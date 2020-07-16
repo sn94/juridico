@@ -16,8 +16,11 @@ class BancoController extends Controller
         date_default_timezone_set("America/Asuncion");
     }
   
-    public function index(){
-        
+    public function index(Request $request){
+        if ( $request->ajax() )
+        {
+            echo "ajax";
+        }
     }
 
 

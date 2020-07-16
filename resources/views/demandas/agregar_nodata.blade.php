@@ -12,20 +12,21 @@
 
 
 
-<form id="formDeman" class="tab-content" method="post" action="<?=url("demandas-agregar/$iddeman")?>">
+<form id="formDeman" class="tab-content" method="post" action="<?=url("demandas-agregar")?>">
 
 {{csrf_field()}}
 
 <button type="submit" class="btn btn-success" >Guardar</button>
 
-<input type="hidden" name="CI"  value="{{$ci}}">
+<input type="hidden" name="CI"  >
 
+<!-- Aqui colocar los campos para seleccionar persona -->
 <div class="row">
   <div class="col-12 col-md-1">
-  <h4>{{$ci}}</h4>
-  </div>
-  <div class="col-12 col-md-11">
-  <h4>{{$nombre}}</h4>
+    <div class="form-group">
+        <label for="origen">Demandado CI°:</label>
+        <input name="CI" type="text"   class="form-control form-control-sm   ">
+    </div> 
   </div>
 </div>
  

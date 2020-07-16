@@ -16,19 +16,39 @@ $raiz="/juridico";
 Route::get('/', function () {
     return view('welcome');
 });
-
+/*
+Datos personales
+*/
+Route::get("ldemandados", "DatosPersoController@index"); //lista datos personales
+Route::get("ndemandado", "DatosPersoController@nuevo"); //Agregar datos personales
+Route::post("ndemandado", "DatosPersoController@nuevo"); //Agregar datos personales
+Route::get("vdemandado/{ci}", "DatosPersoController@view"); //vista datos personales
+/**
+ * Demandas
+ */
 Route::get("demandas", 'DemandaController@demandas');//lista de demandas
 Route::get("demandas-by-o/{origen}", 'DemandaController@demandas_by_origen');//lista de demandas por origen de demanda
+Route::get( "demandas-agregar/{idd}", 'DemandaController@nueva_demanda');//nueva
 Route::get( "demandas-agregar", 'DemandaController@nueva_demanda');//nueva
-Route::post( "demandas-agregar", 'DemandaController@nueva_demanda');//nueva demanda
+Route::post( "demandas-agregar/{idd}", 'DemandaController@nueva_demanda');//nueva demanda
 Route::get( "demandas-liquidar", 'DemandaController@liquidar');//liquidar demanda
 Route::get("ficha-demanda/{codemp}", "DemandaController@ficha_demanda");//ficha de demandas
 Route::get("liquidaciones", 'DemandaController@demandas_p_liquidi');//lista de demandas para liquidacion
 Route::get("liquida-by-o/{origen}", 'DemandaController@demandas_p_liquidi_b_o');//lista  de demandas para notif. por origen
-
+/**
+ * Notificacion-seguimiento
+ */
+Route::get("nnotifi/{iddeman}", "NotifiController@agregar"); //nuevo seguimiento (notificacion)
+Route::post("nnotifi/{iddeman}", "NotifiController@agregar"); //nuevo seguimiento (notificacion)
 Route::get("dema-noti-venc", "NotifiController@notificaciones_venc");//lista de demandas con notificaciones vencidas
 Route::get("proce-noti-venc", "NotifiController@procesar_notifi_venc");//procesar demandas con notificaciones vencidas
 
+
+/**
+ * Observacion
+ */
+Route::get("nobser/{iddeman}", "ObservaController@agregar"); //nueva observacion de demanda
+Route::post("nobser/{iddeman}", "ObservaController@agregar"); //nueva observacion de demanda
 
 
 Route::get('test',  function(){

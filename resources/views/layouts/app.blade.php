@@ -31,8 +31,10 @@
         }
         input[type=text]{
             border-right-color: #092804;
-            border-bottom-color:#092804;
+            border-bottom-color:#092804; 
         }
+         
+       
        
      </style>
 </head>
@@ -56,6 +58,7 @@
                         <a href="#content" class="sidebar-nav-link" data-toggle="collapse"><i class="icon-doc"></i>
                             DEMANDAS</a>
                         <ul id="content" class="collapse" data-parent="#sidebar-nav">
+                        <li><a href="<?=url("ldemandados")?>" class="sidebar-nav-link">Demandados</a></li>
                             <li><a href="<?=url("demandas")?>" class="sidebar-nav-link">Demandas</a></li>
                             <li><a href="<?=url("dema-noti-venc")?>" class="sidebar-nav-link">Notif.vencidas</a></li>
                             
