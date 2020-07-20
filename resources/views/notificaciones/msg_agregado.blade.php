@@ -12,9 +12,22 @@
 <div class="alert alert-success">
 
 <h5>Se ha registrado seguimiento para {{$nombre}} de CI° {{ $ci}} </h5>
-¿Continuar?
-<a href="<?= url("nobser/{{$iddeman}}") ?>">Cargar observaciones</a>
 
+
+<div class="row">
+        <div class="col-12 col-md-3">
+        <a href="<?=url("enotifi/$iddeman") ?>">
+        <img src="<?=url("assets/img/back.png")?>" alt=""> 
+        Volver</a>
+        </div>
+        <div class="col-12 offset-md-1 col-md-7">
+        <a href="<?= url("nobser/$iddeman") ?>">
+        Cargar observaciones
+        <img src="<?=url("assets/img/for.png")?>" alt="">
+        </a>   
+        </div> 
+    </div>
+ 
 </div>
 
 

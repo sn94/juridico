@@ -26,9 +26,9 @@
         table, label, select{
             font-size: 12px !important; 
         }
-        label{
-            font-weight: bold;
-        }
+        table.table td{ padding: 0px !important;}
+        
+        label{  font-weight: bold;   }
         input[type=text]{
             border-right-color: #092804;
             border-bottom-color:#092804; 
@@ -49,7 +49,7 @@
                 </div>
                 <div class="sidebar-header">
                     <img src="<?=url("assets/img/balanza.jpg")?>" class="user-photo">
-                    <p class="username">Dra. Nora Sa.<br><small>Administrator</small>
+                    <p class="username">Estudio Jurídico Sa.<br><small>Administrator</small>
                     </p>
                 </div>
                 <ul id="sidebar-nav" class="sidebar-nav">
@@ -59,7 +59,7 @@
                             DEMANDAS</a>
                         <ul id="content" class="collapse" data-parent="#sidebar-nav">
                         <li><a href="<?=url("ldemandados")?>" class="sidebar-nav-link">Demandados</a></li>
-                            <li><a href="<?=url("demandas")?>" class="sidebar-nav-link">Demandas</a></li>
+                          
                             <li><a href="<?=url("dema-noti-venc")?>" class="sidebar-nav-link">Notif.vencidas</a></li>
                             
                         </ul>
@@ -106,27 +106,24 @@
                             <li><a href="./pages/layout/spinner.html" class="sidebar-nav-link">Gastos por demanda</a></li> 
                         </ul>
                     </li>
-                    <li class="sidebar-nav-group"><a href="#reference" class="sidebar-nav-link" data-toggle="collapse"><i class="icon-notebook"></i> UTILITARIOS</a>
+                    <li class="sidebar-nav-group"><a href="#reference" class="sidebar-nav-link" data-toggle="collapse"><i class="icon-notebook"></i> AUXILIARES</a>
                         <ul id="reference" class="collapse" data-parent="#sidebar-nav">
-                            <li><a href="./pages/reference/callout.html" class="sidebar-nav-link">Organizaci&oacute;n de datos</a></li>
-                            <li><a href="./pages/reference/code-highlight.html" class="sidebar-nav-link">Copia de seguridad</a></li>
+ 
                             <li><a href="./pages/reference/callout.html" class="sidebar-nav-link">Restaurar copias</a></li>
                             <li><a href="./pages/reference/code-highlight.html" class="sidebar-nav-link">Contrase&ntilde;as</a></li>
                             <li><a href="./pages/reference/callout.html" class="sidebar-nav-link">Tabla de notificaci&oacute;n</a></li>
-                            <li><a href="./pages/reference/code-highlight.html" class="sidebar-nav-link">Recalculo de saldos</a></li>
-                            <li><a href="./pages/reference/callout.html" class="sidebar-nav-link">Cambio de Nro. de cta. de banco</a></li>
+ 
                             <li><a href="./pages/reference/code-highlight.html" class="sidebar-nav-link">Cant. d&iacute;as p/vto. Notif </a></li>
                             <li><a href="./pages/reference/callout.html" class="sidebar-nav-link">Origen de las demandas</a></li> 
                         </ul>
                     </li>
-                    <li class="sidebar-nav-btn"><a href="./index.html" class="btn btn-block btn-outline-light">Get started</a>
-                    </li>
+                   
                 </ul>
                 <div class="sidebar-footer"><a href="./pages/content/chat.html" data-toggle="tooltip" title="Support"><i class="fa fa-comment"></i> </a><a href="./pages/content/settings.html" data-toggle="tooltip" title="Settings"><i class="fa fa-cog"></i> </a><a href="./pages/content/signin.html" data-toggle="tooltip" title="Logout"><i class="fa fa-power-off"></i></a></div>
             </div>
             <div class="app-content">
                 <nav class="navbar navbar-expand navbar-light bg-white"><button type="button" class="btn btn-sidebar" data-toggle="sidebar"><i class="fa fa-bars"></i></button>
-                    <div class="navbar-brand">EST. JUR&Iacute;DICO &middot; <a href="https://github.com/marxjmoura/admin4b" class="text-dark" data-toggle="tooltip" data-placement="right" title="Fork me on GitHub"><i class="fa fa-github"></i></a></div>
+                    <div class="navbar-brand">EST. JUR&Iacute;DICO &middot;  </div>
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item dropdown"><a href="#" class="nav-link dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="badge badge-pill badge-primary">3</span> <i class="fa fa-bell-o"></i></a>
                             <div class="dropdown-menu dropdown-menu-right"><a href="./pages/content/notification.html" class="dropdown-item"><small class="dropdown-item-title">Lorem ipsum (today)</small><br>

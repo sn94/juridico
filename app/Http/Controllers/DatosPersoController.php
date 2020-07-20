@@ -57,7 +57,26 @@ class DatosPersoController extends Controller
         else  return view('demandado.agregar'); 
     }
 
- 
+ /**
+  * EDITAR
+  */
+  public function editar(Request $request, $idnro){
+    $modelo= Demandados::find( $idnro );
+  
+    if( ! strcasecmp(  $request->method() , "post"))  {
+        //Quitar el campo _token
+        $Params=  $request->input(); 
+        //Devuelve todo elemento de Params que no este presente en el segundo argumento
+        $Newparams= array_udiff_assoc(  $Params,  array("_token"=> $Params["_token"] ),function($ar1, $ar2){
+        if( $ar1 == $ar2) return 0;    else 1; 
+        } ); 
+        //update to DB ELOQUENT VERSION 
+        $modelo->fill( $Newparams );
+        $modelo->save(); 
+        return view('demandado.msg_agregado', ['ci'=> $modelo->CI,  'lastid'=> $idnro]); 
+    }
+    else  return view('demandado.editar',  ['ci'=> $modelo->CI,  'lastid'=> $idnro, 'ficha'=> $modelo ] ); 
+}
 
   
 

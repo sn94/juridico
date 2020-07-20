@@ -7,6 +7,7 @@ use App\Demandados;
 use App\Http\Controllers\Controller;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB; 
 
 class DemandaController extends Controller
@@ -29,7 +30,11 @@ class DemandaController extends Controller
     public function demandas(){
         $o_de= DB::table("odemanda")->get();
 
-        $dts = DB::select("select TITULAR,CI,DEMANDANTE,COD_EMP,CTA_BANCO,BANCO,GARANTE,CI_GARANTE from demandas  order by TITULAR");
+        $dts= DB::table("demandas2")
+        ->join("demandado", "demandado.CI", "=", "demandas2.CI")
+        ->select("demandado.CI", "demandado.TITULAR", "demandas2.*")
+        ->get();
+       // $dts = DB::select("select IDNRO,TITULAR,CI,DEMANDANTE,COD_EMP,CTA_BANCO,BANCO,GARANTE,CI_GARANTE from demandas2  order by TITULAR");
         return view('demandas.list', ['lista' => $dts, "odemanda" => $o_de]); 
     }
 
@@ -38,9 +43,31 @@ class DemandaController extends Controller
  */
     public function demandas_by_origen(  $origen){ 
  
-        $dts = DB::select("select TITULAR,CI,DEMANDANTE,COD_EMP,CTA_BANCO,BANCO,GARANTE,CI_GARANTE from demandas where O_DEMANDA='$origen' order by TITULAR");
-        return view('demandas.list_tabla_demanda', ['lista' => $dts ]); 
+       /* $dts = DB::select("select IDNRO,TITULAR,CI,DEMANDANTE,COD_EMP,CTA_BANCO,BANCO,GARANTE,CI_GARANTE from demandas where O_DEMANDA='$origen' order by TITULAR");
+        return view('demandas2.list_tabla_demanda', ['lista' => $dts ]); */
     }
+
+
+/**
+ * LISTA DE DEMANDAS DE UNA PERSONA
+ * 
+ */
+
+ public function demandas_by_ci($ci){
+    $lista= Demanda::where("CI", $ci)->get();
+    if(  sizeof( $lista) ){
+        $persona= Demandados::where("ci", $ci)->first();//persona
+
+        return view("demandado.list_demandas", ['lista'=>   $lista, 'ci'=>$ci, 'nombre'=> $persona->TITULAR] );
+    }
+    else{
+        echo "No se registran demandas para el CI°  $ci"; 
+    }
+
+     
+   
+ }
+
 /**
  * FICHA DE DEMANDA SEGUN COD_EMP
  */
@@ -49,11 +76,26 @@ class DemandaController extends Controller
         return view("demandas.ficha_demanda", ['ficha'=>   $data] );
     }
 
-
+    public function ficha_de_demanda(  $idnro){
+        $data= Demanda::find( $idnro);
+        $demanObj=  Demandados::where("CI", $data->CI)->first();
+        $nom= $demanObj->TITULAR;
+        return view("demandas.ficha_demanda", ['ficha'=>   $data, 'idnro'=>$idnro, 'nom'=>  $nom] );
+    }
 
   /*
     NUEVA DEMANDA
     */
+
+    public function show_form_nuevo( $id_d){//Id de demandado
+        $qu= Demandados::find( $id_d);
+        if( is_null( $qu) ){  echo "Código inválido";
+        }else{
+            $ci= $qu->CI;//cedula  
+            $nom=$qu->TITULAR;//nombre
+            return view('demandas.agregar.index', ['ci'=>  $ci ,'id_demandado'=>$id_d, 'nombre'=> $nom ]); 
+        }
+    }
     /**
      * request
      * ultimo codigo generado, id de demandado
@@ -69,36 +111,83 @@ class DemandaController extends Controller
                 if( $ar1 == $ar2) return 0;    else 1; 
              } ); 
           
-            
-            $ci= Demandados::find( $idd)->CI;//cedula de demandado
+            $demandado=Demandados::find( $idd);
+            $ci= $demandado->CI;//cedula de demandado
+            $nombre= $demandado->TITULAR;
             //DB INSERT
             //instancia de demanda
             $obdema=new Demanda();
             $obdema->fill(  $Newparams );
-            $obdema->save();
-            //ULTIMO ID GENERADO
-            $ultimoIdGen=  $obdema->IDNRO;
-            return view('demandas.msg_agregado', [  'ci'=> $ci, 'iddeman'=>$ultimoIdGen ]     ); 
+            if($obdema->save()){//exito
+                //ULTIMO ID GENERADO
+                $ultimoIdGen=  $obdema->IDNRO;
+                //MENSAJE RESPUESTA JSON
+                echo json_encode(array(  'ci'=> $ci, 'nombre'=> $nombre,'id_demanda'=>$ultimoIdGen  ));
+                //return view('demandas.msg_agregado', [  'ci'=> $ci, 'nombre'=> $nombre,'id_demanda'=>$ultimoIdGen ]     ); 
+
+            }else{
+                //fallo
+                echo json_encode(array(  'error'=> 'Un problema en el servidor impidió guardar los datos. Contacte con su desarrollador.' ));
+               
+            }
         }
         else{
-            if(  $idd!= 0){
-                //datos para la vista 
+            if(  $idd!= 0){//id de demandado 
                 $qu= Demandados::find( $idd);
                 if( is_null( $qu) ){  echo "Código inválido";
                 }else{
                     $ci= $qu->CI;//cedula  
                     $nom=$qu->TITULAR;//nombre
-                    return view('demandas.agregar', ['ci'=>  $ci ,'iddeman'=>$idd, 'nombre'=> $nom ]); 
+                    return view('demandas.agregar.index', ['ci'=>  $ci ,'id_demandado'=>$idd, 'nombre'=> $nom ]); 
                 }
             }else{
                 //Vista sin valores iniciales
-               return view('demandas.agregar_nodata'); 
+              // return view('demandas.agregar_nodata'); 
+               return view('demandas.agregar.index'); 
             }
             
         }
     }
 
  
+/**
+ * EDITAR DEMANDA
+ */
+public function editar_demanda(Request $request, $iddeman=0){
+    //instancia de demanda
+    $obdema= Demanda::find( $iddeman);
+
+    if( ! strcasecmp(  $request->method() , "post"))  {
+        //Quitar el campo _token
+        $Params=  $request->input(); 
+        //Devuelve todo elemento de Params que no este presente en el segundo argumento
+        $Newparams= array_udiff_assoc(  $Params,  array("_token"=> $Params["_token"] ),function($ar1, $ar2){
+            if( $ar1 == $ar2) return 0;    else 1; 
+         } ); 
+        //DB INSERT 
+        $obdema->fill(  $Newparams );
+        $obdema->save();
+        //ULTIMO ID GENERADO
+        $ci= $obdema->CI; 
+        return view('demandas.msg_agregado', [  'ci'=> $ci, 'iddeman'=>$iddeman ]     ); 
+    }
+    else{
+        if(  $iddeman!= 0){
+            //datos para la vista 
+            $qu= Demandados::where( "CI", $obdema->CI)->first();
+            if( is_null( $qu) ){  echo "Código inválido";
+            }else{
+                $ci= $qu->CI;//cedula  
+                $nom=$qu->TITULAR;//nombre
+                return view('demandas.editar', ['ci'=>  $ci ,'iddeman'=>$iddeman, 'nombre'=> $nom , 'ficha'=>$obdema]); 
+            }
+        }else{
+            //Vista sin valores iniciales
+           return view('demandas.editar_nodata' , ['ci'=>  $obdema->CI ,'iddeman'=>$iddeman, 'nombre'=> $obdema->TITULAR, 'ficha'=>$obdema ]); 
+        }
+        
+    }
+}
 
 
 

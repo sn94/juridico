@@ -19,4 +19,11 @@ class Demanda extends Model
     protected $fillable= [  'CI','DEMANDANTE','O_DEMANDA','COD_EMP','DOC_DENUNC','LOCALIDAD','DOC_DEN_GA','LOCALIDA_G','JUZGADO','ACTUARIA','JUEZ','FINCA_NRO','CTA_CATAST'];
 
     public $timestamps = false;
+
+
+    public function demandado()
+    {
+        return $this->belongsTo('App\Demandados', "IDNRO");
+    }
+
 }

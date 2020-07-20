@@ -36,7 +36,14 @@
         document.onreadystatechange = () => {
           if (document.readyState === 'complete') {
             // document ready
-            $('#demandatable').DataTable( {    "ordering": false });
+            $('#demandatable').DataTable( 
+              {   
+            "ordering": false,
+            "language": {
+              "url": "<?=url("assets/Spanish.json")?>"
+            }
+          }
+            );
           }
         };
       </script>

@@ -1,13 +1,27 @@
- <?php
- $ci="";
- $iddeman="";
- ?>
+@extends('layouts.app')
 
 
-  <form onsubmit="enviar2(event)" id="formDeman2" class="tab-content" method="post" action="<?=url("nnotifi")?>">
+@section('breadcrumb')
+<li class="breadcrumb-item" aria-current="page">DEMANDAS</li> 
+<li class="breadcrumb-item active" aria-current="page">SEGUIMIENTOS</li> 
+@endsection
+
+@section('content')
+
+<div class="row">
+  <div class="col-12 col-md-1">
+  <h4>{{$ci}}</h4>
+  </div>
+  <div class="col-12 col-md-11">
+  <h4>{{$nombre}}</h4>
+  </div>
+</div>
+
+
+  <form id="formDeman" class="tab-content" method="post" action="<?=url("nnotifi/$iddeman")?>">
 
   <div class="btn-group" role="group" aria-label="Basic example"> 
-  <button type="submit" class="btn btn-info btn-sm"  >GUARDAR</button>
+  <button type="submit" class="btn btn-secondary"  >Guardar</button>
 </div>
  
 
@@ -16,12 +30,12 @@
 
   
 
-<input id="id_demanda2" type="hidden" name="IDNRO"  >
-<input type="hidden" name="CI"  id="ci2">
+<input type="hidden" name="IDNRO" value="{{$iddeman}}">
+<input type="hidden" name="CI" value="{{$ci}}">
 
 <div class="row"> 
         
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-3">
             <div class="form-group">
                 <label for="ctactecatas">Presentado:</label>
                 <input name="PRESENTADO" type="text" id="ctactecatas" class="form-control form-control-sm   ">
@@ -52,11 +66,12 @@
               </div>
               </div>
             </div>
-             
+            
+          
+           
+
       </div><!--end col 1 -->
-
-
-      <div class="col-12 col-md-4">
+      <div class="col-12 col-md-3">
       <div class="row">
               <div class="col-12 col-md-6">
               <div class="form-group">
@@ -89,7 +104,7 @@
             </div>
       </div> <!--end col 2 -->
  
-      <div class="col-12 col-md-4">
+      <div class="col-12 col-md-3">
         
       <div class="row">
               <div class="col-12 col-md-6">
@@ -134,10 +149,13 @@
             </div>
       
       </div><!--end col 3 -->
+     
+
+
+ <!--fin campos seguimiento -->
+
+
 </div>
-
-
-
 <div class="row">
 <div class="col-12 col-md-5">
 
@@ -229,7 +247,7 @@
             </div>
 
 </div> <!-- col 4 -->
-<div class="col-12 col-md-7">
+<div class="col-12 col-md-5">
   <div class="row" style="background-color: #bcfda6;">
     <!-- --> 
       <div class="col-12 col-md-4">
@@ -288,11 +306,52 @@
  
  
   </form>
+</div>
+
+
+
+
+
+
+
+  
+@endsection
+
+
+
+<script>
+
  
 
 
+function enviar( ev){
+  ev.preventDefault();
+  $.ajax(
+    {
+      url:"<?= url("demandas-agregar")?>",
+      method: "post",
+      data: $("#formDeman").serialize(),
+      
+      headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+      beforeSend: function(){
+        $("#showSpinner").html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
+      },
+      success: function( res ){
+        $("#showSpinner").html( res  ); //mensaje
+        //$("#formDeman").reset();//limpiar formulario
+      },
+      error: function(){
+        $("#showSpinner").html(  "" ); 
+      }
+    }
+  );
+}
 
 
 
- 
- 
+
+function showMenuBanco(){
+  
+}
+       
+    </script>

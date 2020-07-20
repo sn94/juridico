@@ -9,6 +9,9 @@
 @section('content')
 
 
+<!--Enlaces  --->
+<a href="<?=url("demandas-by-ci/$ficha->CI")?>">VER DEMANDAS</a> 
+
   
 <div class="row">
   <div class="col-12 col-md-4">

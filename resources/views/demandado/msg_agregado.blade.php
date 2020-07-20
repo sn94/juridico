@@ -10,10 +10,21 @@
 
 
 <div class="alert alert-success">
-
 <h5>Se han registrado datos personales para el CI° {{ $ci}} </h5>
-¿Continuar?
-<a href="<?=url("demandas-agregar/$lastid") ?>">Cargar datos de demanda</a>
+
+ 
+    <div class="row">
+        <div class="col-12 col-md-3">
+        <a href="<?=url("edemandado/$lastid") ?>">
+        <img src="<?=url("assets/img/back.png")?>" alt=""> 
+        Volver</a>
+        </div>
+        <div class="col-12 offset-md-1 col-md-3">
+        <a href="<?=url("demandas-agregar/$lastid") ?>">Cargar datos de demanda
+        <img src="<?=url("assets/img/for.png")?>" alt=""></a>
+        </div>
+    </div>
+
 </div>
 
 

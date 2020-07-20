@@ -1,28 +1,12 @@
-@extends('layouts.app')
+ 
 
-
-@section('breadcrumb')
-<li class="breadcrumb-item" aria-current="page">DEMANDAS</li> 
-<li class="breadcrumb-item active" aria-current="page">AGREGAR</li> 
-@endsection
-
-@section('content')
-
-
-
-
-
-<form id="formDeman" class="tab-content" method="post" action="<?=url("demandas-agregar/$iddeman")?>">
+<form onsubmit="enviar(event)" id="formDeman" class="tab-content" method="post" action="<?=url("demandas-agregar/$id_demandado")?>">
 
 {{csrf_field()}}
 
-<button type="submit" class="btn btn-success" >Guardar</button>
 
 <input type="hidden" name="CI"  value="{{$ci}}">
 
-<div class="row ml-1">
-   <h4>{{$ci}} - {{$nombre}}</h4> 
-</div>
  
 <div class="row">
           <div class="col-12 col-md-3">
@@ -110,6 +94,8 @@
                     <label for="ctactecatas">Cta.Cte.Catastral:</label>
                     <input name="CTA_CATAST" type="text" id="ctactecatas" class="form-control form-control-sm   ">
                   </div>
+                  <button type="submit" class="btn btn-success btn-sm" >GUARDAR</button>
+
           </div>
         </div>
 </form>
@@ -117,40 +103,5 @@
   
 
   
-@endsection
-
-
-
-<script>
- 
-
-
-function enviar( ev){
-  ev.preventDefault();
-  $.ajax(
-    {
-      url:"<?= url("demandas-agregar")?>",
-      method: "post",
-      data: $("#formDeman").serialize(),
-      
-      headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-      beforeSend: function(){
-        $("#showSpinner").html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
-      },
-      success: function( res ){
-        $("#showSpinner").html( res  ); //mensaje
-        //$("#formDeman").reset();//limpiar formulario
-      },
-      error: function(){
-        $("#showSpinner").html(  "" ); 
-      }
-    }
-  );
-}
-
-
-
 
  
-       
-    </script>

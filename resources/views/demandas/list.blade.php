@@ -30,7 +30,7 @@
       </thead>
       <tbody>
       <?php foreach( $lista as $item): ?>
-          <tr><td > <a href="<?=url("ficha-demanda/".$item->COD_EMP)?>"><?= $item->COD_EMP?></a> </td> <td><?= $item->CI?></td>  <td><?= $item->TITULAR?></td><td><?= $item->DEMANDANTE?></td><td><?= $item->CTA_BANCO?></td>   </tr>
+          <tr><td > <a href="<?=url("ficha-demanda/".$item->IDNRO)?>"><?= $item->COD_EMP?></a> </td> <td><?= $item->CI?></td>  <td><?= $item->TITULAR?></td><td><?= $item->DEMANDANTE?></td><td><?= $item->CTA_BANCO?></td>   </tr>
       <?php  endforeach; ?>
       </tbody>
       </table>
@@ -39,7 +39,14 @@
         document.onreadystatechange = () => {
           if (document.readyState === 'complete') {
             // document ready
-            $('#demandatable').DataTable( {    "ordering": false });
+            $('#demandatable').DataTable( 
+              {   
+            "ordering": false,
+            "language": {
+              "url": "<?=url("assets/Spanish.json")?>"
+            }
+          }
+            );
           }
         };
       </script>

@@ -3,26 +3,25 @@
 
 @section('breadcrumb')
 <li class="breadcrumb-item" aria-current="page">DEMANDAS</li> 
-<li class="breadcrumb-item active" aria-current="page">DEMANDADOS</li> 
+<li class="breadcrumb-item active" aria-current="page">REGISTROS DE DEMANDADO</li> 
 @endsection
 
 @section('content')
 
-<h3>DEMANDADOS</h3>
-  
-<div class="btn-group mb-2" role="group" aria-label="Basic example">
-  <a href="<?=url("ndemandado")?>" class="btn btn-success">NUEVO</a>
- 
-</div>
+<h4>{{$ci}} - {{$nombre}}</h4>
+<h3>DEMANDAS</h3>
+ <!--Enlaces  --->
+<a href="<?=url("vdemandado/$ci")?>">VOLVER A DATOS PERSONALES</a> 
+
 
 <div id="tabla-dinamica">
     <table id="demandadostable" class="table table-bordered table-striped">
       <thead class="thead-dark">
-          <tr> <th>CI</th>  <th>TITULAR</th> <th>DOMICILIO</th> <th>TELÉFONO</th> <th></th></tr>
+          <tr> <th>DEMANDANTE</th>  <th>ORIGEN DEMANDA</th> <th>COD_EMP</th> <th></th> </tr>
       </thead>
       <tbody>
       <?php foreach( $lista as $item): ?>
-          <tr><td > <a href="<?=url("vdemandado/".$item->CI)?>"><?=$item->CI?> </a> </td><td > <?= $item->TITULAR?></a> </td> <td><?= $item->DOMICILIO?></td>  <td><?= $item->TELEFONO?></td>  <td><a href="<?=url("demandas-by-ci/".$item->CI)?>" >Ver demandas</a></td>  </tr>
+          <tr><td >  <?= $item->DEMANDANTE?> </td><td > <?= $item->O_DEMANDA?></a> </td> <td><?= $item->COD_EMP?></td>  <td><a href="<?= url("ficha-demanda/".$item->IDNRO)?>">Ver mas</a> </td>    </tr>
       <?php  endforeach; ?>
       </tbody>
       </table>
@@ -31,12 +30,14 @@
         document.onreadystatechange = () => {
           if (document.readyState === 'complete') {
             // document ready
-            $('#demandadostable').DataTable( {   
+            $('#demandadostable').DataTable(
+              {   
             "ordering": false,
             "language": {
               "url": "<?=url("assets/Spanish.json")?>"
             }
-          });
+          }
+            );
           }
         };
       </script>
@@ -57,12 +58,12 @@ document.onreadystatechange = () => {
   if (document.readyState === 'complete') {
     // document ready
     $('#demandadostable').DataTable(
-      {
-        "ordering": false,
-        "language": {
-            "url": "<?=url("assets/Spanish.json")?>"
-        }
-      }
+      {   
+            "ordering": false,
+            "language": {
+              "url": "<?=url("assets/Spanish.json")?>"
+            }
+          }
     );
   }
 };
