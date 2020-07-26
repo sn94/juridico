@@ -10,7 +10,7 @@
 
 
 <div class="alert alert-success">
-<h5>Se han registrado datos personales para el CI° {{ $ci}} </h5>
+<h5>Se han actualizado los datos personales para el CI° {{ $ci}} </h5>
 
  
     <div class="row">
@@ -19,10 +19,7 @@
         <img src="<?=url("assets/img/back.png")?>" alt=""> 
         Volver</a>
         </div>
-        <div class="col-12 offset-md-1 col-md-3">
-        <a href="<?=url("demandas-agregar/$lastid") ?>">Cargar datos Judiciales
-        <img src="<?=url("assets/img/for.png")?>" alt=""></a>
-        </div>
+        
     </div>
 
 </div>

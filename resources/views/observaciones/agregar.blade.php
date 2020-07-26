@@ -27,7 +27,7 @@
     </div>
     <div class="form-group">
         <label for="ctactecatas">Cedula:</label>
-        <input name="CI_GAR_3" type="text" id="ctactecatas" class="form-control form-control-sm   ">
+        <input  oninput="formatear(this)"  name="CI_GAR_3" type="text" id="ctactecatas" class="form-control form-control-sm   ">
     </div>
   </div>
   <div class="col-12 col-md-4">

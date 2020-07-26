@@ -90,7 +90,10 @@ public function agregar( Request $request, $iddeman= 0){
   
 /**Nuevos datos de observacion */
 
-public function editar( Request $request, $iddeman){
+public function editar( Request $request, $iddeman=0){
+
+    $obsmodel= NULL;
+    if( $iddeman==0) $iddeman= $request->input("IDNRO");
     $obsmodel= Observacion::find( $iddeman );
 
     if( ! strcasecmp(  $request->method() , "post"))  {//hay datos
@@ -115,7 +118,7 @@ public function editar( Request $request, $iddeman){
             $ci= $reg->CI;
             $demanObj=  Demandados::where("CI", $ci)->first();
             $nom= $demanObj->TITULAR;
-            return view('observaciones.msg_agregado', [ 'ci'=> $ci, 'nombre'=> $nom, 'iddeman'=>$iddeman ]     ); 
+            echo json_encode( array( 'ci'=> $ci, 'nombre'=> $nom, 'iddeman'=>$iddeman )    ); 
         }/** */
     }
     else

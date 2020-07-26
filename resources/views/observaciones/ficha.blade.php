@@ -20,9 +20,9 @@
 
 
 <!--Enlaces  --->
-<a href="<?=url("vdemandado/$ci")?>">VER DATOS PERSONALES</a>
-<a href="<?=url("ficha-demanda/$idnro")?>">VER DEMANDA</a>
-<a href="<?=url("vnotifi/$idnro")?>">VER SEGUIMIENTO</a>
+<a class="btn btn-info btn-sm mt-1 mb-1"  href="<?=url("vdemandado/$ci")?>">VER DATOS PERSONALES</a>
+<a class="btn btn-info btn-sm mt-1 mb-1"  href="<?=url("ficha-demanda/$idnro")?>">VER DEMANDA</a>
+<a class="btn btn-info btn-sm mt-1 mb-1"  href="<?=url("vnotifi/$idnro")?>">VER SEGUIMIENTO</a>
  
 
 

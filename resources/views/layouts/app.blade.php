@@ -33,8 +33,51 @@
             border-right-color: #092804;
             border-bottom-color:#092804; 
         }
-         
-       
+
+
+/*TABLA RESPONSIVA */
+          /* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+    
+    td:nth-child(3n) p.ldemandado{
+        width: 150px;margin: 0px;
+    }
+    td:nth-child(4n) p.ldemandado{
+        width: 200px;margin: 0px;
+    }
+   
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+     table{
+         width: 100%;
+     }
+    td:nth-child(3n) p.ldemandado{
+        width: 100%;margin: 0px;
+    }
+    td:nth-child(4n) p.ldemandado{
+        width: 100%;margin: 0px;
+    }
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+    
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+
+} 
+
+
+ 
        
      </style>
 </head>
@@ -55,14 +98,9 @@
                 <ul id="sidebar-nav" class="sidebar-nav">
                  
                     <li class="sidebar-nav-group">
-                        <a href="#content" class="sidebar-nav-link" data-toggle="collapse"><i class="icon-doc"></i>
+                        <a href="<?=url("ldemandados")?>" class="sidebar-nav-link" ><i class="icon-doc"></i>
                             DEMANDAS</a>
-                        <ul id="content" class="collapse" data-parent="#sidebar-nav">
-                        <li><a href="<?=url("ldemandados")?>" class="sidebar-nav-link">Demandados</a></li>
-                          
-                            <li><a href="<?=url("dema-noti-venc")?>" class="sidebar-nav-link">Notif.vencidas</a></li>
-                            
-                        </ul>
+                         
                     </li>
                     <li class="sidebar-nav-group">
                         <a href="#device-controls" class="sidebar-nav-link" data-toggle="collapse"><i class="icon-screen-tablet"></i> LIQUIDACION</a>
@@ -70,9 +108,13 @@
                             <li><a href="<?=url("liquidaciones")?>" class="sidebar-nav-link">Liquidaci&oacute;n</a></li> 
                         </ul>
                     </li>
+                     
                     <li class="sidebar-nav-group">
-                        <a href="#forms" class="sidebar-nav-link" data-toggle="collapse"><i class="icon-pencil"></i> CTA.JUDICIAL</a>
-                        <ul id="forms" class="collapse" data-parent="#sidebar-nav">
+                        <a href="#opcinformes" class="sidebar-nav-link" data-toggle="collapse"><i class="icon-pencil"></i> INFORMES</a>
+                        <ul id="opcinformes" class="collapse" data-parent="#sidebar-nav">
+                            <li><a href="./pages/forms/basic-form.html" class="sidebar-nav-link">Crear filtros</a></li>
+                            <li><a href="./pages/forms/multi-step-form.html" class="sidebar-nav-link">Editar filtros</a></li> 
+                            <li><a href="<?=url("dema-noti-venc")?>" class="sidebar-nav-link">Notif.vencidas</a></li>
                             <li><a href="/depcta" class="sidebar-nav-link">Dep&oacute;sitos</a></li>
                             <li><a href="/extcta" class="sidebar-nav-link">Extracciones</a></li>
                             <li><a href="./pages/forms/tabbed-form.html" class="sidebar-nav-link">Est. Cta. Extracci&oacute;n</a></li>
@@ -80,13 +122,7 @@
                             <li><a href="./pages/forms/tabbed-form.html" class="sidebar-nav-link">Dep&oacute;sitos Liquidaci&oacute;n</a></li>   
                             <li><a href="./pages/forms/tabbed-form.html" class="sidebar-nav-link">Resumen de cuentas</a></li>
                             <li><a href="./pages/forms/multi-step-form.html" class="sidebar-nav-link">Recaudaci&oacute;n</a></li> 
-                        </ul>
-                    </li>
-                    <li class="sidebar-nav-group">
-                        <a href="#opcinformes" class="sidebar-nav-link" data-toggle="collapse"><i class="icon-pencil"></i> INFORMES</a>
-                        <ul id="opcinformes" class="collapse" data-parent="#sidebar-nav">
-                            <li><a href="./pages/forms/basic-form.html" class="sidebar-nav-link">Crear filtros</a></li>
-                            <li><a href="./pages/forms/multi-step-form.html" class="sidebar-nav-link">Editar filtros</a></li> 
+                       
                         </ul>
                     </li>
                     <li class="sidebar-nav-group"><a href="#input-controls" class="sidebar-nav-link" data-toggle="collapse"><i class="icon-note"></i> BANCOS</a>

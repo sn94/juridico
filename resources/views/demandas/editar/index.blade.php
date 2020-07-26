@@ -3,15 +3,37 @@
 
 @section('breadcrumb')
 <li class="breadcrumb-item" aria-current="page">DEMANDAS</li> 
-<li class="breadcrumb-item active" aria-current="page">AGREGAR</li> 
+<li class="breadcrumb-item active" aria-current="page">ACTUALIZAR</li> 
 @endsection
 
 @section('content')
 
+
+<?php
+
+function fecha_f( $fe){ 
+  //convertir de d/m/Y a Y/m/d
+  if( $fe==""  ) return "";
+  $fecha= explode("/",  $fe);
+  if(  strlen($fecha[1])==1   )  $fecha[1]= "0".$fecha[1];
+  if(  strlen($fecha[0])==1   )  $fecha[0]= "0".$fecha[0];
+  
+  echo $fecha[2] ."-".$fecha[1]."-".$fecha[0]; 
+}
+
+function number_f( $ar){
+  $v= floatval( $ar);
+  return number_format($v, 0, '', '.');
+}
+ ?>
+
+
+
+
 <?php  if( isset($ci) ):?>  <h4>{{$ci}} - {{$nombre}}</h4>  <?php endif;?>
 
 
-  <input type="hidden" id="iddemanda">
+<input type="hidden" id="iddemanda">
  
 <div class="nav-tabs-responsive">
   <ul class="nav nav-tabs mb-4">
@@ -40,8 +62,9 @@
       </div>
       <div id="demanda-collapse" class="collapse show" data-parent="#formOrder">
         
-     
-      @include("demandas.agregar.create")
+      @include("demandas.editar.edit")
+
+
       </div>
     </div>
     <div id="seguimiento" class="tab-pane">
@@ -51,8 +74,8 @@
         </a>
       </div>
       <div id="seguimiento-collapse" class="collapse" data-parent="#formOrder">
-         
-      @include("notificaciones.agregar")
+      @include("notificaciones.editar")
+      
       </div>
     </div>
     <div id="observacion" class="tab-pane">
@@ -63,7 +86,8 @@
       </div>
       <div id="observacion-collapse" class="collapse" data-parent="#formOrder">
      
-      @include("observaciones.agregar")
+      @include("observaciones.editar")
+     
 
       </div>
     </div>
@@ -86,7 +110,6 @@
 var formDemandasEnviado= false;
 
 
- 
 function enviar( ev){ 
  
   ev.preventDefault();
@@ -112,7 +135,7 @@ function enviar( ev){
             //Mostrar mensaje
             var mens1= `
             <div class="alert alert-success">
-            <h5>Se han registrado datos de demanda para ${res.nombre} - CI° ${res.ci} </h5>
+            <h5>Se han actualizado datos de demanda para ${res.nombre} - CI° ${res.ci} </h5>
             </div>
             `;
             $("#demanda-collapse").html(  mens1  ); //mensaje
@@ -157,7 +180,7 @@ function enviar2( ev){
                 //Mostrar mensaje
                 var mens1= `
                 <div class="alert alert-success">
-                <h5>Se han registrado datos de seguimiento para ${res.nombre} - CI° ${res.ci} </h5>
+                <h5>Se han actualizado datos de seguimiento para ${res.nombre} - CI° ${res.ci} </h5>
                 </div>
                 `;
                 $("#seguimiento-collapse").html(  mens1  ); //mensaje  
@@ -203,7 +226,7 @@ function enviar3( ev){
                //Mostrar mensaje
                var mens1= `
                <div class="alert alert-success">
-               <h5>Se han registrado observaciones para ${res.nombre} - CI° ${res.ci} </h5>
+               <h5>Se han actualizado observaciones para ${res.nombre} - CI° ${res.ci} </h5>
                </div>
                `;
                $("#observacion-collapse").html(  mens1  ); //mensaje 
@@ -221,12 +244,7 @@ function enviar3( ev){
  
 }/** */
 
-function showMenuBanco(){
-  
-}
-       
-
-        
+ 
   function formatear(obj){
     let val_Act= obj.value;
     val_Act= val_Act.replaceAll( new RegExp(/[\.]*[,]*/), "");
@@ -235,4 +253,5 @@ function showMenuBanco(){
     console.log( enpuntos);
 		$( obj).val( enpuntos);
 	} 
+       
     </script>

@@ -28,5 +28,6 @@ mix.combine(['public/assets/css/fonts.css',
     'public/assets/css/font-awesome.min.css',
     'public/assets/css/simple-line-icons.min.css',
     'public/assets/css/datatables.min.css',
-    'public/assets/css/admin4b.min.css'
+    'public/assets/css/admin4b.min.css',
+    'public/assets/css/dataTables.bootstrap4.min.css'
 ], 'public/app.css');

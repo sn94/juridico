@@ -92,8 +92,11 @@ public function agregar( Request $request, $iddeman=0){
  */
 
  
-public function editar( Request $request, $iddeman){
+public function editar( Request $request, $iddeman=0){
+    $notimodel= NULL;
+    if( $iddeman == 0) $iddeman= $request->input("IDNRO");
     $notimodel= Notificacion::find( $iddeman);
+    
     if( ! strcasecmp(  $request->method() , "post"))  {//hay datos
             
         //Quitar el campo _token
@@ -116,7 +119,7 @@ public function editar( Request $request, $iddeman){
             $ci= $reg->CI;
             $demanObj=  Demandados::where("CI", $ci)->first();
             $nom= $demanObj->TITULAR;
-            return view('notificaciones.msg_agregado', [ 'ci'=> $ci, 'nombre'=> $nom, 'iddeman'=>$iddeman ]     ); 
+            echo json_encode( array( 'ci'=> $ci, 'nombre'=> $nom, 'iddeman'=>$iddeman )    ); 
         }/** */
     }
     else

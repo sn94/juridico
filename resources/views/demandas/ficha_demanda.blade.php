@@ -10,15 +10,15 @@
 
 <!-- Nombre Y CI de Titular -->
 
-  
-
-<h4>FICHA DE DEMANDA</h4>
+   
 <div class="row ml-1">  <h5>{{$ficha->CI}} - {{ $nom }}</h5>     </div>
  
 <!--Enlaces a seguimiento , observacion --->
-<a href="<?=url("vnotifi/$idnro")?>">VER SEGUIMIENTO</a>
-<a href="<?=url("vobser/$idnro")?>">VER OBSERVACION</a>
-
+<a  class="btn btn-info btn-sm mt-1 mb-1" href="<?=url("vnotifi/$idnro")?>">SEGUIMIENTO</a>
+<a  class="btn btn-info btn-sm mt-1 mb-1" href="<?=url("vobser/$idnro")?>">OBSERVACION</a>
+<a  class="btn btn-primary btn-sm mt-1 mb-1" href="<?=url("demandas-editar/".$ficha->IDNRO)?>">EDITAR DATOS JUDIC.</a>
+<a  class="btn btn-info btn-sm mt-1 mb-1" href="<?=url("vnotifi/$idnro")?>">CTAS.JUDICIALES</a>
+<a  class="btn btn-info btn-sm mt-1 mb-1" href="<?=url("vobser/$idnro")?>">LIQUIDACIÓN</a>
 
   <div class="row">
   

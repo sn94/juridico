@@ -7,8 +7,7 @@
 @endsection
 
 @section('content')
-
-<h3>DATOS PERSONALES - DEMANDADO</h3>
+ 
 <form id="formDeman"  method="post" action="<?=url("edemandado/$lastid")?>">
 
 {{csrf_field()}}

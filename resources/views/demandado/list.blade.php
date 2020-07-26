@@ -16,59 +16,43 @@
 </div>
 
 <div id="tabla-dinamica">
-    <table id="demandadostable" class="table table-bordered table-striped">
+    <table id="demandadostable" class="table table-responsive table-bordered table-striped" style="width:100%">
       <thead class="thead-dark">
-          <tr> <th>CI</th>  <th>TITULAR</th> <th>DOMICILIO</th> <th>TELÉFONO</th> <th></th></tr>
+          <tr> <th></th> <th>CI</th>  <th >TITULAR</th> <th>DOMICILIO</th> <th>TELÉFONO</th> </tr>
       </thead>
       <tbody>
       <?php foreach( $lista as $item): ?>
-          <tr><td > <a href="<?=url("vdemandado/".$item->CI)?>"><?=$item->CI?> </a> </td><td > <?= $item->TITULAR?></a> </td> <td><?= $item->DOMICILIO?></td>  <td><?= $item->TELEFONO?></td>  <td><a href="<?=url("demandas-by-ci/".$item->CI)?>" >Ver demandas</a></td>  </tr>
+          <tr> <td><a href="<?=url("demandas-by-ci/".$item->CI)?>" >VER</a></td>  <td > <a href="<?=url("vdemandado/".$item->CI)?>"><?=$item->CI?> </a> </td><td  > <p style="width: 150px;margin:0px;"><?= $item->TITULAR?></p></td> <td> <p style="width: 200px;margin:0px;"><?= $item->DOMICILIO?></p></td>  <td><?= $item->TELEFONO?></td>   </tr>
       <?php  endforeach; ?>
       </tbody>
       </table>
 
-      <script>
-        document.onreadystatechange = () => {
-          if (document.readyState === 'complete') {
-            // document ready
-            $('#demandadostable').DataTable( {   
-            "ordering": false,
-            "language": {
-              "url": "<?=url("assets/Spanish.json")?>"
-            }
-          });
-          }
-        };
-      </script>
+   
   </div>
 
 
-  
-@endsection
-
-
-
-<script>
-
-
-
-
+  <script> 
 document.onreadystatechange = () => {
   if (document.readyState === 'complete') {
     // document ready
     $('#demandadostable').DataTable(
-      {
+      {  
+         "columnDefs": [
+    { "width": "20%", "targets": 0 }
+  ],
         "ordering": false,
         "language": {
             "url": "<?=url("assets/Spanish.json")?>"
-        }
+        },
+        "autoWidth": false
       }
     );
+  
+
   }
-};
+}; 
+  </script>
+  
+@endsection
 
 
- 
- 
-       
-    </script>

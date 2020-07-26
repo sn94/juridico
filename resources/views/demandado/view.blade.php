@@ -10,7 +10,8 @@
 
 
 <!--Enlaces  --->
-<a href="<?=url("demandas-by-ci/$ficha->CI")?>">VER DEMANDAS</a> 
+<a class="btn btn-info btn-sm mb-1 mt-1" href="<?=url("demandas-by-ci/$ficha->CI")?>">VER DEMANDAS</a> 
+<a class="btn btn-info btn-sm mb-1 mt-1" href="<?=url("edemandado/$ficha->IDNRO")?>">ACTUALIZAR DATOS</a> 
 
   
 <div class="row">

@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Demanda;
 use App\Demandados;
 use App\Http\Controllers\Controller;
+use App\Notificacion;
+use App\Observacion;
 use Exception;
+use Illuminate\Http\Client\Request as ClientRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB; 
 
@@ -20,9 +24,26 @@ class DatosPersoController extends Controller
 /**
  * AGREGAR
  */
-    public function index(){
-        $dmds= DB::table("demandado")->get(); 
+    public function index( Request $request, $argumento=""){
+        /*$dmds= DB::table("demandado")->get(); 
           return view('demandado.list', ['lista' => $dmds]  ); 
+          */
+          //Con paginacion 
+          $consulta= "";
+          if(  $argumento != ""){
+            $consulta= DB::table("demandado")
+            ->selectRaw(" * ")
+            ->whereRaw(" CI LIKE '%$argumento%' or  TITULAR LIKE '%$argumento%' or DOMICILIO LIKE '%$argumento%' OR TELEFONO LIKE '%$argumento%' ");  
+          }else{
+            $consulta= DB::table("demandado");
+          }
+         $dmds=  $consulta->paginate(20);
+        $sqlq= $consulta->toSql();
+         
+        if(  $request->ajax()){
+        return view('demandado.list_paginate_ajax', ['lista' => $dmds]  ); 
+        }else
+        return view('demandado.list_paginate', ['lista' => $dmds]  ); 
     }
 
  
@@ -52,7 +73,22 @@ class DatosPersoController extends Controller
             $modelo->fill( $Newparams );
             $modelo->save();
            $ultimoIdGen=  $modelo->IDNRO;
-            return view('demandado.msg_agregado', ['ci'=> $modelo->CI,  'lastid'=> $ultimoIdGen]); 
+           
+            /**generar registro en demanda, en notifi y en observacion */
+            $deman= new Demanda();
+            $deman->CI= $modelo->CI;
+            if($deman->save()){
+              $noti= new Notificacion();
+              $noti->IDNRO= $deman->IDNRO;
+              $noti->CI= $deman->CI;
+              $noti->save();
+              $obs= new Observacion();
+              $obs->IDNRO= $deman->IDNRO;
+              $obs->CI= $deman->CI;
+              $obs->save();
+            } 
+            /** */
+            echo json_encode( array( 'ci'=> $modelo->CI,  'nombre'=> $modelo->TITULAR) );
         }
         else  return view('demandado.agregar'); 
     }
@@ -60,9 +96,9 @@ class DatosPersoController extends Controller
  /**
   * EDITAR
   */
-  public function editar(Request $request, $idnro){
-    $modelo= Demandados::find( $idnro );
-  
+  public function editar(Request $request, $idnro){//idnro es CEDULA
+    $modelo= Demandados::where( "CI", $idnro )->first();
+    //Demandados::find( $idnro );
     if( ! strcasecmp(  $request->method() , "post"))  {
         //Quitar el campo _token
         $Params=  $request->input(); 
@@ -72,10 +108,13 @@ class DatosPersoController extends Controller
         } ); 
         //update to DB ELOQUENT VERSION 
         $modelo->fill( $Newparams );
-        $modelo->save(); 
-        return view('demandado.msg_agregado', ['ci'=> $modelo->CI,  'lastid'=> $idnro]); 
+        if($modelo->save()){
+          echo json_encode(array(  'ci'=> $idnro, 'nombre'=> $modelo->TITULAR  ));
+        }else{
+          echo json_encode(array(  'error'=> 'Un problema en el servidor impidió guardar los datos. Contacte con su desarrollador.' )); 
+        } 
     }
-    else  return view('demandado.editar',  ['ci'=> $modelo->CI,  'lastid'=> $idnro, 'ficha'=> $modelo ] ); 
+    else  return view('demandas.agregarn.demandado_form',  ['ci'=> $modelo->CI,   'ficha'=> $modelo ] ); 
 }
 
   

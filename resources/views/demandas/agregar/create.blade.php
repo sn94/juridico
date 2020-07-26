@@ -35,19 +35,19 @@
           <div class="col-12 col-md-3">
                 <div class="form-group">
                   <label for="deman">Demanda:</label>
-                  <input name="DEMANDA" type="text" id="deman" class="form-control form-control-sm " value="0">
+                  <input  oninput="formatear(this)" name="DEMANDA" type="text" id="deman" class="form-control form-control-sm " value="0">
                 </div>
                 <div class="form-group">
                   <label for="saldo">Saldo:</label>
-                  <input name="SALDO" type="text" id="saldo" class="form-control form-control-sm " value="0">
+                  <input  oninput="formatear(this)"  name="SALDO" type="text" id="saldo" class="form-control form-control-sm " value="0">
                 </div>
                 <div class="form-group">
                   <label for="nroemb">Nro.de Embargo:</label>
-                  <input name="EMBARGO_NR" type="text" id="nroemb" class="form-control form-control-sm   ">
+                  <input  oninput="formatear(this)"  name="EMBARGO_NR" type="text" id="nroemb" class="form-control form-control-sm   ">
                 </div>
                 <div class="form-group">
                   <label for="fechaemb">Fecha de embargo:</label>
-                  <input value="2018-07-22" 	min="2000-01-01" max="2050-12-31" name="FEC_EMBARG" type="date" id="fechaemb" class="form-control form-control-sm   ">
+                  <input  name="FEC_EMBARG" type="date" id="fechaemb" class="form-control form-control-sm   ">
                 </div>
                 <div class="form-group">
                   <label for="institu">Institucion:</label>
@@ -80,7 +80,7 @@
           <div class="col-12 col-md-3">
                   <div class="form-group">
                     <label for="nrofinca">Nro.de finca:</label>
-                    <input name="FINCA_NRO" type="text" id="nrofinca" class="form-control form-control-sm   ">
+                    <input  oninput="formatear(this)"   name="FINCA_NRO" type="text" id="nrofinca" class="form-control form-control-sm   ">
                   </div>
                   <div class="form-group">
                     <label for="ctacte">Cta. Cte:</label>

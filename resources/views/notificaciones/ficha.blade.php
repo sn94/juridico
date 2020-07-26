@@ -18,11 +18,19 @@
 </div>
 
 
+<?php 
+
+function number_f( $ar){
+  $v= floatval( $ar);
+  return number_format($v, 0, '', '.');
+}
+ ?>
+
 
 <!--Enlaces  --->
-<a href="<?=url("vdemandado/$ci")?>">VER DATOS PERSONALES</a>
-<a href="<?=url("ficha-demanda/$idnro")?>">VER DEMANDA</a>
-<a href="<?=url("vobser/$idnro")?>">VER OBSERVACION</a>
+<a class="btn btn-info btn-sm mt-1 mb-1" href="<?=url("vdemandado/$ci")?>">DATOS PERSONALES</a>
+<a class="btn btn-info btn-sm mt-1 mb-1" href="<?=url("ficha-demanda/$idnro")?>">DEMANDA</a>
+<a class="btn btn-info btn-sm mt-1 mb-1" href="<?=url("vobser/$idnro")?>">OBSERVACION</a>
 
 <div class="row"> 
         
@@ -172,13 +180,13 @@
         <div class="col-12 col-md-6">
           <div class="form-group">
               <label for="ctactecatas">Importe aprobado AI:</label>
-              <input readonly value="{{$ficha->APROB_IMPO}}" name="APROB_IMPO" type="text" id="ctactecatas" class="form-control form-control-sm   ">
+              <input   readonly value="{{number_f($ficha->APROB_IMPO)}}" name="APROB_IMPO" type="text" id="ctactecatas" class="form-control form-control-sm   ">
           </div>
         </div>
         <div class="col-12 col-md-6">
           <div class="form-group">
               <label for="ctactecatas">Saldo:</label>
-              <input readonly value="{{$ficha->SALDO_EXT}}" name="SALDO_EXT" type="text" id="ctactecatas" class="form-control form-control-sm   ">
+              <input   readonly value="{{number_f($ficha->SALDO_EXT)}}" name="SALDO_EXT" type="text" id="ctactecatas" class="form-control form-control-sm   ">
           </div>
         </div>
       </div>
@@ -212,7 +220,7 @@
         <div class="col-12 col-md-4">
           <div class="form-group">
               <label for="ctactecatas">Monto:</label>
-              <input readonly value="{{$ficha->EMBAR_EJEC}}" name="EMBAR_EJEC" type="text" id="ctactecatas" class="form-control form-control-sm   ">
+              <input   readonly value="{{number_f($ficha->EMBAR_EJEC)}}" name="EMBAR_EJEC" type="text" id="ctactecatas" class="form-control form-control-sm   ">
           </div>
          </div>
       </div>
@@ -243,7 +251,7 @@
       <div class="col-12 col-md-4">
           <div class="form-group">
             <label for="ctactecatas">Inhibición:</label>
-            <input readonly  value="{{$ficha->INIVISION}}" name="INIVISION" type="text" id="ctactecatas" class="form-control form-control-sm   ">
+            <input   readonly  value="{{number_f($ficha->INIVISION)}}" name="INIVISION" type="text" id="ctactecatas" class="form-control form-control-sm   ">
           </div>
           <div class="form-group">
             <label for="ctactecatas">Fecha:</label>
@@ -280,15 +288,7 @@
           
       </div>
       
-      <div class="col-12 col-md-4">
-        <label for="">Depósito</label>{{$ficha->DEPOSITADO}}<br>
-        <label for="">Extracción. C</label>{{$ficha->EXTRAIDO_C}}<br>
-        <label for="">Extracción. L</label> {{$ficha->EXTRAIDO_L}}
-                      <br>
-                      <button class="btn btn-success mb-1">CANCELAR</button>
-                      <br>
-                      <button onclick="showMenuBanco()" class="btn btn-success" type="button">CTA BANCO</button>
-      </div>
+       
     <!-- -->
   </div>
 </div>
