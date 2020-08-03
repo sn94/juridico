@@ -1,12 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Http\Request;
+use App\CuentaJudicial;
+use App\Demanda;
+use App\Demandados;
 use App\Http\Controllers\Controller;
 use Exception;
-use Illuminate\Support\Facades\DB;
-use PhpParser\Node\Expr\FuncCall;
-use PhpParser\Node\Expr\PropertyFetch;
+use Illuminate\Support\Facades\DB; 
 
 class JudicialController extends Controller
 {
@@ -17,138 +18,210 @@ class JudicialController extends Controller
         date_default_timezone_set("America/Asuncion");
     }
 
-/****
- * DEMANDAS
- * 
- */
-//Listado de demandas
-    public function demandas(){
+
+
+
+    public function index( $iddeman){
+        $demandaob=Demanda::find( $iddeman);
+        //Datos pers
+        $ci= $demandaob->CI;
+        $nombre=  Demandados::where("CI", $ci)->first()->TITULAR; 
+        //grilla de movimiento
+        $movis=CuentaJudicial::where("CTA_JUDICI", $demandaob->CTA_BANCO)
+       ->get();
+        return view('cta_judicial.index',
+         ["ci"=>$ci, "nombre"=> $nombre, "id_demanda"=> $iddeman,   "movi"=> $movis]); 
+    }
+
+
+   public function listar($iddeman){
+        //grilla de movimiento
+        $ob=Demanda::find( $iddeman);
+        $movis=CuentaJudicial::where("CTA_JUDICI", $ob->CTA_BANCO )->get();
+        return view('cta_judicial.grilla', ["movi"=>$movis] );
+   }
+
+    public function nuevo(Request $request, $iddeman=0){
+
+        if( ! strcasecmp(  $request->method() , "post"))  {
+               //Quitar el campo _token
+               $Params=  $request->input(); 
+               //Devuelve todo elemento de Params que no este presente en el segundo argumento
+               $Newparams= array_udiff_assoc(  $Params,  array("_token"=> $Params["_token"] ),function($ar1, $ar2){
+                   if( $ar1 == $ar2) return 0;    else 1; 
+                } ); 
+
+           $cta= new CuentaJudicial();
+           $cta->fill(  $Newparams);
+
+           DB::beginTransaction();
+           try {
+            $cta->save(); 
+             DB::commit();
+             return view("cta_judicial.mensaje_success");
+           } catch (\Exception $e) {
+               DB::rollback();
+               echo json_encode( array( 'error'=> "Hubo un error al guardar uno de los datos<br>$e") );
+           }  
+        }
+        else{
+            $demandaob=Demanda::find( $iddeman);
+            //Datos pers
+            $ci= $demandaob->CI;
+            $nombre=  Demandados::where("CI", $ci)->first()->TITULAR; 
+            return view('cta_judicial.cargar', ["id_demanda"=>$iddeman, "CI"=>$ci, "TITULAR"=> $nombre, "dato"=> $demandaob, "OPERACION"=>"A"]); 
+        } 
+    }
+
+
+
+    
+    public function editar(Request $request, $idnro=0){
+
+        if( ! strcasecmp(  $request->method() , "post"))  {
+               //Quitar el campo _token
+               $Params=  $request->input(); 
+               //Devuelve todo elemento de Params que no este presente en el segundo argumento
+               $Newparams= array_udiff_assoc(  $Params,  array("_token"=> $Params["_token"] ),function($ar1, $ar2){
+                   if( $ar1 == $ar2) return 0;    else 1; 
+                } ); 
+
+           $cta= CuentaJudicial::find( $idnro);
+           $cta->fill(  $Newparams);
+           DB::beginTransaction();
+           try {
+            $cta->save();
+          /*
+            if($cta->TIPO_MOVI == "D")
+            {$obj_D=Demanda::find( $iddeman); $obj_D->SALDO=  intval($cta->SALDO)+intval($cta->IMPORTE);}
+            */
+         /*   if($cta->TIPO_MOVI == "E")
+            {$obj_D=Demanda::find( $iddeman); $obj_D->SALDO=  intval($cta->SALDO)-intval($cta->IMPORTE);}
+         */
+             DB::commit();
+             return view("cta_judicial.mensaje_success2", ["mensaje"=> "Movimiento actualizado"]);
+           } catch (\Exception $e) {
+               DB::rollback();
+               echo json_encode( array( 'error'=> "Hubo un error al guardar uno de los datos<br>$e") );
+           }  
+        }
+        else{
+            $ctaob=CuentaJudicial::find( $idnro);
+            //Datos pers Filtrar
+            $demandaObj= Demanda::where("CTA_BANCO", $ctaob->CTA_JUDICI)->first();
+            $ci= $demandaObj->CI;
+            $nombre= Demandados::where("CI", $ci)->first()->TITULAR; 
+            $ctaob->CI= $ci;  $ctaob->TITULAR= $nombre; 
+            return view('cta_judicial.cargar', ["id_demanda"=> $demandaObj->IDNRO,  "CI"=>$ci, "TITULAR"=> $nombre, "dato"=> $ctaob, "OPERACION"=>"M"]); 
+        }
+
       
-        $o_de= DB::table("odemanda")->get();
-
-        $dts = DB::select("select TITULAR,CI,DEMANDANTE,COD_EMP,CTA_BANCO,BANCO,GARANTE,CI_GARANTE from demandas  order by TITULAR");
-        return view('demandas.list', ['lista' => $dts, "odemanda" => $o_de]); 
-    }
-
-    /*
-    NUEVA DEMANDA
-    */
-    public function nueva_demanda(){
-        return view('demandas.agregar'); 
-    }
-
-    /*
-    *
-    LIQUIDAR DEMANDA
-    **
-    */
-    public function liquidar(){
-        return view('demandas.liquidar'); 
-    }
-
-
-    //*************************************************** */
-    /***NOtificaciones vencidas*** */
-
-
-    private function fecha_sgte( $fecha){
-        
-        $fechaformateada=  date_parse_from_format( "d/m/Y", $fecha);//un arreglo
-       //convertir a segundos
-        //strtotime recibe la fecha en formato Y-m-d
-        $date1 = strtotime( $fechaformateada['year']."/".$fechaformateada['month']."/".$fechaformateada['day']  ); //fecha en seg 
-        $fechasgte =  strtotime("+1 day", $date1);//fecha de notificacion mas 1 dia
-        return $fechasgte;
-    }
-    private function es_notifi_vencida( $fech){
-        /****DIAS PARA EL VENCIMIENTO */
-        $dias_vtos= DB::table("diasvto")->get("dias")->first();; 
-        $diavto= $dias_vtos->dias;//dias para el vencimiento
-        $vencido_datos= array("vencido"=>false);
-         /**VERIFICACION FECHA VALIDA */
-        $fecha_demanda = date_create_from_format('j/m/Y',  trim( $fech ));  
-        if( $fecha_demanda ){//Si la fecha convertida es valida  
-
-            $i=1;
-            while($i<= $diavto){ 
-               $fechasgte= $this->fecha_sgte( $fech);
-                //FECHA DE NOTIFICACION ES ANTERIOR O IGUAL A HOY, Y NO ES DOMINGO  NI SABADO
-               if( $fechasgte <= time()  &&  date("N", $fechasgte)!=1 && date("N",$fechasgte)!=7  ){ 
-                  
-                 $vencido_datos= array("vencido"=> true, "fechavenci"=>  date("d-m-Y", $fechasgte) );
-                $i= $diavto;//salir
-               }//END IF
-                 $i++; 
-            }//END WHILE 
-        }//END IF
-        return $vencido_datos;
     }
 
 
 
-    /*
-    Procesar demandas con notificaciones vencidas
-    */
-    public function procesar_notifi_venc(){
-        $demandas= DB::table("demandas") 
-        ->where('arreglo_ex', '')
-        ->where('embargo_n', '0')
-        ->where('sd_finiqui', '0')
-        ->get(); 
-        foreach ($demandas as $it)
-        {
-            $fechaHoy= date("d/m/Y");
-            $obs_notifi="";
-            //Primer escenario
-            if( ($this->es_notifi_vencida(  $it->NOTIFI_1 ) )['vencido']  &&  strlen($it->ADJ_AI) <= 1){//adjunto autointerlocutorio sin fecha
-                $obs_notifi= "Adj. AI venció al ". ($this->es_notifi_vencida(  $it->NOTIFI_1 ))['fechavenci']; 
-                
-            }
-            //Segundo Escenario
-            if( ($this->es_notifi_vencida( $it->INTIMACI_2 ))['vencido'] &&  strlen($it->CITACION) <= 1){
-                $obs_notifi= "Citación venció al ". ($this->es_notifi_vencida(  $it->INTIMACI_2))['fechavenci']; 
-                
-            }
-            //Tercer escenario
-            if( ($this->es_notifi_vencida( $it->NOTIFI_2 ))['vencido'] &&  strlen($it->ADJ_SD) <= 1){
-                $obs_notifi= "Adj. SD. venció al ". ($this->es_notifi_vencida(  $it->NOTIFI_2))['fechavenci']; 
-               
-            }   
-            //Cuarto escenario
-            if( $it->SALDO <= 0  &&  strlen($it->ADJ_LIQUI) <= 1 ){
-                $obs_notifi= "Adj. Liquid. Sin Fecha, saldo: ". $it->SALDO; 
-               
-            }
-            //Quinto escenario
-            if( ($this->es_notifi_vencida( $it->NOTIFI_4 ))['vencido'] &&  strlen($it->ADJ_APROBA) <= 1){
-                $obs_notifi= "Adj. Aprob. venció al ". ($this->es_notifi_vencida(  $it->NOTIFI_4))['fechavenci']; 
-             
-            }  
-            //Sexto escenario
-            if( ($this->es_notifi_vencida( $it->NOTIFI_5 ))['vencido'] &&  strlen($it->ADJ_OFICIO) <= 1){
-                $obs_notifi= "Adj. Oficio. venció al ". ($this->es_notifi_vencida(  $it->NOTIFI_5))['fechavenci']; 
-            
-            } 
-            
-            $Datos= array(
-                "TITULAR"=> $it->TITULAR,"DEMANDANTE"=> $it->DEMANDANTE,"COD_EMP"=> $it->COD_EMP,
-                "JUZGADO"=> $it->JUZGADO,"ACTUARIA"=> $it->ACTUARIA,"JUEZ"=> $it->JUEZ,"DEMANDA"=> $it->DEMANDA,
-                "SALDO"=> $it->SALDO,"EMBARGO_NR"=> $it->EMBARGO_NR,"FEC_EMBARG"=> $it->FEC_EMBARG,
-                "INSTITUCIO"=> $it->INSTITUCIO,"INST_TIPO"=> $it->INST_TIPO,"FECHA"=> $fechaHoy,"OBS"=> $obs_notifi
-            );
-            $est=DB::table("vtos")->insert( $Datos);
-            var_dump($est);
-        }//END FOREACH
-       
-    }
-/**
- * Lista de demandas con notificaciones vencidas
- */
-    public function notificaciones_venc(){
-        $vtos= DB::table("vtos")->get(); 
+    public function view( $idnro){
+        $dat=CuentaJudicial::find(  $idnro);
+        $demandaObj= Demanda::where("CTA_BANCO", $dat->CTA_JUDICI)->first();
+        $ci= $demandaObj->CI;
+        $nombre= Demandados::where("CI", $ci)->first()->TITULAR; 
+        $dat->CI= $ci;  $dat->TITULAR= $nombre; 
+        return view("cta_judicial.cargar", [ "dato"=> $dat, "OPERACION"=>"V", "id_demanda"=> $demandaObj->IDNRO] );
     }
 
 
+    public function delete( $idnro){
+        $dat=CuentaJudicial::find(  $idnro);
+        $dat->delete();
+        echo json_encode( array("idnro"=>  $idnro) );
+      //  return view("cta_judicial.mensaje_success2", ["mensaje"=> "Movimiento borrado"]); 
+    }
+
+
+    public function ver_saldo_all( ){
+        //saldo judicial 
+        //monto de la demanda - extracciones
+        $demanda_=Demanda::sum("DEMANDA");
+        $SaldoJudicial=  intval($demanda_);
+        $Extracciones=0;
+        $dt=CuentaJudicial::where( "TIPO_MOVI", "E")->get();
+        foreach( $dt as $it):
+            if(  $it->TIPO_MOVI == "E")
+            $Extracciones+=  intval(  $it->IMPORTE);
+        endforeach;
+        $SaldoJudicial-= $Extracciones;
+        //saldo en cuenta
+        //depositos - extracciones
+        $Depositos=0; 
+        foreach( $dt as $it):
+            if(  $it->TIPO_MOVI == "D")
+            $Depositos+=  intval(  $it->IMPORTE);
+        endforeach;
+        $SaldoEnCuenta= $Depositos - $Extracciones; 
+
+        return array("saldo_judi"=> $SaldoJudicial, "saldo_en_c"=> $SaldoEnCuenta);
+    }
+
+    public function ver_saldo_array( $iddeman){
+         //saldo judicial 
+        //monto de la demanda - extracciones
+        $demanda_=Demanda::find( $iddeman);
+        $SaldoJudicial=  intval($demanda_->DEMANDA);
+        $Extracciones=0;
+        $dt=CuentaJudicial::where( "CTA_JUDICI", $demanda_->CTA_BANCO)->get();
+        foreach( $dt as $it):
+            if(  $it->TIPO_MOVI == "E")
+            $Extracciones+=  intval(  $it->IMPORTE);
+        endforeach;
+        $SaldoJudicial-= $Extracciones;
+        //saldo en cuenta
+        //depositos - extracciones
+        $Depositos=0; 
+        foreach( $dt as $it):
+            if(  $it->TIPO_MOVI == "D")
+            $Depositos+=  intval(  $it->IMPORTE);
+        endforeach;
+        $SaldoEnCuenta= $Depositos - $Extracciones; 
+        return array("saldo_judi"=> $SaldoJudicial, "saldo_en_c"=> $SaldoEnCuenta);
+    }
+
+    public function ver_saldo( $iddeman){
+        echo json_encode(  $this->ver_saldo_array( $iddeman ));
+    }
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+ 
 
 
 
@@ -171,12 +244,7 @@ class JudicialController extends Controller
         return view('cta_judicial.extraccion_cuenta', ['lista' => $dts]); 
     }
 
-    //formulario para buscar registros de liquidacion por origen de demanda
-    public function liquidacion()
-    {
-        $odemands = DB::table('odemanda')->get();//origen de demandas
-        return view('liquidaciones.liquidacion', ['odemanda' => $odemands]); 
-    }
+     
 
 
 

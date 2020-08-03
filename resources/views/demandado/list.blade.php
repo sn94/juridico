@@ -11,7 +11,7 @@
 <h3>DEMANDADOS</h3>
   
 <div class="btn-group mb-2" role="group" aria-label="Basic example">
-  <a href="<?=url("ndemandado")?>" class="btn btn-success">NUEVO</a>
+  <a href="<?=url("demandas-agregar")?>" class="btn btn-success">NUEVO</a>
  
 </div>
 

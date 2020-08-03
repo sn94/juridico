@@ -23,32 +23,86 @@ border:none;
  }
 
 </style>
-<a href="<?=url("ndemandado")?>" class="btn btn-success btn-sm">NUEVO</a>
+<a href="<?=url("demandas-agregar")?>" class="btn btn-success btn-sm">NUEVO</a>
 
+<div class="input-group mb-2 mt-3">
+  <div class="input-group-prepend">
+    <button  onclick="buscar()" class="btn btn-success" type="button"><i class="fa fa-search" aria-hidden="true"></i>
+</button>
+  </div>
+  <input id="argumento" onkeydown="buscarRegs(event)" type="text" class="form-control" placeholder="buscar" aria-label="" aria-describedby="basic-addon1">
+</div>
 
-<input style="width:100%;"  placeholder="buscar" class="busqueda col-12 col-md-3 form-control form-control-sm m-md-0 " type="text"  id="argumento" oninput="buscarRegs(this)">
  
+<!--
+<input style="width:100%;"  placeholder="buscar" class="busqueda col-12 col-md-3 form-control form-control-sm m-md-0 " type="text"  id="argumento" oninput="buscarRegs(this)">
+-->
   
  
 <div id="tabla-dinamica" class="table-responsive" style="width: 100%;">
 
 @include("demandado.list_paginate_ajax", ["lista"=>$lista]  )
-  {{ $lista->links() }}
+
 </div> 
 
 
   <script> 
 
-  function buscarRegs(target){
-
-     $.ajax({
-       url: "<?=url("ldemandados")?>/"+target.value,
+function buscar( ){
+  $.ajax({
+    url: "<?=url("ldemandados")?>/"+$("#argumento").val(),
        success: function(res){
          $("#tabla-dinamica").html(  res );
        }
      });
-  }
+}
+  function buscarRegs(ev){
  
+if( ev.keyCode==13){
+  let target=  ev.target;
+  buscar();
+}
+  }/** */
+ 
+  
+ 
+function jsonReceiveHandler( data){// string JSON to convert     div Html Tag to display errors
+  try{
+             let res= JSON.parse( data);
+             if( "error" in res){
+               alert( res.error ); return false; 
+             }else{   return res;  }
+           }catch(err){
+             alert(   err);  return false;
+           } return false;
+}/***End Json Receiver Handler */
+
+       function procesar_borrar(ev, ci){
+          ev.preventDefault();  
+          let url_= ev.currentTarget.href; 
+          let nro_juicio= $("#"+ci).children()[6].textContent;//nro de juicios
+          if( nro_juicio=="0"){
+            if ( confirm("Seguro que desear eliminar este registro?") ){
+              $.ajax(  {
+                  url: url_,
+                  success: function(res){ 
+                      let r= jsonReceiveHandler( res );
+                      if( typeof r != "boolean"){
+                          if( "error" in r) alert( r.error);
+                          else {
+                            alert("Datos personales del CI° "+r.ci+" fueron borrados.");
+                            $("#"+r.ci).remove();
+                            } 
+                      }
+                  }, 
+                  error: function(xhr){    alert("Problemas de conexión . "+ xhr.responseText);  }
+              })
+          }
+          }/**end verifi nro juicio */
+          else alert("No se puede borrar. Registros de juicio existentes")
+         
+      }
+   
   </script>
   
 @endsection

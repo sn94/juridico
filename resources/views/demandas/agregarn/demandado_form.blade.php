@@ -1,7 +1,7 @@
 
 <?php
 
-$RUTA= $OPERACION == "A" ? url("ndemandado") : url("edemandado/$ci");
+$RUTA= $OPERACION == "A" ? url("ndemandado") : url("edemandado");
 
 ?>
 
@@ -10,7 +10,12 @@ $RUTA= $OPERACION == "A" ? url("ndemandado") : url("edemandado/$ci");
 {{csrf_field()}}
 
 <div id="mensaje"></div>
-<input class="btn btn-success btn-sm" type="submit" value="Guardar">
+<?php if( $OPERACION != "V"): ?>
+    <button type="submit" class="btn btn-success btn-sm" >Guardar</button>
+
+<?php endif; ?>
+
+ 
 <div class="row">
 
 <div class="col-12 col-md-6">
@@ -91,4 +96,9 @@ $RUTA= $OPERACION == "A" ? url("ndemandado") : url("edemandado/$ci");
  
 </form>
  
-  
+<script>
+  var operacSt= document.getElementById("operacion").value;
+if(    operacSt == "V")
+habilitarCampos('form-person',false);
+
+</script>

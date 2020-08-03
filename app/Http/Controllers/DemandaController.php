@@ -62,15 +62,12 @@ class DemandaController extends Controller
     ->select("demandas2.*", "notificaciones.PRESENTADO", "notificaciones.EMB_FECHA")
     ->where("demandas2.CI", $ci)
     ->get();
-    if(  sizeof( $lista) ){
-        $persona= Demandados::where("ci", $ci)->first();//persona
+       $persona= Demandados::where("ci", $ci)->first();//persona
 
         return view("demandado.list_demandas", 
-        ['lista'=>   $lista, "idpersona"=> $persona->IDNRO, 'ci'=>$ci, 'nombre'=> $persona->TITULAR] );
-    }
-    else{
-        echo "No se registran demandas para el CI°  $ci"; 
-    }
+        ['lista'=>   $lista,   'ci'=>$ci, 'nombre'=> $persona->TITULAR] );
+     
+     
 
      
    
@@ -158,8 +155,9 @@ class DemandaController extends Controller
     }
 
 
-    public function nueva_demandan(Request $request){//idd id_demandado
+    public function nueva_demandan(Request $request, $ci=0){//idd id_demandado
          
+        $origen= DB::table("odemanda")->get();
         if( ! strcasecmp(  $request->method() , "post"))  {
             
             //Quitar el campo _token
@@ -168,24 +166,30 @@ class DemandaController extends Controller
             $Newparams= array_udiff_assoc(  $Params,  array("_token"=> $Params["_token"] ),function($ar1, $ar2){
                 if( $ar1 == $ar2) return 0;    else 1; 
              } ); 
+            /***ini transac */ 
+             DB::beginTransaction();
+             try {
+                $deman=new Demanda();
+                $deman->fill(  $Newparams );
+                $deman->save();
+               $noti= new Notificacion(); $noti->IDNRO= $deman->IDNRO; $noti->CI= $deman->CI; $noti->save();
+               $obs= new Observacion(); $obs->IDNRO= $deman->IDNRO;    $obs->CI= $deman->CI; $obs->save(); 
+               DB::commit();
+               echo json_encode( array( 'ci'=> $deman->CI, "id_demanda"=> $deman->IDNRO) );
+             } catch (\Exception $e) {
+                 DB::rollback();
+                 echo json_encode( array( 'error'=> "Hubo un error al guardar uno de los datos<br>$e") );
+             } 
+            /**end transac */
             
-            //DB INSERT
-            //instancia de demanda
-            $obdema=new Demanda();
-            $obdema->fill(  $Newparams );
-            if($obdema->save()){//exito
-                //ULTIMO ID GENERADO
-                $ultimoIdGen=  $obdema->IDNRO;
-                //MENSAJE RESPUESTA JSON
-                echo json_encode(array(  'ci'=> $obdema->CI,  'id_demanda'=>$ultimoIdGen  )); 
-            }else{
-                //fallo
-                echo json_encode(array(  'error'=> 'Un problema en el servidor impidió guardar los datos. Contacte con su desarrollador.' ));
-               
-            }
         }
-        else{   
-            return view('demandas.agregarn.index',    [   'OPERACION'=>"A"]);  
+        else{    
+            if( $ci != 0){
+                $ficha= Demandados::where("CI", $ci)->first();
+                return view('demandas.agregarn.index',    [ 'ci'=>$ci, 'nombre'=>$ficha->TITULAR, 'ficha0'=> $ficha, 'OPERACION'=>"A+", "origen"=>$origen]); 
+            }else{
+                return view('demandas.agregarn.index',    [   'OPERACION'=>"A", "origen"=>$origen  ]);  
+            } 
         }
     }
 
@@ -193,6 +197,8 @@ class DemandaController extends Controller
 
     
     public function editar_demandan(Request $request, $iddeman=0){//idd id_demanda
+        $origen= DB::table("odemanda")->get();
+
            //instancia de demanda
            $obdema= NULL;
            if($iddeman==0) {$iddeman= $request->input("IDNRO"); }
@@ -228,11 +234,30 @@ class DemandaController extends Controller
             $nom= Demandados::where("CI",$ci)->first()->TITULAR;//nombre 
             //Devolver
             //Cedula    ID demanda  Nombre  Operacion   
-            return view('demandas.agregarn.index', [ 'ci'=>  $ci ,'id_demanda'=>$iddeman,'ficha0'=>$obDataPerso, 'ficha'=> $obdema, 'ficha2'=>$obnoti, 'ficha3'=>$obobs, 'nombre'=> $nom , 'OPERACION'=>"M"]); //Modificar M  
+            return view('demandas.agregarn.index', [ 'ci'=>  $ci ,'id_demanda'=>$iddeman,'ficha0'=>$obDataPerso, 'ficha'=> $obdema, 'ficha2'=>$obnoti, 'ficha3'=>$obobs, 'nombre'=> $nom , 'OPERACION'=>"M", "origen"=>$origen]); //Modificar M  
             }
         }
 
 
+        
+    public function ver_demandan(Request $request, $iddeman=0){//idd id_demanda
+        $origen= DB::table("odemanda")->get();
+
+        //instancia de demanda 
+        $obdema= Demanda::find( $iddeman );
+        $obnoti= Notificacion::find( $iddeman);
+        $obobs= Observacion::find( $iddeman);
+        $obDataPerso= Demandados::where("CI", $obdema->CI)->first();
+         $ci= $obdema->CI;//cedula  
+         $nom= Demandados::where("CI",$ci)->first()->TITULAR;//nombre 
+         //Devolver
+         //Cedula    ID demanda  Nombre  Operacion   
+         return view('demandas.agregarn.index',
+          [ 'ci'=>  $ci ,'id_demanda'=>$iddeman,  "origen"=>  $origen,
+          'ficha0'=>$obDataPerso, 'ficha'=> $obdema, 'ficha2'=>$obnoti, 'ficha3'=>$obobs,
+           'nombre'=> $nom , 'OPERACION'=>"V"]); //ver V  
+         
+     }
 
  
 /**
@@ -277,6 +302,26 @@ public function editar_demanda(Request $request, $iddeman=0){
         
     }
 }
+
+
+
+public function borrar($iddeman){
+
+    DB::beginTransaction();
+    try {
+        //Borrar demandas notificaciones y observacion asociada al CI Nro
+        Demanda::find($iddeman)->delete();
+        Notificacion::find( $iddeman)->delete();
+        Observacion::find($iddeman)->delete();
+        DB::commit();
+      echo json_encode( array( 'id_deman'=> $iddeman) );
+    } catch (\Exception $e) {
+        DB::rollback();
+        echo json_encode( array( 'error'=> "Hubo un error al borrar uno de los datos<br>$e") );
+    }    
+ }/** end  */
+
+
 
 
 

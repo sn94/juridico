@@ -25,21 +25,26 @@ class DatosPersoController extends Controller
  * AGREGAR
  */
     public function index( Request $request, $argumento=""){
-        /*$dmds= DB::table("demandado")->get(); 
-          return view('demandado.list', ['lista' => $dmds]  ); 
+        /*
+          select  demandado.*, count(demandas2.CI) as nro from `demandado` inner join `demandas2`
+           on `demandas2`.`CI` = `demandado`.`CI` where  demandado.CI LIKE '%p%' or  TITULAR LIKE '%p%' or 
+           DOMICILIO LIKE '%p%' OR TELEFONO LIKE '%p%' GROUP by demandas2.IDNRO  limit 20 offset 0
           */
+          $argumento=  preg_split("/[\s]+/", $argumento);
+          if( sizeof($argumento)) $argumento= implode("%", $argumento);
           //Con paginacion 
           $consulta= "";
           if(  $argumento != ""){
-            $consulta= DB::table("demandado")
-            ->selectRaw(" * ")
-            ->whereRaw(" CI LIKE '%$argumento%' or  TITULAR LIKE '%$argumento%' or DOMICILIO LIKE '%$argumento%' OR TELEFONO LIKE '%$argumento%' ");  
+            $consulta= DB::table("demandado") 
+            ->selectRaw(" demandado.CI,demandado.TITULAR,demandado.DOMICILIO, demandado.TELEFONO, (select count(demandas2.IDNRO) from demandas2 where demandas2.CI= demandado.CI) as nro")
+            ->whereRaw(" demandado.CI LIKE '%$argumento%' or  TITULAR LIKE '%$argumento%'  ")  ;
           }else{
-            $consulta= DB::table("demandado");
+            $consulta= DB::table("demandado") 
+            ->selectRaw( " demandado.CI,demandado.TITULAR,demandado.DOMICILIO, demandado.TELEFONO, (select count(demandas2.IDNRO) from demandas2 where demandas2.CI= demandado.CI) as nro");
           }
          $dmds=  $consulta->paginate(20);
-        $sqlq= $consulta->toSql();
-         
+        $sqlq= $consulta->toSql(); 
+      // echo $sqlq;
         if(  $request->ajax()){
         return view('demandado.list_paginate_ajax', ['lista' => $dmds]  ); 
         }else
@@ -55,6 +60,12 @@ class DatosPersoController extends Controller
         return view("demandado.view", ['ficha'=>   $data] );
     }
 
+  /**VERIFICAR SI EXISTE UN CI */
+  public function existe(  $ci){
+    $data= DB::table("demandado")->where('CI', $ci)->first();
+    $ex= is_null($data) ? "n": "s";
+    echo json_encode( array("existe"=>  $ex) );
+}
 
 
   /*
@@ -65,30 +76,25 @@ class DatosPersoController extends Controller
             //Quitar el campo _token
             $Params=  $request->input(); 
             //Devuelve todo elemento de Params que no este presente en el segundo argumento
-            $Newparams= array_udiff_assoc(  $Params,  array("_token"=> $Params["_token"] ),function($ar1, $ar2){
+            $Newparams= array_udiff_assoc(  $Params,  array("_token"=> $Params["_token"] ), function($ar1, $ar2){
             if( $ar1 == $ar2) return 0;    else 1; 
             } ); 
-            //insert to DB ELOQUENT VERSION
-            $modelo= new Demandados();
-            $modelo->fill( $Newparams );
-            $modelo->save();
-           $ultimoIdGen=  $modelo->IDNRO;
-           
-            /**generar registro en demanda, en notifi y en observacion */
-            $deman= new Demanda();
-            $deman->CI= $modelo->CI;
-            if($deman->save()){
-              $noti= new Notificacion();
-              $noti->IDNRO= $deman->IDNRO;
-              $noti->CI= $deman->CI;
-              $noti->save();
-              $obs= new Observacion();
-              $obs->IDNRO= $deman->IDNRO;
-              $obs->CI= $deman->CI;
-              $obs->save();
-            } 
-            /** */
-            echo json_encode( array( 'ci'=> $modelo->CI,  'nombre'=> $modelo->TITULAR) );
+            //***********TRANSACCION SQL****** */
+            DB::beginTransaction();
+            try {
+              //insert to DB ELOQUENT VERSION
+              $modelo= new Demandados();  $modelo->fill( $Newparams );  $modelo->save();
+              //$ultimoIdGen=  $modelo->IDNRO; 
+              /**generar registro en demanda, en notifi y en observacion */
+              $deman= new Demanda();   $deman->CI= $modelo->CI; $deman->save();
+              $noti= new Notificacion(); $noti->IDNRO= $deman->IDNRO; $noti->CI= $deman->CI; $noti->save();
+              $obs= new Observacion(); $obs->IDNRO= $deman->IDNRO;    $obs->CI= $deman->CI; $obs->save(); 
+              DB::commit();
+              echo json_encode( array( 'ci'=> $modelo->CI,  'nombre'=> $modelo->TITULAR, "id_demanda"=> $deman->IDNRO) );
+            } catch (\Exception $e) {
+                DB::rollback();
+                echo json_encode( array( 'error'=> "Hubo un error al guardar uno de los datos<br>$e") );
+            }  
         }
         else  return view('demandado.agregar'); 
     }
@@ -96,7 +102,8 @@ class DatosPersoController extends Controller
  /**
   * EDITAR
   */
-  public function editar(Request $request, $idnro){//idnro es CEDULA
+  public function editar(Request $request, $idnro=0){//idnro es CEDULA
+    if( $idnro==0) $idnro= $request->input("CI");
     $modelo= Demandados::where( "CI", $idnro )->first();
     //Demandados::find( $idnro );
     if( ! strcasecmp(  $request->method() , "post"))  {
@@ -120,5 +127,14 @@ class DatosPersoController extends Controller
   
 
 
+public function borrar($ci){ 
+   $r_D= Demanda::where("CI", $ci)->first();
+    if( is_null( $r_D) ){//Se puede borrar
+      Demandados::where("CI", $ci)->first()->delete();
+      echo json_encode( array( 'ci'=> $ci) );
+    }else{
+      echo json_encode( array( 'error'=> "Los datos de CI° $ci no pueden borrarse. Existen datos judiciales ") );
+    } 
+}/** end  */
 
 }

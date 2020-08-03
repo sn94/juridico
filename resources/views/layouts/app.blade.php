@@ -29,11 +29,7 @@
         table.table td{ padding: 0px !important;}
         
         label{  font-weight: bold;   }
-        input[type=text]{
-            border-right-color: #092804;
-            border-bottom-color:#092804; 
-        }
-
+       
 
 /*TABLA RESPONSIVA */
           /* Extra small devices (phones, 600px and down) */
@@ -91,7 +87,7 @@
                         <span class="x"></span></button>
                 </div>
                 <div class="sidebar-header">
-                    <img src="<?=url("assets/img/balanza.jpg")?>" class="user-photo">
+                    <a href="<?= url("/") ?>"><img src="<?=url("assets/img/balanza.jpg")?>" class="user-photo"></a>
                     <p class="username">Estudio Jurídico Sa.<br><small>Administrator</small>
                     </p>
                 </div>
@@ -102,12 +98,7 @@
                             DEMANDAS</a>
                          
                     </li>
-                    <li class="sidebar-nav-group">
-                        <a href="#device-controls" class="sidebar-nav-link" data-toggle="collapse"><i class="icon-screen-tablet"></i> LIQUIDACION</a>
-                        <ul id="device-controls" class="collapse" data-parent="#sidebar-nav">
-                            <li><a href="<?=url("liquidaciones")?>" class="sidebar-nav-link">Liquidaci&oacute;n</a></li> 
-                        </ul>
-                    </li>
+                    
                      
                     <li class="sidebar-nav-group">
                         <a href="#opcinformes" class="sidebar-nav-link" data-toggle="collapse"><i class="icon-pencil"></i> INFORMES</a>
@@ -145,8 +136,9 @@
                     <li class="sidebar-nav-group"><a href="#reference" class="sidebar-nav-link" data-toggle="collapse"><i class="icon-notebook"></i> AUXILIARES</a>
                         <ul id="reference" class="collapse" data-parent="#sidebar-nav">
  
-                            <li><a href="./pages/reference/callout.html" class="sidebar-nav-link">Restaurar copias</a></li>
-                            <li><a href="./pages/reference/code-highlight.html" class="sidebar-nav-link">Contrase&ntilde;as</a></li>
+                            <li><a href="./pages/reference/code-highlight.html" class="sidebar-nav-link">Usuarios</a></li>
+                            <li><a href="<?= url("params")?>" class="sidebar-nav-link">Parámetros</a></li>
+
                             <li><a href="./pages/reference/callout.html" class="sidebar-nav-link">Tabla de notificaci&oacute;n</a></li>
  
                             <li><a href="./pages/reference/code-highlight.html" class="sidebar-nav-link">Cant. d&iacute;as p/vto. Notif </a></li>

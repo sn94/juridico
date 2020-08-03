@@ -20,10 +20,6 @@ class Demanda extends Model
 
     public $timestamps = false;
 
-
-    public function demandado()
-    {
-        return $this->belongsTo('App\Demandados', "IDNRO");
-    }
+ 
 
 }

@@ -1,30 +1,40 @@
-
-
 <?php
- 
-$id_demanda= isset( $id_demanda)?$id_demanda:"";
-$ruta= $OPERACION == "A" ? url("demandas-agregar"): url("demandas-editar") ;
+
+use Illuminate\Support\Facades\URL;
+
+$rutaEspecial="";
+if( $OPERACION == "A+")  $rutaEspecial = url("demandas-agregar");
+if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar") ;
 
 ?>
-
-<form onsubmit="enviar(event)" id="formDeman" class="tab-content" method="post" action="<?= $ruta?>">
+<form  onsubmit="enviar(event)" id="formDeman" class="tab-content" method="post" action="<?=  $rutaEspecial ?>">
  
 {{csrf_field()}}
  
+<?php if( $OPERACION != "V"): ?>
+    <button type="submit" class="btn btn-success btn-sm" >Guardar</button>
 
- <button type="submit" class="btn btn-success btn-sm" >Guardar</button>
- 
-<?php if( $OPERACION == "M"): ?>
- <input   type="hidden" name="IDNRO"  value="{{isset($ficha)?$ficha->IDNRO:''}}">
- <?php endif; ?>
+<?php endif; ?>
+
  <input id="CI1" type="hidden" name="CI"  value="{{isset($ci)?$ci:''}}">
- 
+ <?php if( $OPERACION != "A+"): ?>
+    <input  id="IDNRO0"  type="hidden" name="IDNRO"  value="{{isset($ficha)?$ficha->IDNRO:''}}">
+ <?php endif; ?>
+
  <div class="row">
    
    <div class="col-l2 col-md-3">
          <div class="form-group">
              <label for="actuaria">Origen:</label>
-              <input  name="O_DEMANDA"  type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->O_DEMANDA}}">
+             <select class="form-control form-control-sm" name="O_DEMANDA" id="">
+                 <?php
+                 $ori=  !isset($ficha)? '' : $ficha->O_DEMANDA;
+                 foreach($origen as $it): 
+                    if( $ori == $it->CODIGO)  echo "<option selected value='{$it->CODIGO}'>{$it->NOMBRES}</option>"; 
+                    else  echo "<option value='{$it->CODIGO}'>{$it->NOMBRES}</option>"; 
+                 endforeach;
+                 ?>
+             </select> 
          </div>
          <div class="form-group">
              <label for="actuaria">Demandante:</label>
@@ -50,13 +60,13 @@ $ruta= $OPERACION == "A" ? url("demandas-agregar"): url("demandas-editar") ;
              <div class="col-12 col-md-6">
                  <div class="form-group">
                  <label for="actuaria">Demanda:</label>
-                 <input name="DEMANDA"   oninput="formatear(this)"  type="text"   class="form-control form-control-sm" value="{{number_f( !isset($ficha)? '' : $ficha->DEMANDA)}}">
+                 <input name="DEMANDA"   oninput="formatear(event)"  type="text"   class="form-control form-control-sm" value="{{number_f( !isset($ficha)? '' : $ficha->DEMANDA)}}">
                  </div>
              </div>
              <div class="col-12 col-md-6">
              <div class="form-group">
              <label for="actuaria">Saldo:</label>
-              <input name="SALDO" oninput="formatear(this)"   type="text"   class="form-control form-control-sm" value="{{number_f( !isset($ficha)? '' : $ficha->SALDO)}}">
+              <input name="SALDO" oninput="formatear(event)"   type="text"   class="form-control form-control-sm" value="{{number_f( !isset($ficha)? '' : $ficha->SALDO)}}">
              </div>
              </div>
          </div>
@@ -67,7 +77,7 @@ $ruta= $OPERACION == "A" ? url("demandas-agregar"): url("demandas-editar") ;
          </div> 
          <div class="form-group">
              <label for="actuaria">Fecha de embargo:</label>
-              <input  name="FEC_EMBARG"  type="date"   class="form-control form-control-sm" value="{{fecha_f( !isset($ficha)? '' : $ficha->FEC_EMBARG)}}">
+              <input  name="FEC_EMBARG"    type="date"      class="form-control form-control-sm" value="{{fecha_f( !isset($ficha)? '' : $ficha->FEC_EMBARG)}}">
          </div>
          <div class="form-group">
                  <label for="actuaria">Institución:</label>
@@ -125,7 +135,19 @@ $ruta= $OPERACION == "A" ? url("demandas-agregar"): url("demandas-editar") ;
  </div>
    
 </form>
-
+<script>
+    var Operstr= document.getElementById("operacion").value;
+if( Operstr =="A")
+ habilitarCampos('formDeman',false);
+ 
+if(Operstr =="A+"  || Operstr =="M")
+habilitarCampos('formDeman', true);
+  //Los datos personales ya estan en BD en este caso, habilitar solo campos de Demanda CASO 1
+           //Edicion, todas las instancias ya existen en la Bd CASO2
+     
+if(Operstr =="V"  )
+habilitarCampos('formDeman', false);
+ </script>
   
 
   
