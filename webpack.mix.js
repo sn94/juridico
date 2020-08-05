@@ -11,5 +11,12 @@ const mix = require('laravel-mix');
  |
  */
 
-mix.js('resources/js/app.js', 'public/js')
-    .sass('resources/sass/app.scss', 'public/css');
+
+//mix.js('resources/js/xlsgene.js', 'public/xls_gen');
+
+
+mix.combine(['public/xls_gen/Blob.min.js',
+    'public/xls_gen/FileSaver.min.js',
+    'public/xls_gen/xls.core.min.js',
+    'public/xls_gen/xlsx.full.min.js'
+], 'resources/js/xls.js');

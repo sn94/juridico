@@ -104,7 +104,7 @@ if( $OPERACION == "M"): ?> <input type="hidden" name="IDNRO" value="{{ $dato->ID
  
       <div class="form-group">
           <label >IMP.EXTRAÍDO:</label>
-          <input  maxlength="10"  oninput="formatear(event)" name="EXTRAIDO" value="{{isset($dato->EXTRAIDO)?$dato->EXTRAIDO: ''}}" type="text"  class="form-control form-control-sm">
+          <input  maxlength="10"  oninput="calc_total(event)" name="EXTRAIDO" value="{{isset($dato->EXTRAIDO)?$dato->EXTRAIDO: ''}}" type="text"  class="form-control form-control-sm">
         </div>
         <div class="form-group">
           <label >SALDO:</label>
@@ -192,6 +192,13 @@ if( $OPERACION == "M"): ?> <input type="hidden" name="IDNRO" value="{{ $dato->ID
     if(finiquito=="") finiquito= 0;
     let total= capital+imp_intere+gast_notif+gast_notig+gast_embar+gast_intim+honorarios+iva+finiquito;
     $("input[name=TOTAL]").val( formatear_string( total ));
+
+    //importe extraido
+    let extraido= quitarSeparadorInt($("input[name=EXTRAIDO]") );
+    let saldo=   total - extraido; 
+    $("input[name=SALDO]").val( formatear_string( saldo ) );
+
+
   }
 
 

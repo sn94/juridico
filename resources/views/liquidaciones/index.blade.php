@@ -13,6 +13,7 @@
 <h3>Cuenta bancaria: {{$CTA_BANCO}}</h3>
 
  <a href="<?= url("nliquida/$id_demanda") ?>" class="btn btn-info btn-sm mb-2">AGREGAR</a>
+ <a onclick="gen_xls_list_liquida(event)" style="color:black;" href="<?=url("jsonlliquida/$id_demanda")?>"><i class="fa fa-print fa-2x "></i></a>
  
  <div class="table-responsive mt-2" id="tablamovi">
    @include("liquidaciones.grilla", ["lista"=> $lista])
@@ -125,6 +126,41 @@ let divname= "#viewsaldo";
      );
 }
     
+
+
+
+
+
+
+
+
+
+function callToXlsGen(ev, titulo){
+
+  let showMsg= function(){  $("#mensajes").html("Creando archivo xls/xlsx...");     }; 
+            let rutaxls= ev.currentTarget.href;
+           //Obtencion de datos de la base de datos para cargarlo a un archivo xls
+            let dta= { 
+                url:  rutaxls,
+                method:"get",  
+                success: (res)=>{createWorkBook(res, titulo); }, 
+                beforeSend: showMsg }
+            $.ajax( dta); 
+ 
+}
+
+function gen_xls_list_liquida(ev){
+  ev.preventDefault();
+  callToXlsGen( ev, "LISTADO DE LIQUIDACIONES");
+}
+
+
+
+function gen_xls_liquida(ev){
+  ev.preventDefault();
+  callToXlsGen( ev, "LIQUIDACIONES");
+}
+
 
 
 /**Verificar tabla vacia */

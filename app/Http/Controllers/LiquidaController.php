@@ -10,6 +10,7 @@ use App\Liquidacion;
 use App\Notificacion;
 use Exception;
 use Illuminate\Support\Facades\DB; 
+use App\pdf_gen\PDF;
 
 class LiquidaController extends Controller
 {
@@ -131,6 +132,20 @@ public function list( $iddeman){
     return view("liquidaciones.grilla", ["lista"=> $lista] );
 }
 
+public function list_json( $iddeman){
+    $obj_demanda= Demanda::find(  $iddeman);
+    $lista= Liquidacion::where("CTA_BANCO",  $obj_demanda->CTA_BANCO)->get();
+   echo json_encode( $lista );
+}
+
+public function liquida_json( $idnro){
+    $obj_= Liquidacion::find(  $idnro);
+     
+   echo json_encode( array( "0"=> $obj_) );
+}
+
+
+
     public function delete( $idnro){
         $dat=Liquidacion::find(  $idnro);
         $dat->delete();
@@ -142,10 +157,88 @@ public function list( $iddeman){
 
  
 
-
+/**
+ * PDF FILES GENERATOR FUNCS
+ */
  
      
 
+public function list_pdf(){
+    
 
+    $html=<<<EOF
+    <style>
+    table.cabecera{
+        font-size:11px;  
+    }
+    span{
+        font-weight: bolder;
+    }
+    table.tabla{
+        color: #003300;
+        font-family: helvetica;
+        font-size: 8pt;
+        border-left: 3px solid #777777;
+        border-right: 3px solid #777777;
+        border-top: 3px solid #777777;
+        border-bottom: 3px solid #777777;
+        background-color: #ddddff;
+    }
+    
+    tr.header{
+        background-color: #ccccff; 
+        font-weight: bold;
+    } 
+    tr{
+        background-color: #ddeeff;
+        border-bottom: 1px solid #000000; 
+    }
+    tr.success{
+        background-color: #aaffaa;
+        border-bottom: 1px solid #000000; 
+    }
+    tr.pending{
+        background-color: #888888;
+        border-bottom: 1px solid #000000; 
+    }
+    tr.danger{
+        background-color: #ffaaaaa;
+        border-bottom: 1px solid #000000; 
+    }
+    </style>
+    <table class="cabecera">
+    <tbody>
+    <tr> <td> </td> <td> </td> <td> </td> </tr>
+    </tbody>
+    </table>
+    <h6></h6>
+    <table class="tabla">
+    <thead >
+    <tr class="header">
+    <td>Cedula</td>
+    <td>Nombre completo</td>
+    <td>Telefono</td>
+    </tr>
+    </thead>
+    <tbody>
+    EOF;
+    $DATO= Liquidacion::get();
+    foreach( $DATO as $row){
+        $nombres= $row->nombres." ".$row->apellidos;
+        $estado= ($row->estado =="P" )? "PENDIENTE": ($row->estado =="A" ? "APROBADO":"RECHAZADO") ;
+        
+        $html.="<tr> <td>{$row->CTA_BANCO}</td> <td>{$row->ULT_PAGO}</td> <td>{$row->CAPITAL}</td> </tr>";
+    }
+    $html.="</tbody> </table> ";
+    /********* */
+
+    $tituloDocumento= "LIQUIDA-".date("d")."-".date("m")."-".date("yy")."-".rand();
+
+       // $this->load->library("PDF"); 	
+        $pdf = new PDF(); 
+        $pdf->prepararPdf("$tituloDocumento.pdf", $tituloDocumento, ""); 
+        $pdf->generarHtml( $html);
+        $pdf->generar();
+}
 
 }

@@ -55,17 +55,33 @@ class DemandaController extends Controller
  * 
  */
  
+ public function adjuntarSaldosDemanda( $ci){
+    $judi=new JudicialController();
+    $lst= Demanda::where("CI", $ci)->orderBy("IDNRO")->get();
+    $n_lst= array();
+    foreach( $lst as $it){
+        $idn= $it->IDNRO;
+        $arr= $judi->ver_saldo_array( $idn);
+        $arr['IDNRO']= $idn;
+       array_push( $n_lst, $arr);
+
+    }
+ return $n_lst; 
+ }
  public function demandas_by_ci($ci){
   
     $lista= DB::table("demandas2")
     ->join("notificaciones", "notificaciones.IDNRO", "=", "demandas2.IDNRO")
-    ->select("demandas2.*", "notificaciones.PRESENTADO", "notificaciones.EMB_FECHA")
+    ->select("demandas2.*", "notificaciones.PRESENTADO", "notificaciones.SD_FINIQUI", "notificaciones.FEC_FINIQU")
     ->where("demandas2.CI", $ci)
+    ->orderBy("demandas2.IDNRO")
     ->get();
+ 
        $persona= Demandados::where("ci", $ci)->first();//persona
+       $saldos= $this->adjuntarSaldosDemanda($ci);
 
         return view("demandado.list_demandas", 
-        ['lista'=>   $lista,   'ci'=>$ci, 'nombre'=> $persona->TITULAR] );
+        ['lista'=>   $lista,   'ci'=>$ci, 'nombre'=> $persona->TITULAR, "saldos"=> $saldos ] );
      
      
 

@@ -201,6 +201,10 @@
     </div>
   
     <script src="<?=url("app.js")?>"></script>
+    <!-- librerias para generar archivos excel -->
+    <script src="<?=url("xls.js")?>"></script>
+    <!-- inicializacion de las librerias ant.-->
+    <script src="<?=url("xls_ini.js")?>"></script>
 </body>
 
 </html>

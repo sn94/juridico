@@ -1,12 +1,9 @@
 <?php
-
-use App\Demanda;
-use App\Demandados;
-use App\Http\Controllers\JudicialController;
+ 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
-
+//use Illuminate\Routing\Route;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -93,9 +90,11 @@ Route::get("vliquida/{idnro}", "LiquidaController@view");
 Route::get("dliquida/{idnro}", "LiquidaController@delete"); 
 Route::get("lliquida/{iddeman}", "LiquidaController@list"); 
 Route::get("liquida/{iddeman}", "LiquidaController@index"); 
+Route::get("jsonlliquida/{iddeman}", "LiquidaController@list_json"); 
+Route::get("jsonliquida/{iddeman}", "LiquidaController@liquida_json"); 
+Route::get("pdflliquida", "LiquidaController@list_pdf"); 
 
-
-Route::get('test/{idd}',   'DemandaController@nueva_demandan');
+Route::get('test/{ci}',   'DemandaController@adjuntarSaldosDemanda');
 Route::get('depcta', 'JudicialController@deposito_en_cuenta');
 Route::get('extcta', 'JudicialController@extraccion_cuenta');
 
@@ -106,6 +105,6 @@ Route::post('nparam',   'ParamController@agregar');
 Route::get('dparam/{id}',   'ParamController@borrar');
 
  
-Auth::routes();
+//Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');

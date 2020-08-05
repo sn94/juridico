@@ -22,9 +22,8 @@ if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar
  <?php endif; ?>
 
  <div class="row">
-   
-   <div class="col-l2 col-md-3">
-         <div class="form-group">
+    <div class="col-12 col-sm-5 col-md-4 col-lg-3">
+    <div class="form-group">
              <label for="actuaria">Origen:</label>
              <select class="form-control form-control-sm" name="O_DEMANDA" id="">
                  <?php
@@ -36,103 +35,125 @@ if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar
                  ?>
              </select> 
          </div>
-         <div class="form-group">
+    </div>
+    <div class="col-12 col-sm-5 col-md-4 col-lg-3">
+    <div class="form-group">
              <label for="actuaria">Demandante:</label>
               <input name="DEMANDANTE"   type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->DEMANDANTE}}">
          </div>
-         <div class="form-group">
+    </div>
+    <div class="col-12 col-sm-5 col-md-4 col-lg-3">
+    <div class="form-group">
              <label for="actuaria">Cod_emp:</label>
               <input  name="COD_EMP"  type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->COD_EMP}}">
          </div>
-         <div class="form-group">
+    </div>
+    <div class="col-12 col-sm-5 col-md-4 col-lg-3">
+    <div class="form-group">
              <label for="actuaria">Actuaria:</label>
               <input  name="ACTUARIA"  type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->ACTUARIA}}">
          </div>
-         <div class="form-group">
+    </div>
+    <div class="col-12 col-sm-5 col-md-4 col-lg-3">
+    <div class="form-group">
              <label for="actuaria">Juez:</label>
               <input   name="JUEZ" type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->JUEZ}}">
          </div>
-        
-     </div>
-     
-     <div class="col-12 col-md-3">
-         <div class="row">
-             <div class="col-12 col-md-6">
-                 <div class="form-group">
+    </div>
+    <div class="col-12 col-sm-5 col-md-4 col-lg-3">
+    <div class="form-group">
                  <label for="actuaria">Demanda:</label>
                  <input name="DEMANDA"   oninput="formatear(event)"  type="text"   class="form-control form-control-sm" value="{{number_f( !isset($ficha)? '' : $ficha->DEMANDA)}}">
                  </div>
-             </div>
-             <div class="col-12 col-md-6">
-             <div class="form-group">
+    </div>
+    <div class="col-12 col-sm-5 col-md-4 col-lg-3">
+    <div class="form-group">
              <label for="actuaria">Saldo:</label>
               <input name="SALDO" oninput="formatear(event)"   type="text"   class="form-control form-control-sm" value="{{number_f( !isset($ficha)? '' : $ficha->SALDO)}}">
              </div>
-             </div>
-         </div>
-      
-         <div class="form-group">
+    </div>
+    <div class="col-12 col-sm-5 col-md-4 col-lg-3">
+    <div class="form-group">
              <label for="actuaria">Nro.Embargo:</label>
               <input  name="EMBARGO_NR"  type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->EMBARGO_NR}}">
          </div> 
-         <div class="form-group">
+    </div>
+    <div class="col-12 col-sm-5 col-md-4 col-lg-3">
+    <div class="form-group">
              <label for="actuaria">Fecha de embargo:</label>
               <input  name="FEC_EMBARG"    type="date"      class="form-control form-control-sm" value="{{fecha_f( !isset($ficha)? '' : $ficha->FEC_EMBARG)}}">
          </div>
-         <div class="form-group">
+    </div>
+    <div class="col-12 col-sm-5 col-md-4 col-lg-3">
+    <div class="form-group">
                  <label for="actuaria">Institución:</label>
                   <input  name="INSTITUCIO"  type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->INSTITUCIO}}">
              </div>
-         <div class="form-group">
+    </div>
+    <div class="col-12 col-sm-5 col-md-4 col-lg-3">
+    <div class="form-group">
                  <label for="actuaria">Tipo:</label>
                   <input name="INST_TIPO"   type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->INST_TIPO}}">
          </div>
-         
-     </div>
-      
-     <div class="col-12 col-md-3">
-     <div class="form-group">
+    </div>
+    <div class="col-12 col-sm-5 col-md-4 col-lg-3">
+    <div class="form-group">
                  <label for="actuaria">Juzgado:</label>
                   <input  name="JUZGADO"  type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->JUZGADO}}">
          </div>
-         <div class="form-group">
+    </div>
+    <div class="col-12 col-sm-5 col-md-4 col-lg-3">
+    <div class="form-group">
                  <label for="actuaria">Domic.denunciado:</label>
                   <input name="DOC_DENUNC"   type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->DOC_DENUNC}}">
              </div> 
-         <div class="form-group">
+    </div>
+    <div class="col-12 col-sm-5 col-md-4 col-lg-3">
+    <div class="form-group">
                  <label for="actuaria">Localidad:</label>
                  <input name="LOCALIDAD"   type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->LOCALIDAD}}">
          </div>
-         <div class="form-group">
+    </div>
+    <div class="col-12 col-sm-5 col-md-4 col-lg-3">
+    <div class="form-group">
              <label for="actuaria">Localidad del Gte.:</label>
              <input   name="LOCALIDA_G" type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->LOCALIDA_G}}">
          </div>
-         <div class="form-group">
+    </div>
+    <div class="col-12 col-sm-5 col-md-4 col-lg-3">
+    <div class="form-group">
                  <label for="actuaria">Dom.denun.Gte:</label>
                   <input  name="DOC_DEN_GA"  type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->DOC_DEN_GA}}">
          </div>
-       
-     </div>
- 
-     <div class="col-12 col-md-3">
-        <div class="form-group">
+    </div>
+    <div class="col-12 col-sm-5 col-md-4 col-lg-3">
+    <div class="form-group">
              <label for="actuaria">Nro. Finca:</label>
               <input name="FINCA_NRO"   type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->FINCA_NRO}}">
          </div>
-         <div class="form-group">
+    </div>
+    <div class="col-12 col-sm-5 col-md-4 col-lg-3">
+    <div class="form-group">
              <label for="actuaria">Cta.Cte:</label>
               <input  name="CTA_BANCO"  type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->CTA_BANCO}}">
          </div>
-         <div class="form-group">
+    </div>
+    <div class="col-12 col-sm-5 col-md-4 col-lg-3">  
+    <div class="form-group">
              <label for="actuaria">Banco:</label>
               <input   name="BANCO" type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->BANCO}}">
          </div>
-         <div class="form-group">
+    </div>
+    <div class="col-12 col-sm-5 col-md-4 col-lg-3">
+    <div class="form-group">
              <label for="actuaria">Cta.Catastral:</label>
               <input  name="CTA_CATAST"  type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->CTA_CATAST}}">
          </div>
-     </div>
- </div>
+    </div>
+    <div class="col-12 col-sm-5 col-md-4 col-lg-3">
+    </div>
+     
+ </div><!-- end row -->
    
 </form>
 <script>
