@@ -12,27 +12,15 @@
 
 <?php
 
-function fecha_f( $fe){ 
-  //convertir de d/m/Y a Y/m/d
- if( $fe==""  ) return "";
-  $fecha= explode("/",  $fe);
-  if( sizeof( $fecha) > 1){
-    if(  strlen($fecha[1])==1   )  $fecha[1]= "0".$fecha[1];
-    if(  strlen($fecha[0])==1   )  $fecha[0]= "0".$fecha[0];
-    echo $fecha[2] ."-".$fecha[1]."-".$fecha[0]; 
-  }else
-  echo $fe;
+use App\Mobile_Detect; 
+
+$detect= new Mobile_Detect();
+if ($detect->isMobile() == false):?>
+ <h4>{{ isset($ci) ? $ci." - ". $nombre  : ""}}</h4>  
+<?php else: ?>
+  <p class="name-titular">{{ isset($ci) ? $ci." - ". $nombre  : ""}}</p>  
+<?php endif; ?>
  
-}
-
-function number_f( $ar){
-  $v= floatval( $ar);
-  return number_format($v, 0, '', '.');  
-}
- ?>
-
-  <h4>{{ isset($ci) ? $ci." - ". $nombre  : ""}}</h4>  
-
 
   <?php if( $OPERACION=="M" || $OPERACION=="V"): ?>
     <a  class="btn btn-info btn-sm" href="<?=url("liquida/".$ficha->IDNRO)?>">LIQUIDACIÓN</a>
@@ -377,7 +365,7 @@ function quitarSeparador( ele){
 return ele.replaceAll("[.]", "");
 }
 
-  //Borrar cualquier ocurrencias de puntos o comas en una cadena
+   
   function formatear(ev){
     console.log( ev.target.selectionStart, ev);
     if( ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57){ 

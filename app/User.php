@@ -22,21 +22,6 @@ class User extends Authenticatable
         'nick', 'tipo', 'pass',
     ];
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
-    protected $hidden = [
-        'pass', 'remember_token',
-    ];
+    public $timestamps = true;
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
 }

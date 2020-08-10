@@ -14,7 +14,7 @@ const mix = require('laravel-mix');
 
 //mix.js('resources/js/xlsgene.js', 'public/xls_gen');
 
-
+//Minificador de libs para generar archivos XLS
 mix.combine(['public/xls_gen/Blob.min.js',
     'public/xls_gen/FileSaver.min.js',
     'public/xls_gen/xls.core.min.js',

@@ -123,8 +123,7 @@ Route::get('nfiltro',   'FilterController@agregar');
 Route::post('nfiltro',   'FilterController@agregar');
 Route::get('efiltro/{id}',   'FilterController@editar');
 Route::post('efiltro',   'FilterController@editar');
-Route::get('exexlsfiltro',   'FilterController@xlsfiltro');
-Route::get('exepdffiltro',   'FilterController@pdffiltro');
+
 
 Route::get('users',   'UserController@index');
 Route::get('new-user',   'UserController@agregar');

@@ -2,88 +2,78 @@
 
 
 @section('breadcrumb')
-<li class="breadcrumb-item" aria-current="page">PARÁMETROS</li>  
+<li class="breadcrumb-item" aria-current="page">PARÁMETROS VARIOS</li>  
 @endsection
 
 @section('content')
-   
-<button onclick="ver_form()" data-toggle="modal" data-target="#formparam"  type="button" class="mb-2 btn btn-sm btn-info">NUEVO</button>
- <div id="espera"></div>
-<div id="grilla">
-@include("parametros.grilla", ['lista'=> $lista] )
-</div>
-
-<div id="formparam" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-sm">
-    <div class="modal-content" id="viewform">
-      
-    </div>
-  </div>
-</div>
-
-<!--
-ODEMANDA
-INT_X_MES
-HONO_PORCE
-CANTDIA_P_VTO_DE_NOTIF
-IVA
--->
+    
+@include("parametros.form" )
+ 
 @endsection 
-
 
 <script>
 
+ 
 
-function ver_form(){
-let divname= "#viewform";
-  $.ajax(
-       {
-         url:  "<?=url("nparam")?>", 
-         beforeSend: function(){
-           $( divname).html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
-         },
-         success: function(res){ $(divname).html( res );        },
-         error: function(){
-           $( divname).html(  "<h6 style='color:red;'>Problemas de conexión</h6>" ); 
-         }
-       }
-     );
-}
 
-function act_grilla(){
-  $.ajax({
-    url:"<?= url("lparams")?>",
-    beforeSend: function(){
-         $( "#espera").html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
-       },
-    success: function(res){    $("#grilla").html( res ); $( "#espera").html( "");    },
-    error: function(xhr){     $( "#espera").html( "");    }
-  })
-}
-function borrar( ev){//Objeto event   DIV tag selector to display   success handler
-ev.preventDefault();  
-if(confirm("SEGURO QUE DESEA BORRARLO?") ){
-     $.ajax(
+//inserta, modifica registros de parametros y origen de demanda
+function ajaxCall( ev, divname){//Objeto event   DIV tag selector to display   success handler
+ev.preventDefault(); 
+
+ $.ajax(
      {
-       url:  ev.currentTarget.href,
-       method: "get", 
+       url:  ev.target.action,
+       method: "post",
+       data: $("#"+ev.target.id).serialize(),
        headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
        beforeSend: function(){
-         $( "#espera").html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
+         $( divname).html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
        },
        success: function(res){
-         alert("BORRADO"); $( "#espera").html( "");
-         act_grilla();
+        $(divname).html("");
+           let r= JSON.parse(res);
+           if("ok" in r)  alert( r.ok);
+            else alert( r.error); 
        },
-       error: function(xhr){
-        $( "#espera").html( xhr);
-         alert(xhr);
+       error: function(){
+         $( divname).html(  "<h6 style='color:red;'>Problemas de conexión</h6>" ); 
        }
      }
-   );}
+   );
 }/*****end ajax call* */
 
+function number_field(ev){
+  if( ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57){ 
+      ev.target.value= 
+      ev.target.value.substr( 0, ev.target.selectionStart-1) + 
+      ev.target.value.substr( ev.target.selectionStart );
+    }
+}
 
-    
+function decimal_field(ev){
+  if( ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57){ 
+    if(  ev.data.charCodeAt() == 46) return;
+      ev.target.value= 
+      ev.target.value.substr( 0, ev.target.selectionStart-1) + 
+      ev.target.value.substr( ev.target.selectionStart );
+    }
+}
+
+
+/**Forma una cadena numerica con separador de miles */
+function formatear(ev){
+    console.log( ev.target.selectionStart, ev);
+    if( ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57){ 
+      ev.target.value= 
+      ev.target.value.substr( 0, ev.target.selectionStart-1) + 
+      ev.target.value.substr( ev.target.selectionStart );
+    }
+     
+    let val_Act= ev.target.value;  
+  val_Act= val_Act.replaceAll( new RegExp(/[\.]*[,]*/), ""); 
+    let enpuntos= new Intl.NumberFormat("de-DE").format( val_Act);
+		$( ev.target).val(  enpuntos);
+	} 
+
 
 </script>

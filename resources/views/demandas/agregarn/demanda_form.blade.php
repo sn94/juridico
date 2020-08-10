@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\URL;
+use App\Helpers\Helper;
 
 $rutaEspecial="";
 if( $OPERACION == "A+")  $rutaEspecial = url("demandas-agregar");
@@ -63,13 +64,13 @@ if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar
     <div class="col-12 col-sm-5 col-md-4 col-lg-3">
     <div class="form-group">
                  <label for="actuaria">Demanda:</label>
-                 <input name="DEMANDA"   oninput="formatear(event)"  type="text"   class="form-control form-control-sm" value="{{number_f( !isset($ficha)? '' : $ficha->DEMANDA)}}">
+                 <input name="DEMANDA"   oninput="formatear(event)"  type="text"   class="form-control form-control-sm" value="{{Helper::number_f( !isset($ficha)? '' : $ficha->DEMANDA)}}">
                  </div>
     </div>
     <div class="col-12 col-sm-5 col-md-4 col-lg-3">
     <div class="form-group">
              <label for="actuaria">Saldo:</label>
-              <input name="SALDO" oninput="formatear(event)"   type="text"   class="form-control form-control-sm" value="{{number_f( !isset($ficha)? '' : $ficha->SALDO)}}">
+              <input name="SALDO" oninput="formatear(event)"   type="text"   class="form-control form-control-sm" value="{{Helper::number_f( !isset($ficha)? '' : $ficha->SALDO)}}">
              </div>
     </div>
     <div class="col-12 col-sm-5 col-md-4 col-lg-3">
@@ -81,7 +82,7 @@ if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar
     <div class="col-12 col-sm-5 col-md-4 col-lg-3">
     <div class="form-group">
              <label for="actuaria">Fecha de embargo:</label>
-              <input  name="FEC_EMBARG"    type="date"      class="form-control form-control-sm" value="{{fecha_f( !isset($ficha)? '' : $ficha->FEC_EMBARG)}}">
+              <input  name="FEC_EMBARG"    type="date"      class="form-control form-control-sm" value="{{Helper::fecha_f( !isset($ficha)? '' : $ficha->FEC_EMBARG)}}">
          </div>
     </div>
     <div class="col-12 col-sm-5 col-md-4 col-lg-3">

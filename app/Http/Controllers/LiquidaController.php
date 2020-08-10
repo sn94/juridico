@@ -132,15 +132,23 @@ public function list( $iddeman){
     return view("liquidaciones.grilla", ["lista"=> $lista] );
 }
 
+/**LISTA LIQUIDACIONES DE UNA DEMANDA ESPECIFICA  EN FORMATO JSON*/
 public function list_json( $iddeman){
     $obj_demanda= Demanda::find(  $iddeman);
     $lista= Liquidacion::where("CTA_BANCO",  $obj_demanda->CTA_BANCO)->get();
    echo json_encode( $lista );
 }
 
+/**LISTA LIQUIDACIONES DE UNA DEMANDA ESPECIFICA EN FORMATO ARRAY*/
+public function list_array( $iddeman){
+    $obj_demanda= Demanda::find(  $iddeman);
+    $lista= Liquidacion::where("CTA_BANCO",  $obj_demanda->CTA_BANCO)->get();
+    return $lista;
+}
+
+
 public function liquida_json( $idnro){
     $obj_= Liquidacion::find(  $idnro);
-     
    echo json_encode( array( "0"=> $obj_) );
 }
 
@@ -155,7 +163,16 @@ public function liquida_json( $idnro){
 
 
 
- 
+
+
+/**
+ * INFORME EN HTML
+ */
+ public function list_html($idnro){
+    $DATO=Liquidacion::find( $idnro); 
+    return view("liquidaciones.rep_html", ["dato"=> $DATO] );
+ }
+
 
 /**
  * PDF FILES GENERATOR FUNCS
@@ -163,76 +180,61 @@ public function liquida_json( $idnro){
  
      
 
-public function list_pdf(){
-    
+public function liquida_pdf( $idnro){
+    $DATO=  Liquidacion::find(  $idnro); 
 
     $html=<<<EOF
     <style>
-    table.cabecera{
-        font-size:11px;  
-    }
+    
     span{
         font-weight: bolder;
     }
-    table.tabla{
-        color: #003300;
+    td{ text-align:left; }
+    table.tabla{ 
         font-family: helvetica;
-        font-size: 8pt;
-        border-left: 3px solid #777777;
-        border-right: 3px solid #777777;
-        border-top: 3px solid #777777;
-        border-bottom: 3px solid #777777;
-        background-color: #ddddff;
+        font-size: 8pt; 
     }
     
-    tr.header{
-        background-color: #ccccff; 
-        font-weight: bold;
-    } 
-    tr{
-        background-color: #ddeeff;
-        border-bottom: 1px solid #000000; 
-    }
-    tr.success{
-        background-color: #aaffaa;
-        border-bottom: 1px solid #000000; 
-    }
-    tr.pending{
-        background-color: #888888;
-        border-bottom: 1px solid #000000; 
-    }
-    tr.danger{
-        background-color: #ffaaaaa;
-        border-bottom: 1px solid #000000; 
-    }
+     
+     
     </style>
-    <table class="cabecera">
-    <tbody>
-    <tr> <td> </td> <td> </td> <td> </td> </tr>
-    </tbody>
-    </table>
-    <h6></h6>
+    
+    <h6> {$DATO->TITULAR}</h6>
     <table class="tabla">
-    <thead >
-    <tr class="header">
-    <td>Cedula</td>
-    <td>Nombre completo</td>
-    <td>Telefono</td>
-    </tr>
-    </thead>
     <tbody>
     EOF;
-    $DATO= Liquidacion::get();
-    foreach( $DATO as $row){
-        $nombres= $row->nombres." ".$row->apellidos;
-        $estado= ($row->estado =="P" )? "PENDIENTE": ($row->estado =="A" ? "APROBADO":"RECHAZADO") ;
-        
-        $html.="<tr> <td>{$row->CTA_BANCO}</td> <td>{$row->ULT_PAGO}</td> <td>{$row->CAPITAL}</td> </tr>";
-    }
+  
+    $html.="<tr> 
+    <td style='text-align:left;'>
+    <span>CAPITAL:</span> {$DATO->CAPITAL}<br><br>
+    <span>ULT.PAGO:</span> {$DATO->ULT_PAGO}<br><br>
+    <span>ULT.CHEQUE:</span> {$DATO->ULT_CHEQUE}<br><br>
+    <span>CTA.MESES:</span> {$DATO->CTA_MESES}<br><br>
+    <span>INT.P/MES:</span> {$DATO->INT_X_MES}<br><br>
+    <span>IMP.INTERE.:</span> {$DATO->IMP_INTERE}<br><br>
+    <span>I.V.A.:</span> {$DATO->IVA}
+    </td>
+    <td>
+    <span>GAST.NOTIF.:</span> {$DATO->GAST_NOTIF}<br><br>
+    <span>GAST.NOTIF.GTE.:</span> {$DATO->GAST_NOTIG}<br><br>
+    <span>GAST.EMBARGO.:</span> {$DATO->GAST_EMBAR}<br><br>
+    <span>GAST.INTIMAC.:</span> {$DATO->GAST_INTIM}<br><br>
+    <span>%HONORARIOS:</span> {$DATO->HONO_PORCE}<br><br>
+    <span>HONORARIOS.:</span> {$DATO->HONORARIOS}
+    </td>
+    <td>
+    <span>FINIQUITO:</span> {$DATO->FINIQUITO}<br><br>
+    <span>TOTAL:</span> {$DATO->TOTAL}<br><br>
+    <span>IMP.EXTR.:</span> {$DATO->EXTRAIDO}<br><br>
+    <span>SALDO:</span> {$DATO->SALDO}<br><br>
+    <span>EXTR.LIQUID.:</span> {$DATO->EXT_LIQUID}<br><br>
+    <span>NUEVO SALDO:</span> {$DATO->NEW_SALDO}
+    </td> </tr>";
+    
     $html.="</tbody> </table> ";
     /********* */
 
-    $tituloDocumento= "LIQUIDA-".date("d")."-".date("m")."-".date("yy")."-".rand();
+    $tituloDocumento= "LIQUIDACION-".date("d")."-".date("m")."-".date("yy")."-".rand();
 
        // $this->load->library("PDF"); 	
         $pdf = new PDF(); 

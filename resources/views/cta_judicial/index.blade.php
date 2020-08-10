@@ -8,9 +8,19 @@
 
 @section('content')
 
+<?php
 
- 
-<h3>{{$ci}}-{{$nombre}}</h3>
+use App\Mobile_Detect; 
+
+$detect= new Mobile_Detect();
+if ($detect->isMobile() == false):?>
+ <h4>{{ isset($ci) ? $ci." - ". $nombre  : ""}}</h4>  
+<?php else: ?>
+  <p class="name-titular">{{ isset($ci) ? $ci." - ". $nombre  : ""}}</p>  
+<?php endif; ?>
+
+
+
 <button  onclick="verSaldos()" class="btn btn-danger btn-sm mb-2" data-toggle="modal" data-target="#showsaldo" >VER SALDO</button>
 
  <a href="<?= url("ncuentajudi/$id_demanda") ?>" class="btn btn-info btn-sm mb-2">AGREGAR</a>

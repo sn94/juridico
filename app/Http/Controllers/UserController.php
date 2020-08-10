@@ -9,9 +9,11 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;   
 use App\Parametros;
+use App\User;
 use Illuminate\Http\Client\Request as ClientRequest;
+use Illuminate\Support\Facades\Hash;
 
-class ParamController extends Controller
+class UserController extends Controller
 {
     
 
@@ -24,9 +26,11 @@ class ParamController extends Controller
     
 
 public function index(){
- 
-        $params= Parametros::first();
-        return view('parametros.index',  ["DATO"=> $params  ] );
+
+        
+        //Lista odemandas
+        $lst_od= User::get(); 
+        return view('auth.index',  ['users'=> $lst_od  , "OPERACION"=>"A"] );
 } 
 
 
@@ -41,20 +45,17 @@ public function agregar( Request $request){
         $Newparams= array_udiff_assoc(  $Params,  array("_token"=> $Params["_token"] ),function($ar1, $ar2){
             if( $ar1 == $ar2) return 0;    else 1; 
          } ); 
-
+         $Newparams['pass']= Hash::make($request->pass);
          DB::beginTransaction();
-        try{
-             //VERIFICAR SI YA HAY UN REGISTRO
-         if( sizeof( Parametros::get() ) > 0 ){
-            //Actualizar
-            $rw= Parametros::first()->update( $Newparams ); 
-            echo json_encode( array('ok'=>  "ACTUALIZADO"  ));   
-        }else{    
-             $r= new Parametros(); 
+        try{     
+
+            //hashing
+            $request->pass= Hash::make($request->pass);
+             $r= new User(); 
              $r->fill(  $Newparams  );  
              $r->save();
              echo json_encode( array('ok'=>  "GUARDADO"  ));    
-        }
+        
         DB::commit();
        
         } catch (\Exception $e) {
@@ -62,15 +63,20 @@ public function agregar( Request $request){
             echo json_encode( array( 'error'=> "Hubo un error al guardar uno de los datos<br>$e") );
         }   
     }
-    else  {    
-        if( Parametros::get() > 0)  return view('parametros.index',  ['DATO'=>  Parametros::first() ] );
-        else  return view('parametros.index');
+    else  {   
+        
+        //Lista odemandas
+        $lst_od= User::get();
+        return view('auth.form' );
        }/** */    
 }
    
 
    
-public function agregarOdemanda( Request $request){
+ 
+
+
+public function editar( Request $request, $id=0){
     if( ! strcasecmp(  $request->method() , "post"))  {//hay datos 
         //Quitar el campo _token
         $Params=  $request->input(); 
@@ -79,39 +85,12 @@ public function agregarOdemanda( Request $request){
             if( $ar1 == $ar2) return 0;    else 1; 
          } ); 
 
+            //hashing
+        $Newparams['pass']= Hash::make($request->pass);
          DB::beginTransaction();
         try{
-              
-             $r= new ODemanda(); 
-             $r->fill(  $Newparams  );  
-             $r->save();
-             echo json_encode( array('ok'=>  "GUARDADO"  ));    
-            DB::commit();
-       
-        } catch (\Exception $e) {
-            DB::rollback();
-            echo json_encode( array( 'error'=> "Hubo un error al guardar uno de los datos<br>$e") );
-        }   
-    }
-    else  {   return view('parametros.index', ["OPERACION"=>"A" ]);
-       }/** */    
-}
-
-
-
-public function editarOdemanda( Request $request, $id=0){
-    if( ! strcasecmp(  $request->method() , "post"))  {//hay datos 
-        //Quitar el campo _token
-        $Params=  $request->input(); 
-        //Devuelve todo elemento de Params que no este presente en el segundo argumento
-        $Newparams= array_udiff_assoc(  $Params,  array("_token"=> $Params["_token"] ),function($ar1, $ar2){
-            if( $ar1 == $ar2) return 0;    else 1; 
-         } ); 
-
-         DB::beginTransaction();
-        try{
-              
-             $r= ODemanda::find( $request->input("IDNRO") ); 
+            
+             $r= User::find( $request->input("IDNRO") ); 
              $r->fill(  $Newparams  );  
              $r->save();
              echo json_encode( array('ok'=>  "ACTUALIZADO"  ));    
@@ -123,21 +102,21 @@ public function editarOdemanda( Request $request, $id=0){
         }   
     }
     else  {   
-        $dato= ODemanda::find( $id );
-        return view('parametros.form_odema' , ["DATO2"=> $dato , "OPERACION"=>"M"]  );
+        $dato= User::find( $id );
+        return view('auth.form' , ["DATO"=> $dato , "OPERACION"=>"M"]  );
      }/** */    
  }
 
 
 public function borrar( $id){
-   if(  ODemanda::find($id)->delete() ) echo json_encode( array('ok'=>  "BORRADO"  ) );
+   if(  User::find($id)->delete() ) echo json_encode( array('ok'=>  "BORRADO"  ) );
    else json_encode( array( 'error'=> "Hubo un error al guardar uno de los datos") );
 
 }
 
-public function listar_odema(){
-    $ls= ODemanda::get();
-    return view('parametros.grilla' , ["odemandas"=>  $ls]);
+public function list(){
+    $ls= User::get();
+    return view('auth.grilla' , ["users"=>  $ls]);
 }
 
 

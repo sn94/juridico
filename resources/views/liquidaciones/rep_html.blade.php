@@ -1,29 +1,10 @@
 <?php
 
 use App\Helpers\Helper;
-$ruta=  $OPERACION == "A" ? url("nliquida") : url("eliquida");
- ?>
-
-<input type="hidden" id="OPERACION"  value="{{$OPERACION}}">
 
 
-<form id="liquidaform" action="<?= $ruta?>" method="post" onsubmit="enviarLiquida(event)" >
-  
-{{csrf_field()}}
+?>
 
-
-<?php if( $OPERACION != "V"): ?> 
-   <button type="submit" class="btn btn-success btn-sm" >GUARDAR</button>
-<?php endif; 
-if( $OPERACION == "M" || $OPERACION == "V"  ): ?> <input type="hidden" name="IDNRO" value="{{ $dato->IDNRO }}" >
-<?php endif; ?>
-
-
- 
-
-<input type="hidden" name="ID_DEMA" value="{{isset( $dato->ID_DEMA)? $dato->ID_DEMA : $id_demanda}}" >
-<input type="hidden" name="TITULAR" value="{{isset( $dato->TITULAR)? $dato->TITULAR  : $TITULAR }}" >
-<input type="hidden" name="CTA_BANCO" value="{{isset( $dato->CTA_BANCO)? $dato->CTA_BANCO  : ($CTA_BANCO ?? '') }}" >
 
 <div class="row">
   <div class="col-12 col-md-3">
@@ -118,89 +99,3 @@ if( $OPERACION == "M" || $OPERACION == "V"  ): ?> <input type="hidden" name="IDN
     </div>
  
   </div>
-  
-</form>
-<script>
-
-  //Calculos de valores de campos correlativos
-
-  //aplicar a ult_cheque
-  function calc_cta_meses(){
-    let ult_pago= $("input[name=ULT_PAGO]").val();
-    let ult_cheque= $("input[name=ULT_CHEQUE]").val();
-    if( ult_pago != ""  &&  ult_cheque != ""){
-        //diferencias de fechas
-        let fecha1 = moment(ult_cheque);
-        let fecha2 = moment( ult_pago);
-        let diferen= Math.round( fecha1.diff(fecha2, 'days')   / 30  ); 
-        $("input[name=CTA_MESES]").val(  diferen);
-    } 
-  }
-
-
-//aplicar a hono_porce
-  function calc_honorarios(){
-    if( $("input[name=IMP_INTERE]").val() != ""  &&  $("input[name=HONO_PORCE]").val()!="" ){
-    let capital= quitarSeparador( $("input[name=CAPITAL]").val() );
-    let imp_intere= $("input[name=IMP_INTERE]").val();
-    let hono_porce= $("input[name=HONO_PORCE]").val();
-    let honorarios=  ((capital+imp_intere)*hono_porce)/100;
-    console.log( "honora", honorarios);
-    //FORMATEAR
-    $("input[name=HONORARIOS]").val(  formatear_string( honorarios ) ); 
-    //calcular IVA
-    let iva= honorarios* 0.10;
-    $("input[name=IVA]").val( iva) ;
-    }
-  }
-
-
-  //aplicar a finiquito
-  function calc_total(ev){
-    if( ev.data== null ) return;
-//Validar entrada
-    if( ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57){ 
-      ev.target.value=   ev.target.value.substr( 0, ev.target.selectionStart-1) +  ev.target.value.substr( ev.target.selectionStart );
-    } 
-    //formato puntos
-    let val_Act= ev.target.value;  
-    val_Act= val_Act.replaceAll( new RegExp(/[\.]*[,]*/), ""); 
-    let enpuntos= new Intl.NumberFormat("de-DE").format( val_Act);
-		$( ev.target).val(  enpuntos);
-  //Valores 
-    let capital= quitarSeparadorInt( $("input[name=CAPITAL]"));
-    let imp_intere= quitarSeparadorInt($("input[name=IMP_INTERE]"));
-    let gast_notif= quitarSeparadorInt($("input[name=GAST_NOTIF]") );
-    let gast_notig= quitarSeparadorInt($("input[name=GAST_NOTIG]") ); 
-    let gast_embar= quitarSeparadorInt($("input[name=GAST_EMBAR]") );
-    let gast_intim= quitarSeparadorInt($("input[name=GAST_INTIM]"));
-    let honorarios= quitarSeparadorInt($("input[name=HONORARIOS]") );
-    let iva= quitarSeparadorInt($("input[name=IVA]"));
-    let finiquito= quitarSeparadorInt($("#finiquito") );
-//inicializacion
-    if( capital == "") capital= 0;
-    if( imp_intere=="") imp_intere= 0;
-    if( gast_notif=="") gast_notif= 0;
-    if( gast_notig == "") gast_notig=0;
-    if( gast_embar=="") gast_embar= 0;
-    if( gast_intim=="") gast_intim=0;
-    if(honorarios=="") honorarios= 0;
-    if(iva=="") iva=0;
-    if(finiquito=="") finiquito= 0;
-    let total= capital+imp_intere+gast_notif+gast_notig+gast_embar+gast_intim+honorarios+iva+finiquito;
-    $("input[name=TOTAL]").val( formatear_string( total ));
-
-    //importe extraido
-    let extraido= quitarSeparadorInt($("input[name=EXTRAIDO]") );
-    let saldo=   total - extraido; 
-    $("input[name=SALDO]").val( formatear_string( saldo ) );
-
-
-  }
-
-
-
-
-
-  
-</script>

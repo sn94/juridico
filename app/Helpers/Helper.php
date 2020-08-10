@@ -10,7 +10,10 @@ class Helper
         $v= floatval( $ar);
         return number_format($v, 0, '', '.');  
       }
-
+//Formato numero decimal de coma  a punto
+      public static function fromComaToDot( $ar){
+        return str_replace( ",", ".", $ar);
+      }
 
     /***
      * Devuelve una fecha Y-m-d a partir de una fecha d/m/Y

@@ -1,5 +1,4 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html> 
 
 <head>
     <meta charset="utf-8">
@@ -9,7 +8,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <title>Sistema de Control de Juicios</title>
     <link rel="icon" href="./favicon.ico">
-     <link href="<?= url("app.css") ?>" rel="stylesheet">
+    <link href="<?= url("app.css") ?>" rel="stylesheet">
+    <!--Estilo print -->
+    <link href="<?= url("print/print.min.css") ?>" rel="stylesheet">
 
      <style>
         .app .app-body .app-sidebar{
@@ -28,53 +29,16 @@
         }
         table.table td{ padding: 0px !important;}
         
-        label{  font-weight: bold;   }
+        label{  font-weight: bold; text-transform: uppercase;  }
        
 
-/*TABLA RESPONSIVA */
-          /* Extra small devices (phones, 600px and down) */
-@media only screen and (max-width: 600px) {
-    
-    td:nth-child(3n) p.ldemandado{
-        width: 150px;margin: 0px;
-    }
-    td:nth-child(4n) p.ldemandado{
-        width: 200px;margin: 0px;
-    }
-   
-}
-
-/* Small devices (portrait tablets and large phones, 600px and up) */
-@media only screen and (min-width: 600px) {
-     table{
-         width: 100%;
-     }
-    td:nth-child(3n) p.ldemandado{
-        width: 100%;margin: 0px;
-    }
-    td:nth-child(4n) p.ldemandado{
-        width: 100%;margin: 0px;
-    }
-}
-
-/* Medium devices (landscape tablets, 768px and up) */
-@media only screen and (min-width: 768px) {
-    
-}
-
-/* Large devices (laptops/desktops, 992px and up) */
-@media only screen and (min-width: 992px) {
-
-}
-
-/* Extra large devices (large laptops and desktops, 1200px and up) */
-@media only screen and (min-width: 1200px) {
-
-} 
+ 
 
 
  
-       
+       .name-titular{
+        font-size: 14px; text-transform: capitalize; font-weight: bold;
+       }
      </style>
 </head>
 
@@ -103,8 +67,7 @@
                     <li class="sidebar-nav-group">
                         <a href="#opcinformes" class="sidebar-nav-link" data-toggle="collapse"><i class="icon-pencil"></i> INFORMES</a>
                         <ul id="opcinformes" class="collapse" data-parent="#sidebar-nav">
-                            <li><a href="./pages/forms/basic-form.html" class="sidebar-nav-link">Crear filtros</a></li>
-                            <li><a href="./pages/forms/multi-step-form.html" class="sidebar-nav-link">Editar filtros</a></li> 
+                            <li><a href="<?=url("filtros")?>" class="sidebar-nav-link">FILTROS</a></li> 
                             <li><a href="<?=url("dema-noti-venc")?>" class="sidebar-nav-link">Notif.vencidas</a></li>
                             <li><a href="/depcta" class="sidebar-nav-link">Dep&oacute;sitos</a></li>
                             <li><a href="/extcta" class="sidebar-nav-link">Extracciones</a></li>
@@ -135,14 +98,10 @@
                     </li>
                     <li class="sidebar-nav-group"><a href="#reference" class="sidebar-nav-link" data-toggle="collapse"><i class="icon-notebook"></i> AUXILIARES</a>
                         <ul id="reference" class="collapse" data-parent="#sidebar-nav">
- 
-                            <li><a href="./pages/reference/code-highlight.html" class="sidebar-nav-link">Usuarios</a></li>
-                            <li><a href="<?= url("params")?>" class="sidebar-nav-link">Parámetros</a></li>
+                            <li><a href="<?= url("auxiliar")?>" class="sidebar-nav-link">Datos aux.</a></li>
+                            <li><a href="<?= url("users")?>" class="sidebar-nav-link">Usuarios</a></li>
+                            <li><a href="<?= url("params")?>" class="sidebar-nav-link">Parámetros</a></li> 
 
-                            <li><a href="./pages/reference/callout.html" class="sidebar-nav-link">Tabla de notificaci&oacute;n</a></li>
- 
-                            <li><a href="./pages/reference/code-highlight.html" class="sidebar-nav-link">Cant. d&iacute;as p/vto. Notif </a></li>
-                            <li><a href="./pages/reference/callout.html" class="sidebar-nav-link">Origen de las demandas</a></li> 
                         </ul>
                     </li>
                    
@@ -203,8 +162,10 @@
     <script src="<?=url("app.js")?>"></script>
     <!-- librerias para generar archivos excel -->
     <script src="<?=url("xls.js")?>"></script>
-    <!-- inicializacion de las librerias ant.-->
+    <!-- inicializacion de las librerias anteriores.-->
     <script src="<?=url("xls_ini.js")?>"></script>
+    <!--lib para imprimir -->
+    <script src="<?=url("print/print.min.js")?>"></script>
 </body>
 
 </html>

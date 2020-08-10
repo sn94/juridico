@@ -1,7 +1,7 @@
 function jsonToArray(arg) {
     try {
         let ob = JSON.parse(arg);
-        let newob = ob.map((row) => Object.values(row));
+        let newob = ob.map(function(row) { return Object.values(row); });
         //agregar cabeceras
         let headers = Object.keys(ob[0]);
         newob.unshift(headers);
@@ -10,10 +10,12 @@ function jsonToArray(arg) {
         $("#mensajes").html("");
         return [];
     }
+    console.log("sin error");
 }
 
-function createWorkBook(datos, whois = "Clientes") {
+function createWorkBook(datos, whois) {
 
+    if (whois == undefined) whois = "Clientes";
     ///$("#mensajes").html("Creando archivo xls/xlsx...");
 
     var wb = XLSX.utils.book_new(); //workbook
@@ -47,4 +49,22 @@ function createWorkBook(datos, whois = "Clientes") {
     let fileName = whois + "-" + (fecha.getDate() + "-" + (fecha.getMonth() + 1) + "-" + fecha.getFullYear()) + "-" + fecha.getMilliseconds() + ".xlsx";
 
     saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), fileName);
+}
+
+
+
+function callToXlsGen(ev, titulo, showMsg) {
+    if (showMsg == undefined) showMsg = function() {; }
+    ev.preventDefault();
+    var rutaxls = ev.currentTarget.href; //Obtencion de datos de la base de datos para cargarlo a un archivo xls
+
+    var dta = {
+        url: rutaxls,
+        method: "get",
+        success: function success(res) {
+            createWorkBook(res, titulo);
+        },
+        beforeSend: showMsg
+    };
+    $.ajax(dta);
 }

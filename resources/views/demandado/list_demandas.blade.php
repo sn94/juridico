@@ -7,24 +7,40 @@
 
 @section('content')
 
-<h4>{{$ci}} - {{$nombre}}</h4>
+<?php
+
+use App\Mobile_Detect; 
+
+$detect= new Mobile_Detect();
+if ($detect->isMobile() == false):?>
+ <h4>{{ isset($ci) ? $ci." - ". $nombre  : ""}}</h4>  
+<?php else: ?>
+  <p class="name-titular">{{ isset($ci) ? $ci." - ". $nombre  : ""}}</p>  
+<?php endif; ?>
+
+
+
  <!--Enlaces  --->
  
 <a class="btn btn-info btn-sm mb-1 mt-1" href="<?=url("demandas-agregar/$ci")?>">NUEVO JUICIO</a> 
 
+<?php
 
+use App\Helpers\Helper;
+
+?>
 <div id="tabla-dinamica">
     <table id="demandadostable" class="table table-bordered table-striped">
-      <thead class="thead-dark">
+      <thead class="thead-dark pb-0 pt-0">
           <tr> <th></th> <th></th><th></th>
-          <th>DEMANDANTE</th>  
-          <th>ORIGEN</th> 
-          <th>PRESENTADO</th> 
-          <th>SD.FINIQ.</th>
-          <th>FECHA</th>
-          <th>SALDO CAPITAL</th>
-          <th>SALDO LIQUID.</th>
-          <th>COD_EMP</th>  </tr>
+          <th class="pb-0 pt-0">DEMANDANTE</th>  
+          <th class="pb-0 pt-0">ORIGEN</th> 
+          <th class="pb-0 pt-0">PRESENTADO</th> 
+          <th class="pb-0 pt-0">SD.FINIQ.</th>
+          <th class="pb-0 pt-0">FECHA</th>
+          <th class="pb-0 pt-0">SALDO CAPITAL</th>
+          <th class="pb-0 pt-0">SALDO LIQUID.</th>
+          <th class="pb-0 pt-0">COD_EMP</th>  </tr>
       </thead>
       <tbody>
       <?php for($x=0; $x< sizeof($lista); $x++):
@@ -38,8 +54,8 @@
              <td>{{$item->PRESENTADO}}</td>
              <td>{{$item->SD_FINIQUI}}</td>
              <td>{{$item->FEC_FINIQU}}</td>
-             <td>{{$saldos[$x]["saldo_judi"]}}</td>
-             <td>{{$saldos[$x]["saldo_en_c"]}}</td>
+             <td class="text-right">{{Helper::number_f($saldos[$x]["saldo_judi"])}}</td>
+             <td class="text-right" >{{Helper::number_f($saldos[$x]["saldo_en_c"])}}</td>
               <td><?= $item->COD_EMP?></td>     </tr>
       <?php  endfor; ?>
       </tbody>

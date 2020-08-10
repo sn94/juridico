@@ -1,60 +1,110 @@
-<form id="paraform" action="<?= url("nparam") ?>" method="post" onsubmit="ajaxCall(event)">
+<?php
+
+use App\Helpers\Helper; 
+?>
+
+
+<div id="viewform">
+
+</div>
+<form id="paraform" action="<?= url("nparam") ?>" method="post" onsubmit="ajaxCall(event,'#viewform')">
 
 {{csrf_field()}}
 
-<div class="container p-1">
-    
-<div class="form-group">
-              <label >DESCRIPCIÓN:</label>
-              <input  name="DESCR"  type="text"  class="form-control form-control-sm">
-          </div>
-          <div class="form-group">
-              <label >VALOR:</label>
-              <input     name="VALOR"  type="text"  class="form-control form-control-sm">
-          </div>
-          <button type="submit" class="btn btn-sm btn-info">GUARDAR</button>
+<div class="row">
+<div class="col-6 col-sm-4 col-md-3 col-lg-2">
+    <div class="form-group">
+    <label >INTERÉS:</label>
+<input oninput="decimal_field(event)"  maxlength="4" value="{{isset($DATO)? Helper::fromComaToDot($DATO->INTERES) : '' }}"   name="INTERES"  type="text"  class="form-control form-control-sm">
+    </div>
+  </div>
+  <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+    <div class="form-group">
+    <label >MORA:</label>
+    <input oninput="decimal_field(event)"  maxlength="4" value="{{isset($DATO)?  Helper::fromComaToDot($DATO->MORA)  : '' }}"   name="MORA"  type="text"  class="form-control form-control-sm">
+    </div>
+  </div>
+  <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+    <div class="form-group">
+    <label >SEGURO:</label>
+    <input oninput="decimal_field(event)"  maxlength="4"  value="{{isset($DATO)?  Helper::fromComaToDot($DATO->SEGURO) : '' }}"   name="SEGURO"  type="text"  class="form-control form-control-sm">
+    </div>
+  </div>
+  <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+    <div class="form-group">
+    <label >REDONDEO:</label>
+    <input  value="{{isset($DATO)?$DATO->REDONDEO : '' }}"   name="REDONDEO"  type="text"  class="form-control form-control-sm">
+    </div>
+  </div>
+  <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+    <div class="form-group">
+    <label >%HONORARIOS:</label>
+    <input oninput="decimal_field(event)"  value="{{isset($DATO)?  Helper::fromComaToDot($DATO->HONORARIOS) : '' }}"   name="HONORARIOS"  type="text"  class="form-control form-control-sm">
+    </div>
+  </div>
+  <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+    <div class="form-group">
+    <label >I.V.A:</label>
+    <input oninput="decimal_field(event)" maxlength="4"  value="{{isset($DATO)?  Helper::fromComaToDot($DATO->IVA) : '' }}"  name="IVA"  type="text"  class="form-control form-control-sm">
+    </div>
+  </div>
+  <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+    <div class="form-group">
+    <label >PUNITORIO:</label>
+    <input oninput="decimal_field(event)"  maxlength="4" value="{{isset($DATO)?  Helper::fromComaToDot($DATO->PUNITORIO) : '' }}"   name="PUNITORIO"  type="text"  class="form-control form-control-sm">
+    </div>
+  </div>
+  <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+    <div class="form-group">
+    <label >GAST.ADMIN.:</label>
+    <input oninput="decimal_field(event)"  maxlength="4"  value="{{isset($DATO)?  Helper::fromComaToDot($DATO->GASTOSADMIN) : '' }}"   name="GASTOSADMIN"  type="text"  class="form-control form-control-sm">
+    </div>
+  </div>
+  <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+  <div class="form-group">
+    <label >DIASVTO.:</label>
+    <input maxlength="2" oninput="number_field(event)"   value="{{isset($DATO)?$DATO->DIASVTO : '' }}"  name="DIASVTO"  type="text"  class="form-control form-control-sm">
+    </div>
+  </div>
+ 
+  <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+  <div class="form-group">
+    <label >FACTURA:</label>
+    <input  oninput="number_field(event)"  value="{{isset($DATO)?$DATO->FACTURA : '' }}"  name="FACTURA"  type="text"  class="form-control form-control-sm">
+    </div>
+  </div>
 
+  <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+  <div class="form-group">
+    <label >RECIBO:</label>
+    <input   oninput="number_field(event)"  value="{{isset($DATO)?$DATO->RECIBO : '' }}"  name="RECIBO"  type="text"  class="form-control form-control-sm">
+    </div>
+  </div>
+ 
+
+  <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+  <div class="form-group">
+    <label >FECHA MIN.:</label>
+    <input    value="{{isset($DATO)?  Helper::fecha_f($DATO->FECMIN) : '' }}"  name="FECMIN"  type="date"  class="form-control form-control-sm">
+    </div>
+  </div>
+
+
+  <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+  <div class="form-group">
+    <label >FECHA MAX..:</label>
+    <input   value="{{isset($DATO)? Helper::fecha_f($DATO->FECMAX) : '' }}"  name="FECMAX"  type="date"  class="form-control form-control-sm">
+    </div>
+  </div>
+ 
+ 
+ 
+
+  <div  class="col-6 col-sm-4 col-md-3 col-lg-2 d-flex align-items-center">
+  <button type="submit" class="btn btn-sm btn-info">GUARDAR</button>
+  </div>
 </div>
 
+
 </form>
-<script>
-
-function ajaxCall( ev){//Objeto event   DIV tag selector to display   success handler
-ev.preventDefault();
-let divname="#viewform"; 
- $.ajax(
-     {
-       url:  ev.target.action,
-       method: "post",
-       data: $("#"+ev.target.id).serialize(),
-       headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-       beforeSend: function(){
-         $( divname).html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
-       },
-       success: function(res){
-           let r= JSON.parse(res);
-           if("ok" in r)
-            $( divname).html( `<div class="alert alert-success">
-            <h6>${ r.ok}</h6>
-            </div>`);
-            else
-            $( divname).html( `<div class="alert alert-danger">
-            <h6>${ r.error}</h6>
-            </div>`);
-            $("#formparam").modal('hide');
-            act_grilla();
-       },
-       error: function(){
-         $( divname).html(  "<h6 style='color:red;'>Problemas de conexión</h6>" ); 
-       }
-     }
-   );
-}/*****end ajax call* */
-
-
-
-
-
-
-
-</script>
+  

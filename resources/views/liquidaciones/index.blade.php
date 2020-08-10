@@ -9,22 +9,38 @@
 @section('content')
 
  
-<h3>{{$CI}}-{{$TITULAR}}</h3>
-<h3>Cuenta bancaria: {{$CTA_BANCO}}</h3>
+<?php
+
+use App\Mobile_Detect; 
+
+$detect= new Mobile_Detect();
+if ($detect->isMobile() == false):?>
+ <h4>{{ isset($CI) ? $CI." - ". $TITULAR  : ""}}</h4>  
+ <h4>Cuenta bancaria: {{$CTA_BANCO}}</h4>
+<?php else: ?>
+  <p class="name-titular">{{ isset($CI) ? $CI." - ". $TITULAR  : ""}}</p>  
+  <p class="name-titular">Cuenta bancaria:{{ $CTA_BANCO}}</p>  
+<?php endif; ?>
+
+
 
  <a href="<?= url("nliquida/$id_demanda") ?>" class="btn btn-info btn-sm mb-2">AGREGAR</a>
- <a onclick="gen_xls_list_liquida(event)" style="color:black;" href="<?=url("jsonlliquida/$id_demanda")?>"><i class="fa fa-print fa-2x "></i></a>
  
+  
+ 
+ <!--TABLA-->
  <div class="table-responsive mt-2" id="tablamovi">
    @include("liquidaciones.grilla", ["lista"=> $lista])
      
  </div>
 
+
+
   
 
- @endsection 
 
-<script>
+
+<script type="text/javascript">
 
   
  
@@ -39,11 +55,7 @@
             success: function(res){ 
               let ob=JSON.parse( res );
 
-               $("#myform").html( `
-               <div class="alert alert-success">
-              <h6>Movimiento borrado</h6>
-              </div>
-            ` ); 
+               $("#myform").html( " <div class='alert alert-success'>  <h6>Movimiento borrado</h6>  </div> "); 
               actualizarGrill();
                },
             beforeSend: function(){  
@@ -86,81 +98,23 @@ function actualizarGrill(){
   try{
              let res= JSON.parse( data);
              if( "error" in res){
-               $( divname).html(  `<h6 style='color:red;'>${res.error}</h6>` ); return false; 
+               $( divname).html(  "<h6 style='color:red;'>"+res.error+"</h6>" ); return false; 
              }else{   return res;  }
            }catch(err){
-             $(divname).html(  `<h6 style='color:red;'>${err}</h6>` );  return false;
+             $(divname).html(  "<h6 style='color:red;'>"+err+"</h6>" );  return false;
            } return false;
 }/***End Json Receiver Handler */
 
 
-function verSaldos(){
-let divname= "#viewsaldo";
-  $.ajax(
-       {
-         url:  "<?=url("calcsaldo/$id_demanda")?>", 
-         beforeSend: function(){
-           $( divname).html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
-         },
-         success: function(res){
-           let r= jsonReceiveHandler( res);
-           console.log( typeof  r.saldo);
-           let formateado1= formatear_string( r.saldo_judi);
-           let formateado2= formatear_string( r.saldo_en_c);
-           if( typeof r != "boolean") $(divname).html(
-             `
-             <div style="background-color:red; padding: 30px;">
-             <h3 class="text-white text-center" style="text-decoration:underline;">SALDO JUDICIAL:</h3>
-             <h3 class="text-white text-center">${ formateado1} Gs.</h3>
-             <h3 class="text-white text-center" style="text-decoration:underline;">SALDO EN CUENTA:</h3>
-             <h3 class="text-white text-center">${ formateado2} Gs.</h3>
-             </div>
-             `
-           );
-           else $(divname).html(  "<h6 style='color:red;'>Error al obtener datos.</h6>" );
-         },
-         error: function(){
-           $( divname).html(  "<h6 style='color:red;'>Problemas de conexión</h6>" ); 
-         }
-       }
-     );
-}
+
     
 
 
-
-
-
-
-
-
-
-function callToXlsGen(ev, titulo){
-
-  let showMsg= function(){  $("#mensajes").html("Creando archivo xls/xlsx...");     }; 
-            let rutaxls= ev.currentTarget.href;
-           //Obtencion de datos de la base de datos para cargarlo a un archivo xls
-            let dta= { 
-                url:  rutaxls,
-                method:"get",  
-                success: (res)=>{createWorkBook(res, titulo); }, 
-                beforeSend: showMsg }
-            $.ajax( dta); 
  
-}
-
-function gen_xls_list_liquida(ev){
-  ev.preventDefault();
-  callToXlsGen( ev, "LISTADO DE LIQUIDACIONES");
-}
 
 
-
-function gen_xls_liquida(ev){
-  ev.preventDefault();
-  callToXlsGen( ev, "LIQUIDACIONES");
-}
-
+ 
+ 
 
 
 /**Verificar tabla vacia */
@@ -176,3 +130,4 @@ window.onload= function(){
             
 
 
+@endsection 
