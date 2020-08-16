@@ -33,6 +33,35 @@ if( $detect->isMobile() == false){
    #CONDICIONES input, #CONDICIONES select{
      border:none; 
    }
+
+   .multiselect {
+      width: 200px;
+      position:relative;
+      }
+.selectBox {position: relative;}
+
+.selectBox select {width: 100%;}
+
+   .fields {
+      display: block;
+      border: 1px #dadada solid;
+      position:absolute;
+      width:100%;
+      background-color:white;
+      box-sizing: border-box;
+      overflow-y:auto;
+      max-height:200px;
+      z-index: 10000;
+}
+.fields.hide {display:none;}
+
+.overSelect {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  }
  </style>
  
   
@@ -44,17 +73,7 @@ $ruta= $OPERACION =="A" ? url("nfiltro") : url("efiltro");
  
 <div class="row">
 
-  <div  class="col-12 col-sm-3 col-md-2 col-lg-2">
-  <div class="form-group">
-  <label for="actuaria">TABLA:</label>
-  <select class="form-control form-control-sm"   id="TABLA" onchange="cargar_campos(event)">
-
-    <option value="demandas2">DEMANDAS</option>
-    <option value="notificaciones">SEGUIMIENTO</option>
-    <option value="cta_judicial">CTA.JUDICIAL</option> 
-  </select>
-</div>
-  </div>
+  
 
 <!-- FORM -->
   <div  class="col-12 col-sm-9 col-md-10 col-lg-8">
@@ -86,17 +105,22 @@ $ruta= $OPERACION =="A" ? url("nfiltro") : url("efiltro");
 <div id="statusform">
 
 </div>
+<h5>CAMPOS A VISUALIZAR</h5>
 
+<table id="CAMPOS-VIEW"  style='background-color: #bdfbbb; border-collapse: separate;border-spacing: 15px 5px;'  >
+  <tbody>
+
+  </tbody>
+</table>
+<h5>CONDICIONES</h5>
 <table id="CONDICIONES" class="table table-striped table-bordered <?= $detect->isMobile()?"":"table-responsive" ?>">
       <thead class="thead-dark "> 
+        <th class="pb-0">  TABLA  </th>
         <th class="pb-0">  CAMPO  </th>
         <th class="pb-0">RELACIÓN</th>
         <th class="pb-0"> VALOR</th>
         <th class="pb-0">LÓGICO</th>  </thead>
-      <tbody>
-         
-     
-      </tbody>
+      <tbody>  </tbody>
 </table>
 
 
@@ -107,6 +131,7 @@ $ruta= $OPERACION =="A" ? url("nfiltro") : url("efiltro");
 
 
 <script>
+var wellTableNames=[ "DEMANDAS", "SEGUIMIENTOS", "CTA.JUDICIAL"];
 var allcampos=
 {
   demandas2: [ { back: 'CI', face:'CEDULA'},{ back:'DEMANDANTE',face:"DEMANDANTE"},{ back:'O_DEMANDA',face:'ORIGEN_DEMANDA'},{back:'COD_EMP',face:'COD.EMP.'},
@@ -129,7 +154,13 @@ var allcampos=
   {back:'FECHA', face: 'FECHA'},{ back:'TIPO_EXT', face:'TIPO_DE_EXTRACCION'},{ back:'IMPORTE', face: 'IMPORTE'},{ back:'CHEQUE_NRO', face: 'NRO_DE_CHEQUE'},{ back:'CI', face:'CEDULA'}   ]
 };
 
+//Relaciones
+var relations={
+  demandas2: { notificaciones: "IDNRO", cta_judicial: "CTA_JUDICI"},
+  notificaciones: { demandas2: "IDNRO"},
+  cta_judicial: { demandas2: "CTA_BANCO"}
 
+};
 
 
 function compatibilidad(  ar){
@@ -138,13 +169,21 @@ function compatibilidad(  ar){
 
 //A PARTIR DE UNA CAD SQL EXTRAER TOKENS
 function  translate_sql( arg){
-  //obtener tabla
-   let tablax=arg.split("where")[0].split(" ")[3] ;
-   $("#TABLA").val(  tablax );
+   
+//Obtener tokens de los campos seleccionados
+let fields_from_sele=  arg.split("where")[0].replaceAll( new RegExp("(select)|from"),"").trim();
+let eachField= fields_from_sele.split(",");
+eachField.forEach( function(fiel){
+  let tempo=fiel.split(".");
+  let tabla= tempo[0];  let campo=  tempo[1];
+  $("#"+tabla+"-"+campo).prop("checked", true);
+});
+ 
+
+
   let base= arg.split("where")[1];//Obtener solo la condicion
   let  propo1= base.split(/(&&|\|\|)/);//Dividir por operadores logicos OR AND
   let ope_logicos= propo1.filter( function(ar){ return ar=="&&" || ar=="||"; } );
-  console.log( ope_logicos);
   let ls_condi=  propo1.filter( function( ar){ 
     let tempo= ar.trim();
     return  (tempo != "")  && (tempo!="&&")  && (tempo !="||");  }  );
@@ -152,16 +191,17 @@ function  translate_sql( arg){
     $("#CONDICIONES tbody").empty();
     ls_condi.forEach( function(condi, indice){
 
-      let operandos= condi.split(/(<>)|(>)|(<)|(=)/).filter(function(ar){ return ar!= undefined; });
-      console.log(operandos);
+      let operandos= condi.split(/(<>)|(>\w)|(>=)|(<=)|(<)|(=)/).filter(function(ar){ return ar!= undefined; });
+      let tablaxcampo=operandos[0].trim();
+      let campo__= tablaxcampo.split(".")[1];//Nombre de campo
+      let tablax= tablaxcampo.split(".")[0];//OBTENER TABLA ASOCIADA
       try{
-        condition_creator(operandos[0].trim(), operandos[1], operandos[2].trim(),  ope_logicos[indice]  );
+        condition_creator( tablax,  campo__, operandos[1], operandos[2].trim(),  ope_logicos[indice]  );
       }catch(err){
-        condition_creator(operandos[0].trim(), operandos[1], operandos[2].trim() );
+        condition_creator( tablax,  campo__, operandos[1], operandos[2].trim() );
       }
      
-
-      console.log( operandos);
+ 
     });
     
 
@@ -171,33 +211,77 @@ function  translate_sql( arg){
 
 //paso 1 CARGAR CAMPOS DE LA TABLA SELECCIONADA
 function cargar_campos(ev){
-  if( $("#OPERACION").val()=="M"   ||   ($("#OPERACION").val()=="A"  && ! confirm("ANTES DE CREAR UN NUEVO FILTRO, DEBE GUARDAR EL FILTRO ACTUAL. ¿GUARDAR?"))   ) {
-    $("#CONDICIONES tbody").empty();
+ /* $("#CONDICIONES tbody").empty();
     condition_creator();
     return;
-  }
+                                    reiniciar tabla de filtros*/
   let valor= undefined;
-  if(  typeof ev == "object" &&  ( "target" in ev) ) valor=  ev.target.value;
-  else valor= ev;
-  let dt= allcampos[  valor ];
-  //CAMBIAR CAMPOS
-  $("#CAMPOS").empty();
-  dt.forEach( function(ar){  $("#CAMPOS").append("<option value='"+ar.back+"'>"+ar.face+"</option>" ); }  );
+  valor=  ev.target.value;//NOMBRE DE TABLA SELECCIONADA
+    //Nodo select Campos
+    let selectCampos= ev.target.parentNode.parentNode.children[1].children[0] ;
+    //vaciar CAMPOS
+    $( selectCampos).empty();
+    let dt= allcampos[  valor ];//OBTENER CAMPOS DE LA TABLA SELECCIONADA 
+    dt.forEach( function(ar){  $( selectCampos).append("<option value='"+ar.back+"'>"+ar.face+"</option>" ); }  );
 } 
 
 
 
+function generar_selects_fields(){
+  let fie= [];
+  Array.prototype.forEach.call( $("input[type=checkbox]"),  function(s){
+    if( s.checked ){
+      let tablefield= s.id.split("-");
+       fie.push( tablefield[0]+"."+tablefield[1]);
+       }
+    } );
+    if( fie.length == 0) return " * ";
+    else return fie.join(",") ;
+}
 /**GENERAR NUEVA SENTENCIA */
 function generar_sentencia_sql(){
-  let sql=" select * from "+ $("#TABLA").val()+" where ";
+  let tableNames= [];  //Identificar tablas existentes en el filtro
+  let wheres= ""; //Concatenacion de expresiones relacionales mediante operadores logicos
+  let selects= generar_selects_fields();
+  let sql=" select "+selects+" from ";
+
   Array.prototype.forEach.call( document.querySelector("#CONDICIONES tbody").children,  function( row){
-    let campo= row.children[0].children[0].value;
-    let operel=row.children[1].children[0].value;
-    let valor= row.children[2].children[0].value;
-    let opelog=row.children[3].children[0].value;
-    sql=   sql+" "+ campo+operel+valor+" "+opelog+" ";
-    console.log( campo+operel+valor+" "+opelog);
-  });  return sql;
+   
+    let tabla_= row.children[0].children[0].value;//Nombre de tabla
+    if( ! tableNames.includes( tabla_ )){  tableNames.push( tabla_ );  }
+
+        let campo= row.children[1].children[0].value;//campo de tabla
+        let operel=row.children[2].children[0].value;//Operador relacional
+        let valor= row.children[3].children[0].value;//valor en comparacion
+        let opelog=row.children[4].children[0].value;//Operador logico
+        wheres=   wheres+" "+ tabla_+"."+campo+operel+valor+" "+opelog+" ";
+  }); 
+
+  //DEFINIR RELACIONES ENTRE TABLAS
+  let tablas_ya_relacio=[];
+  let relaciones= [];
+  tableNames.forEach( function(ar){
+    if( !tablas_ya_relacio.includes(ar) ){
+      let TABLA_PRINCI= ar;
+      if(Object.keys( relations).includes(ar)){
+        let rela=Object.keys(relations[ar]);//Nombre de otras tablas con las que se relaciona la tabla ar
+        rela.forEach( function(RELACIONADA){
+          if( tableNames.includes(RELACIONADA)  ) { 
+            relaciones.push( TABLA_PRINCI+"."+relations[TABLA_PRINCI][RELACIONADA]+"="+ RELACIONADA+"."+relations[RELACIONADA][TABLA_PRINCI] );
+            tablas_ya_relacio.push( RELACIONADA);
+            tablas_ya_relacio.push( TABLA_PRINCI);
+            }
+        })
+      }
+    }
+  });/**fIN RELACIONAMIENTO */
+   
+  //Concatenar tables
+let tbls= tableNames.reduce( function(prev, curr){
+  return prev+","+curr;
+});
+sql+=   tbls+" where  "+wheres+ relaciones; 
+return sql;
 }
 
 /**PREPARAR CREADOR DE CONDICIONES */
@@ -205,8 +289,7 @@ function return_table_fields(ev, defaul){//GENERA UN STRING PARA INTRODUCIRLO CO
   let valor= undefined;
   if(  typeof ev == "object" &&  ( "target" in ev) ) valor=  ev.target.value;
   else valor= ev;
-  let dt= allcampos[  valor ];
-  console.log(  typeof ev);
+  let dt= allcampos[  valor ]; 
   let resu="";
   dt.forEach( function(ar){ 
     let selected= "";
@@ -217,8 +300,19 @@ function return_table_fields(ev, defaul){//GENERA UN STRING PARA INTRODUCIRLO CO
 } 
 
 // CREAR UNA CONDICION, CARGAR A LA TABLA TEMPORAL
-function crear_select_campo( defaul){ 
-  let options= return_table_fields(  $("#TABLA").val() , defaul);
+function crear_select_tabla(defaul){
+  if( defaul == undefined) defaul= Object.keys( allcampos )[0];//table name( default)
+  let expr=" <select class='form-control form-control-sm' onchange='cargar_campos(event)'    >";
+  
+  Object.keys( allcampos ).forEach( function( tab, index){
+    expr+="<option "+(defaul== tab? 'selected':'')+" value='"+tab+"'>"+ wellTableNames[index] +"</option>";
+  });
+  expr+="</select> ";
+  return expr;
+}
+function crear_select_campo( tabla, defaul){ 
+  let defaultTableName=  tabla ==undefined ? Object.keys( allcampos )[0]  :  tabla;
+  let options= return_table_fields( defaultTableName  , defaul);
   let expr= "  <select class='form-control form-control-sm' >"+options+"</select>";
   return expr;
 }
@@ -233,6 +327,8 @@ function crear_select_ope_rela( defaul){
   expr+="<option "+(defaul=="="? 'selected':'')+" value='='>IGUAL</option>";
   expr+="<option "+(defaul==">"? 'selected':'')+" value='>'>MAYOR</option>";
   expr+="<option "+(defaul=="<"? 'selected':'')+" value='<'>MENOR</option>";
+  expr+="<option "+(defaul==">="? 'selected':'')+" value='>='>MAYOR O IGUAL</option>";
+  expr+="<option "+(defaul=="<="? 'selected':'')+" value='<='>MENOR O IGUAL</option>";
   expr+="<option "+(defaul=="<>"? 'selected':'')+" value='<>'>DIFERENTE</option>  </select>";
   return expr;
 }
@@ -246,10 +342,10 @@ function crear_select_ope_logico( defaul){
   return expr;
 }
 
-function  condition_creator( campo, operel, valor, opelog){
+function  condition_creator( tabla, campo, operel, valor, opelog){
   let id_=  document.querySelector("#CONDICIONES tbody").children.length;
    
-  $("#CONDICIONES tbody").append("<tr id='"+id_+"'><td>"+crear_select_campo(campo)+"</td><td>"+crear_select_ope_rela(operel)+"</td><td>"+crear_input_campo(valor)+"</td><td>"+crear_select_ope_logico(opelog)+"</td></tr>");
+  $("#CONDICIONES tbody").append("<tr id='"+id_+"'><td>"+crear_select_tabla(tabla)+"</td><td>"+crear_select_campo(tabla,campo)+"</td><td>"+crear_select_ope_rela(operel)+"</td><td>"+crear_input_campo(valor)+"</td><td>"+crear_select_ope_logico(opelog)+"</td></tr>");
 }
 
 
@@ -268,15 +364,11 @@ if( ev.target.value != "")
   condition_creator();//SI EL OPERADOR LOGICO SELECCIONADO NO ES VACIO, SE AGREGA UNA NUEVA FILA
     }
 }
-else
-{ 
- 
-      let actual= parseInt(ev.target.parentNode.parentNode.id); 
-      console.log( "actual", actual);
+else{ 
+      let actual= parseInt(ev.target.parentNode.parentNode.id);  
       let lng= document.querySelector("#CONDICIONES tbody").children.length; 
-      let id_borra= parseInt(lng)-1;console.log( "a borrar", id_borra);
-      while( id_borra!= 0 &&  id_borra != actual ) { document.querySelector("#CONDICIONES tbody").children[id_borra].remove(); id_borra--; }
-     
+      let id_borra= parseInt(lng)-1;
+      while( id_borra!= 0 &&  id_borra != actual ) { document.querySelector("#CONDICIONES tbody").children[id_borra].remove(); id_borra--; }  
  }
 }
 
@@ -284,7 +376,38 @@ else
 
 
 
+function createCheckOption( table_n, id){
+  let html='<div class="form-check">  <input class="form-check-input" type="checkbox" id="'+table_n+"-"+ id.back+'" value="option1"><label class="form-check-label" for="inlineCheckbox1">'+id.face+'</label></div>';
+return html;
+}
 
+function displayFieldsFromSelect( tabname){
+  if( $("#"+tabname).hasClass("hide") )
+$("#"+tabname).removeClass("hide");
+else $("#"+tabname).addClass("hide");
+}
+
+function selectFieldsOptions(){
+  let tablenames= Object.keys( allcampos);
+  let html="";
+  let buildme= function( t_table_name, index ){
+  
+    html+="<td><p>"+ wellTableNames[index]+"</p>";
+    html+="<div class='multiselect'><div class='selectBox' onclick=\"displayFieldsFromSelect('"+t_table_name+"')\" ><select>";
+    html+="<option>Eliga una opcion</option> </select> <div class='overSelect'></div> </div>";
+    html+="<div id='"+t_table_name+"'  class='fields hide'>";
+
+    allcampos[t_table_name].forEach( function(campo, index){
+      html+=   createCheckOption( t_table_name, campo);
+    });
+
+    html+="</div> </div></td>";
+  };
+   html+="<tr>";
+  tablenames.forEach( buildme);
+  html+="</tr>";
+  $("#CAMPOS-VIEW tbody").append( html);
+}
 
 
 
@@ -326,9 +449,9 @@ $("input[name=FILTRO]").val(generar_sentencia_sql());
 
 //INICIALIZACION
 window.onload= function(){
-//cargar_campos(  $("#TABLA").val() );
-if($("#OPERACION").val() == "M") translate_sql( $("input[name=FILTRO]").val() );
-else      condition_creator();
+  selectFieldsOptions();
+  if($("#OPERACION").val() == "M") translate_sql( $("input[name=FILTRO]").val() );
+  else      condition_creator();
 }
-//object.keys( allcampos ).forEach( function(ar){    allcampos[ar].forEach( function(aru){    console.log( ar, "->",  aru   );      }  );    })
+ 
 </script>

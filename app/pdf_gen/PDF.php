@@ -8,8 +8,10 @@ require("tcpdf/tcpdf.php");
 
 class PDF extends TCPDF{
  
-    public function __construct(){
+    public function __construct( $orientacion="P", $dimensiones=null){
+        if( is_null( $dimensiones) )
         parent::__construct( PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false); 
+        else parent::__construct( $orientacion, PDF_UNIT, $dimensiones, true, 'UTF-8', false); 
       
     }
 
@@ -35,8 +37,7 @@ class PDF extends TCPDF{
         $this->settingFont(); 
     }
 
-    public function generarHtml( $html_custom){
-        
+    public function generarHtml( $html_custom){ 
          // This method has several options, check the source code documentation for more information.
         $this->AddPage();
         $this->setShadows();

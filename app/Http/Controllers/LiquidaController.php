@@ -5,12 +5,14 @@ use Illuminate\Http\Request;
 use App\CuentaJudicial;
 use App\Demanda;
 use App\Demandados;
+use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Liquidacion;
 use App\Notificacion;
 use Exception;
 use Illuminate\Support\Facades\DB; 
 use App\pdf_gen\PDF;
+use phpDocumentor\Reflection\Types\Null_;
 
 class LiquidaController extends Controller
 {
@@ -126,31 +128,36 @@ class LiquidaController extends Controller
         ["id_demanda"=>$demandaob->IDNRO, "CI"=>$ci,  "SD_FINIQUI"=> $sdf,"FEC_FINIQU"=> $fecf,
          "CAPITAL"=> $demandaob->DEMANDA, "dato"=> $liqui , "OPERACION"=>"V"]); 
     }
+
+
+
+//************************LISTA DE LIQUIDACIONES******************** */
 public function list( $iddeman){
     $obj_demanda= Demanda::find(  $iddeman);
     $lista= Liquidacion::where("CTA_BANCO",  $obj_demanda->CTA_BANCO)->get();
-    return view("liquidaciones.grilla", ["lista"=> $lista] );
+    return view("liquidaciones.grilla", ["lista"=> $lista, "id_demanda"=> $iddeman] );
 }
 
-/**LISTA LIQUIDACIONES DE UNA DEMANDA ESPECIFICA  EN FORMATO JSON*/
+ 
 public function list_json( $iddeman){
     $obj_demanda= Demanda::find(  $iddeman);
     $lista= Liquidacion::where("CTA_BANCO",  $obj_demanda->CTA_BANCO)->get();
    echo json_encode( $lista );
 }
 
-/**LISTA LIQUIDACIONES DE UNA DEMANDA ESPECIFICA EN FORMATO ARRAY*/
+ 
 public function list_array( $iddeman){
     $obj_demanda= Demanda::find(  $iddeman);
     $lista= Liquidacion::where("CTA_BANCO",  $obj_demanda->CTA_BANCO)->get();
     return $lista;
 }
 
+/*********************************END LISTADO DE LIQUIDACIONES************** */
 
-public function liquida_json( $idnro){
-    $obj_= Liquidacion::find(  $idnro);
-   echo json_encode( array( "0"=> $obj_) );
-}
+
+
+
+
 
 
 
@@ -164,15 +171,7 @@ public function liquida_json( $idnro){
 
 
 
-
-/**
- * INFORME EN HTML
- */
- public function list_html($idnro){
-    $DATO=Liquidacion::find( $idnro); 
-    return view("liquidaciones.rep_html", ["dato"=> $DATO] );
- }
-
+ 
 
 /**
  * PDF FILES GENERATOR FUNCS
@@ -180,67 +179,100 @@ public function liquida_json( $idnro){
  
      
 
-public function liquida_pdf( $idnro){
-    $DATO=  Liquidacion::find(  $idnro); 
+public function reporte( $idnro, $tipo){
+    $DATO= Liquidacion::find(  $idnro);
+    if( $tipo == "xls"){
+        echo json_encode( array( "0"=> $DATO) );  
+    }else{
+        //Pdf format
+        //Preparar variables que representan montos
+        $TOTAL=  Helper::number_f( $DATO->TOTAL );
+        $EXTRAIDO=Helper::number_f( $DATO->EXTRAIDO );
+        $SALDO= Helper::number_f( $DATO->SALDO );
+        $EXT_LIQUID=Helper::number_f( $DATO->EXT_LIQUID );
+        $NEW_SALDO= Helper::number_f( $DATO->NEW_SALDO );
+        $html=<<<EOF
+        <style>
+        h1,h2,h3,h4,h5,h6{  color: #151515;}
+        span{
+            font-weight: bolder;
+        }
+        .subtitulo{ font-size: 7pt; font-weight: bold; text-align: center;text-decoration: underline; background-color: #bcfdb0; border-bottom: 1px solid #8ef861;}
+        .panel{
+            margin-top:0px;
+            border-top: 1px solid #797979;
+            border-bottom: 1px solid #797979;
+            border-left: 1px solid #797979;
+            border-right: 1px solid #797979;
+        } 
+        td{ text-align:left; }
+        table.tabla{ 
+            font-family: helvetica;
+            font-size: 7pt; 
+            color: #151515;
+        }
+        </style>
+        
+        <h6>TITULAR: {$DATO->TITULAR}</h6>
+        <table class="tabla">
+        <tbody>
+        <tr> 
+        <td style='text-align:left;'>
+        <span>CTA.BANCO:</span> {$DATO->CTA_BANCO}<br><br>
+        <span>ULT.PAGO:</span> {$DATO->ULT_PAGO}<br><br>
+        <span>ULT.CHEQUE:</span> {$DATO->ULT_CHEQUE}<br><br>
+        </td>
+        <td>
+        <span>CTA.MESES:</span> {$DATO->CTA_MESES}<br><br>
+        <span>INTERÉS POR MES:</span> {$DATO->INT_X_MES}<br><br>
+        <span>LIQUIDACIÓN.:</span> {$DATO->LIQUIDACIO}
+        </td>
+        <td>
+        <span>FINIQUITO:</span> {$DATO->FINIQUITO}<br><br>
+        <span>IMP.EXTR.:</span> {$EXTRAIDO}<br><br>
+        <span>SALDO:</span> {$SALDO}<br><br>
+        </td>
+        <td>
+        <span>EXTR.LIQUID.:</span> {$EXT_LIQUID}<br><br>
+        <span>NUEVO SALDO:</span> {$NEW_SALDO}
+        </td>
+        </tr> 
+        </tbody> 
+        </table> 
+        <p class="subtitulo"> TOTALES</p>
+        <table class="tabla panel">
+        <tr>
+        <td><span>CAPITAL:</span> {$DATO->CAPITAL}<br></td>
+        <td><span>IMP.INTERÉS.:</span> {$DATO->IMP_INTERE}<br></td>
+        <td><span>GAST.NOTIF.:</span> {$DATO->GAST_NOTIF}<br></td>
+        <td><span>GAST.NOTIF.GTE.:</span> {$DATO->GAST_NOTIG}<br></td>
+        </tr>
+        <tr>
+        <td><span>GAST.EMBARGO.:</span> {$DATO->GAST_EMBAR}<br></td>
+        <td><span>GAST.INTIMAC.:</span> {$DATO->GAST_INTIM}<br></td>
+        <td><span>I.V.A.:</span> {$DATO->IVA}<br></td>
+        <td> <span>HONORARIOS.:</span> {$DATO->HONORARIOS}<br></td>
+        </tr>
+        <tr>
+        <td><span>TOTAL:</span> $TOTAL <br></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        </tr>
+        </table>
+        EOF; 
+       // echo $html;
+        $tituloDocumento= "LIQUIDACION-".date("d")."-".date("m")."-".date("yy")."-".rand();
+    
+           // $this->load->library("PDF"); 	
+            $pdf = new PDF(); 
+            $pdf->prepararPdf("$tituloDocumento.pdf", $tituloDocumento, ""); 
+            $pdf->generarHtml( $html);
+            $pdf->generar();
 
-    $html=<<<EOF
-    <style>
-    
-    span{
-        font-weight: bolder;
-    }
-    td{ text-align:left; }
-    table.tabla{ 
-        font-family: helvetica;
-        font-size: 8pt; 
-    }
-    
+    }//End pdf format option
      
-     
-    </style>
-    
-    <h6> {$DATO->TITULAR}</h6>
-    <table class="tabla">
-    <tbody>
-    EOF;
-  
-    $html.="<tr> 
-    <td style='text-align:left;'>
-    <span>CAPITAL:</span> {$DATO->CAPITAL}<br><br>
-    <span>ULT.PAGO:</span> {$DATO->ULT_PAGO}<br><br>
-    <span>ULT.CHEQUE:</span> {$DATO->ULT_CHEQUE}<br><br>
-    <span>CTA.MESES:</span> {$DATO->CTA_MESES}<br><br>
-    <span>INT.P/MES:</span> {$DATO->INT_X_MES}<br><br>
-    <span>IMP.INTERE.:</span> {$DATO->IMP_INTERE}<br><br>
-    <span>I.V.A.:</span> {$DATO->IVA}
-    </td>
-    <td>
-    <span>GAST.NOTIF.:</span> {$DATO->GAST_NOTIF}<br><br>
-    <span>GAST.NOTIF.GTE.:</span> {$DATO->GAST_NOTIG}<br><br>
-    <span>GAST.EMBARGO.:</span> {$DATO->GAST_EMBAR}<br><br>
-    <span>GAST.INTIMAC.:</span> {$DATO->GAST_INTIM}<br><br>
-    <span>%HONORARIOS:</span> {$DATO->HONO_PORCE}<br><br>
-    <span>HONORARIOS.:</span> {$DATO->HONORARIOS}
-    </td>
-    <td>
-    <span>FINIQUITO:</span> {$DATO->FINIQUITO}<br><br>
-    <span>TOTAL:</span> {$DATO->TOTAL}<br><br>
-    <span>IMP.EXTR.:</span> {$DATO->EXTRAIDO}<br><br>
-    <span>SALDO:</span> {$DATO->SALDO}<br><br>
-    <span>EXTR.LIQUID.:</span> {$DATO->EXT_LIQUID}<br><br>
-    <span>NUEVO SALDO:</span> {$DATO->NEW_SALDO}
-    </td> </tr>";
-    
-    $html.="</tbody> </table> ";
-    /********* */
 
-    $tituloDocumento= "LIQUIDACION-".date("d")."-".date("m")."-".date("yy")."-".rand();
-
-       // $this->load->library("PDF"); 	
-        $pdf = new PDF(); 
-        $pdf->prepararPdf("$tituloDocumento.pdf", $tituloDocumento, ""); 
-        $pdf->generarHtml( $html);
-        $pdf->generar();
-}
+}//End reporte function
 
 }

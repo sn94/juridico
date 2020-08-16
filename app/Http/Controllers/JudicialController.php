@@ -139,21 +139,21 @@ class JudicialController extends Controller
 
 
     public function ver_saldo_all( ){
-        //saldo judicial 
+        //SALDO JUDICIAL
         //monto de la demanda - extracciones
         $demanda_=Demanda::sum("DEMANDA");
         $SaldoJudicial=  intval($demanda_);
         $Extracciones=0;
-        $dt=CuentaJudicial::where( "TIPO_MOVI", "E")->get();
-        foreach( $dt as $it):
-            if(  $it->TIPO_MOVI == "E")
+        $mov_cta_jud=CuentaJudicial::where( "TIPO_MOVI", "E")->get();
+        foreach( $mov_cta_jud as $it):
+            if(  $it->TIPO_MOVI == "E") //extracciones
             $Extracciones+=  intval(  $it->IMPORTE);
         endforeach;
         $SaldoJudicial-= $Extracciones;
-        //saldo en cuenta
+        // SALDO EN CUENTA
         //depositos - extracciones
         $Depositos=0; 
-        foreach( $dt as $it):
+        foreach( $mov_cta_jud as $it):
             if(  $it->TIPO_MOVI == "D")
             $Depositos+=  intval(  $it->IMPORTE);
         endforeach;

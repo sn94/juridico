@@ -40,7 +40,20 @@ if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar
     <div class="col-12 col-sm-5 col-md-4 col-lg-3">
     <div class="form-group">
              <label for="actuaria">Demandante:</label>
-              <input name="DEMANDANTE"   type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->DEMANDANTE}}">
+             <select name="DEMANDANTE" class="form-control form-control-sm">
+                    <?php 
+
+                     $demandanTE=  !isset($ficha)? '' : $ficha->DEMANDANTE;
+                    foreach($demandantes as $it): 
+                         if( $demandanTE == $it->DESCR || $demandanTE == $it->IDNRO)//Ojo
+                           echo "<option selected value='{$it->IDNRO}'>{$it->DESCR}</option>"; 
+                         else{
+                              echo "<option value='{$it->IDNRO}'>{$it->DESCR}</option>";      
+                         }
+                         
+                    endforeach;  ?>
+             </select>
+              
          </div>
     </div>
     <div class="col-12 col-sm-5 col-md-4 col-lg-3">
@@ -52,13 +65,37 @@ if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar
     <div class="col-12 col-sm-5 col-md-4 col-lg-3">
     <div class="form-group">
              <label for="actuaria">Actuaria:</label>
-              <input  name="ACTUARIA"  type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->ACTUARIA}}">
+             <select name="ACTUARIA" class="form-control form-control-sm">
+                    <?php 
+
+                     $actuariAS=  !isset($ficha)? '' : $ficha->ACTUARIA;
+                    foreach($actuarias as $it): 
+                         if( $actuariAS == $it->DESCR || $actuariAS == $it->IDNRO)//Ojo
+                           echo "<option selected value='{$it->IDNRO}'>{$it->DESCR}</option>"; 
+                         else{
+                              echo "<option value='{$it->IDNRO}'>{$it->DESCR}</option>";      
+                         }
+                         
+                    endforeach;  ?>
+             </select> 
          </div>
     </div>
     <div class="col-12 col-sm-5 col-md-4 col-lg-3">
     <div class="form-group">
              <label for="actuaria">Juez:</label>
-              <input   name="JUEZ" type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->JUEZ}}">
+             <select name="JUEZ" class="form-control form-control-sm">
+                    <?php 
+
+                     $jueCES=  !isset($ficha)? '' : $ficha->JUEZ;
+                    foreach($jueces as $it): 
+                         if( $jueCES == $it->DESCR || $jueCES == $it->IDNRO)//Ojo
+                           echo "<option selected value='{$it->IDNRO}'>{$it->DESCR}</option>"; 
+                         else{
+                              echo "<option value='{$it->IDNRO}'>{$it->DESCR}</option>";      
+                         }
+                         
+                    endforeach;  ?>
+             </select>  
          </div>
     </div>
     <div class="col-12 col-sm-5 col-md-4 col-lg-3">
@@ -88,19 +125,55 @@ if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar
     <div class="col-12 col-sm-5 col-md-4 col-lg-3">
     <div class="form-group">
                  <label for="actuaria">Institución:</label>
-                  <input  name="INSTITUCIO"  type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->INSTITUCIO}}">
+                 <select name="INSTITUCIO" class="form-control form-control-sm">
+                    <?php 
+
+                     $instituc=  !isset($ficha)? '' : $ficha->INSTITUCIO;
+                    foreach($instituciones as $it): 
+                         if( $instituc == $it->DESCR || $instituc == $it->IDNRO)//Ojo
+                           echo "<option selected value='{$it->IDNRO}'>{$it->DESCR}</option>"; 
+                         else{
+                              echo "<option value='{$it->IDNRO}'>{$it->DESCR}</option>";      
+                         }
+                         
+                    endforeach;  ?>
+             </select>   
              </div>
     </div>
     <div class="col-12 col-sm-5 col-md-4 col-lg-3">
     <div class="form-group">
                  <label for="actuaria">Tipo:</label>
-                  <input name="INST_TIPO"   type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->INST_TIPO}}">
+                 <select name="INST_TIPO" class="form-control form-control-sm">
+                    <?php 
+
+                     $instiPO=  !isset($ficha)? '' : $ficha->INST_TIPO;
+                    foreach($instipos as $it): 
+                         if( $instiPO == $it->DESCR || $instiPO == $it->IDNRO)//Ojo
+                           echo "<option selected value='{$it->IDNRO}'>{$it->DESCR}</option>"; 
+                         else{
+                              echo "<option value='{$it->IDNRO}'>{$it->DESCR}</option>";      
+                         }
+                         
+                    endforeach;  ?>
+             </select>   
          </div>
     </div>
     <div class="col-12 col-sm-5 col-md-4 col-lg-3">
     <div class="form-group">
                  <label for="actuaria">Juzgado:</label>
-                  <input  name="JUZGADO"  type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->JUZGADO}}">
+                 <select name="JUZGADO" class="form-control form-control-sm">
+                    <?php 
+
+                     $JUZ=  !isset($ficha)? '' : $ficha->JUZGADO;
+                    foreach($juzgados as $it): 
+                         if( $JUZ == $it->DESCR || $JUZ == $it->IDNRO)//Ojo
+                           echo "<option selected value='{$it->IDNRO}'>{$it->DESCR}</option>"; 
+                         else{
+                              echo "<option value='{$it->IDNRO}'>{$it->DESCR}</option>";      
+                         }
+                         
+                    endforeach;  ?>
+             </select>   
          </div>
     </div>
     <div class="col-12 col-sm-5 col-md-4 col-lg-3">
@@ -112,13 +185,37 @@ if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar
     <div class="col-12 col-sm-5 col-md-4 col-lg-3">
     <div class="form-group">
                  <label for="actuaria">Localidad:</label>
-                 <input name="LOCALIDAD"   type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->LOCALIDAD}}">
+                 <select name="LOCALIDAD" class="form-control form-control-sm">
+                    <?php 
+
+                     $loc=  !isset($ficha)? '' : $ficha->LOCALIDAD;
+                    foreach($localidades as $it): 
+                         if( $loc == $it->DESCR || $loc == $it->IDNRO)//Ojo
+                           echo "<option selected value='{$it->IDNRO}'>{$it->DESCR}</option>"; 
+                         else{
+                              echo "<option value='{$it->IDNRO}'>{$it->DESCR}</option>";      
+                         }
+                         
+                    endforeach;  ?>
+             </select> 
          </div>
     </div>
     <div class="col-12 col-sm-5 col-md-4 col-lg-3">
     <div class="form-group">
              <label for="actuaria">Localidad del Gte.:</label>
-             <input   name="LOCALIDA_G" type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->LOCALIDA_G}}">
+             <select name="LOCALIDA_G" class="form-control form-control-sm">
+                    <?php 
+
+                     $loc=  !isset($ficha)? '' : $ficha->LOCALIDA_G;
+                    foreach($localidades as $it): 
+                         if( $loc == $it->DESCR || $loc == $it->IDNRO)//Ojo
+                           echo "<option selected value='{$it->IDNRO}'>{$it->DESCR}</option>"; 
+                         else{
+                              echo "<option value='{$it->IDNRO}'>{$it->DESCR}</option>";      
+                         }
+                         
+                    endforeach;  ?>
+             </select>  
          </div>
     </div>
     <div class="col-12 col-sm-5 col-md-4 col-lg-3">
@@ -142,7 +239,19 @@ if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar
     <div class="col-12 col-sm-5 col-md-4 col-lg-3">  
     <div class="form-group">
              <label for="actuaria">Banco:</label>
-              <input   name="BANCO" type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->BANCO}}">
+             <select name="BANCO" class="form-control form-control-sm">
+                    <?php 
+
+                     $loc=  !isset($ficha)? '' : $ficha->BANCO;
+                    foreach($bancos as $it): 
+                         if( $loc == $it->DESCR || $loc == $it->IDNRO)//Ojo
+                           echo "<option selected value='{$it->IDNRO}'>{$it->DESCR}</option>"; 
+                         else{
+                              echo "<option value='{$it->IDNRO}'>{$it->DESCR}</option>";      
+                         }
+                         
+                    endforeach;  ?>
+             </select> 
          </div>
     </div>
     <div class="col-12 col-sm-5 col-md-4 col-lg-3">

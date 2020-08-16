@@ -1,3 +1,7 @@
+<?php
+
+use Illuminate\Support\Facades\URL;
+?>
 <!DOCTYPE html> 
 
 <head>
@@ -79,7 +83,7 @@
                        
                         </ul>
                     </li>
-                    <li class="sidebar-nav-group"><a href="#input-controls" class="sidebar-nav-link" data-toggle="collapse"><i class="icon-note"></i> BANCOS</a>
+                    <li class="sidebar-nav-group"><a href="<?=url("bank")?>" class="sidebar-nav-link" ><i class="icon-note"></i> BANCOS</a>
                         <ul id="input-controls" class="collapse" data-parent="#sidebar-nav">
                             <li><a href="./pages/input-controls/input-date.html" class="sidebar-nav-link">Dep&oacute;sitos/ingresos </a></li>
                             <li><a href="./pages/input-controls/checkbox.html" class="sidebar-nav-link">Extracciones/egresos</a></li>
@@ -106,7 +110,7 @@
                     </li>
                    
                 </ul>
-                <div class="sidebar-footer"><a href="./pages/content/chat.html" data-toggle="tooltip" title="Support"><i class="fa fa-comment"></i> </a><a href="./pages/content/settings.html" data-toggle="tooltip" title="Settings"><i class="fa fa-cog"></i> </a><a href="./pages/content/signin.html" data-toggle="tooltip" title="Logout"><i class="fa fa-power-off"></i></a></div>
+                <div class="sidebar-footer"><a href="./pages/content/chat.html" data-toggle="tooltip" title="Support"><i class="fa fa-comment"></i> </a><a href="./pages/content/settings.html" data-toggle="tooltip" title="Settings"><i class="fa fa-cog"></i> </a><a href="<?=url("signout")?>" data-toggle="tooltip" title="Logout"><i class="fa fa-power-off"></i></a></div>
             </div>
             <div class="app-content">
                 <nav class="navbar navbar-expand navbar-light bg-white"><button type="button" class="btn btn-sidebar" data-toggle="sidebar"><i class="fa fa-bars"></i></button>
@@ -122,7 +126,7 @@
                                 <div class="dropdown-divider"></div><a href="./pages/content/notification.html" class="dropdown-item"><small class="text-secondary">Lorem ipsum (12/25/2017)</small><br>
                                     <div>Lorem ipsum dolor sit amet...</div>
                                 </a>
-                                <div class="dropdown-divider"></div><a href="./pages/content/notifications.html" class="dropdown-item dropdown-link">See all notifications</a>
+                                <div class="dropdown-divider"></div><a href="<?=url("signout")?>" class="dropdown-item dropdown-link">CERRAR SESIÓN</a>
                             </div>
                         </li>
                     </ul>

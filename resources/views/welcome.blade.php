@@ -3,53 +3,47 @@
 
 @section('content')
 
-<?php 
-function number_f( $ar){
-  $v= floatval( $ar);
-  return number_format($v, 0, '', '.');  
-}
+<?php
+
+use App\Helpers\Helper;
+
+
 ?>
 
 <div class="row">
 
-    <div class="col-12 col-md-2">
-        <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
-        <div class="card-header bg-primary text-center">JUICIOS</div>
+    <div class="col-12 col-md-5 col-lg-3">
+        <div class="card text-white bg-success mb-3" style="max-width: 18rem;">
+        <div class="card-header bg-dark  text-center">DEMANDAS </div>
         <div class="card-body">
-            <h3 class="card-title text-center">{{$demanda}}</h3> 
+            <h4 class="card-title text-center">{{ Helper::number_f($demanda)}}Gs.</h4> 
         </div>
         </div>
     </div>
-    <div class="col-12 col-md-2">
-        <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
-        <div class="card-header bg-primary text-center">DEMANDADOS</div>
+    <div class="col-12 col-md-5 col-lg-3">
+        <div class="card text-white bg-success mb-3" style="max-width: 18rem;">
+        <div class="card-header bg-dark  text-center">SALDOS</div>
         <div class="card-body">
-            <h3 class="card-title text-center">{{$demandado}}</h3> 
+            <h4 class="card-title text-center">{{Helper::number_f($saldo_judi)}}Gs.</h4> 
         </div>
         </div>
     </div>
-    <div class="col-12 col-md-2">
-        <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
-        <div class="card-header  bg-secondary text-center ">NOTIF.VENC.</div>
+    <div class="col-12 col-md-5 col-lg-3">
+        <div class="card text-white bg-success mb-3" style="max-width: 18rem;">
+        <div class="card-header  bg-dark text-center ">SALDO CAPITAL.</div>
         <div class="card-body">
-            <h3 class="card-title text-center">{{$notiven}}</h3>
+            <h4 class="card-title text-center">{{ Helper::number_f($saldo_c)}}Gs</h4>
         </div>
         </div>
     </div> 
-    <div class="col-12 col-md-3">
+    <div class="col-12 col-md-5 col-lg-3">
         <div class="card text-white bg-success mb-3" style="max-width: 18rem;">
-        <div class="card-header bg-success text-center ">SALDO EN CUENTA</div>
+        <div class="card-header bg-dark text-center ">SALDO LIQUIDACIÓN</div>
         <div class="card-body">
-            <h3 class="card-title text-center">{{number_f($saldo_n_c)." Gs"}}</h3>  </div>
+            <h4 class="card-title text-center">{{Helper::number_f($saldo_l)}}Gs.</h4>  </div>
         </div>
     </div>
-    <div class="col-12 col-md-3">
-        <div class="card text-white bg-success mb-3" style="max-width: 18rem;">
-        <div class="card-header bg-success text-center ">SALDO JUDICIAL</div>
-        <div class="card-body">
-            <h3 class="card-title text-center">{{number_f($saldo_judi)." Gs"}}</h3>  </div>
-        </div>
-    </div>
+   
     
 </div>
  

@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\CuentaJudicial;
 use App\Demanda;
 use App\Http\Controllers\Controller;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;  
 use App\Demandados;
+use App\Liquidacion;
 use App\Observacion;
 
 class WelcomeController extends Controller
@@ -15,24 +17,25 @@ class WelcomeController extends Controller
     
 
     public function __construct()
-    {
+    { 
+
         date_default_timezone_set("America/Asuncion");
     }
    
 
 
     public function index(){
-        $demanda=Demanda::count();
-        $demndado= Demandados::count();
-        $notiven= DB::table("vtos")->count();
-        $judiob= new JudicialController();
-        $judi= $judiob->ver_saldo_all();
-        return view('welcome', 
-        ["demandado"=> $demndado, 
-        "demanda"=>$demanda, 
-        "notiven"=>$notiven, 
-        "saldo_judi"=> $judi['saldo_judi'],
-         "saldo_n_c"=> $judi['saldo_en_c']]);
+        $demanda= Demanda::sum("DEMANDA");  
+        $judiob= new JudicialController();$judi= $judiob->ver_saldo_all();
+        $saldo_c= CuentaJudicial::where("TIPO_CTA", "C")->where("TIPO_MOVI","E")->sum("IMPORTE");
+        $saldo_l= CuentaJudicial::where("TIPO_CTA", "L")->where("TIPO_MOVI","E")->sum("IMPORTE");
+        
+        return view('welcome',  [
+        "demanda"=>$demanda, //Demandas 
+        "saldo_judi"=> intval($judi['saldo_judi']) < 0 ? "0": $judi['saldo_judi'] ,//Saldos
+        "saldo_c"=> $saldo_c,//Saldo: Total de ext. de capital
+        "saldo_l"=> $saldo_l //Saldo: Total de ext. de Liquidacion
+        ]);
 
     }
 

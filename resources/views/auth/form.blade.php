@@ -13,13 +13,13 @@ $ruta= isset($OPERACION)?  ($OPERACION=="A" ? url("new-user"): url("edit-user") 
 <?php endif; ?>
 
            <div class="row align-items-center "> 
-           <div class="col-12 col-sm-4 col-md-3 col-lg-3">
+           <div class="col-12 col-sm-4 col-md-4 col-lg-3">
                         <div class="form-group">
                             <label >NICK:</label>
                             <input  maxlength="20"  value="{{isset($DATO->nick)?$DATO->nick: ''}}" name="nick"  type="text"  class="form-control form-control-sm">
                         </div>
                         </div>
-                        <div class="col-12 col-sm-4 col-md-3 col-lg-3">
+                        <div class="col-12 col-sm-4 col-md-4 col-lg-3">
                         <div class="form-group">
                             <label >PASSWORD:</label>
                             <input <?=($OPERACION=='A') ? '' : 'disabled'?> maxlength="20"    name="pass"  type="password"  class="form-control form-control-sm">
@@ -40,8 +40,14 @@ $ruta= isset($OPERACION)?  ($OPERACION=="A" ? url("new-user"): url("edit-user") 
                         </div>
                     <?php endif; ?>
 
+                    <div class="col-12 col-sm-3 col-md-4 col-lg-3">
+                        <div class="form-group">
+                            <label >E-MAIL:</label>
+                            <input  maxlength="60"  value="{{isset($DATO->email)?$DATO->email: ''}}" name="email"  type="text"  class="form-control form-control-sm">
+                        </div> 
+                        </div>
 
-                        <div class="col-12 col-sm-3 col-md-3 col-lg-3">
+                        <div class="col-12 col-sm-3 col-md-4 col-lg-3">
                         <div class="form-group">
                             <label >CATEGORÍA:</label>
                             <select class="form-control form-control-sm" name="tipo" >

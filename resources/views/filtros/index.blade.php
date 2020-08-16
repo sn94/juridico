@@ -33,36 +33,9 @@
 
 
      <!-- MODAL TIPO DE INFORME -->
-     <div id="show_opc_rep" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-sm">
-    <div class="modal-content" >
-    <a  id="info-xls" onclick="callToXlsGen(event, 'FILTRO')" class="btn btn-sm btn-info" href="<?=url("jsonliquida")?>"><i class="fa fa-file-excel-o fa-2x" aria-hidden="true"></i> <h3>EXCEL</h3></a>
-   
-    <a  id="info-pdf"  class="btn btn-sm btn-info" href="<?=url("pdfliquida")?>"><i class="fa fa-file-pdf-o fa-2x" aria-hidden="true"></i><h3>PDF</h3></a>
-    <a  id="info-print" class="btn btn-sm btn-info" href="<?=url("jsonliquida")?>"><i class="fa fa-print fa-2x" aria-hidden="true"></i><h3>Printer</h3></a>
-    </div>
-  </div>
-</div>
+
+     @include("layouts.report", ["TITULO"=>"FILTROS" ]  )
  
 @endsection 
 
-<script>
-
  
- 
-
- 
-function mostrar_informe(ev){
-    ev.preventDefault();
-   // let id= ev.currentTarget.parentNode.parentNode.id;
-    let xls= $("#RUTA1").val();
-    let pdf= $("#RUTA2").val();
-
-    $("#info-xls").attr("href", xls );
-    $("#info-pdf").attr("href", pdf );
-    $("#info-print").attr("href", $("#info-print").attr("href") );
-    ev.currentTarget.href.concat( id ) ;
-  }
-
-
-</script>

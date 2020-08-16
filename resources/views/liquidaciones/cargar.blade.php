@@ -3,7 +3,7 @@
 
 @section('breadcrumb')
 <li class="breadcrumb-item" aria-current="page">LIQUIDACIONES</li> 
-<li class="breadcrumb-item active" aria-current="page">NUEVO</li> 
+<li class="breadcrumb-item active" aria-current="page"> <?= ( $OPERACION == "V") ? "VER" : ( $OPERACION == "M" ?  "MODIFICAR": "NUEVO" ) ?></li> 
 @endsection
 
 @section('content')
@@ -18,26 +18,22 @@ use App\Helpers\Helper;
 <h4>Cuenta bancaria: {{ isset( $dato->CTA_BANCO)? $dato->CTA_BANCO  : ($CTA_BANCO ?? '') }}</h4>
 <a  href="<?= url("liquida/".(isset( $dato->ID_DEMA)? $dato->ID_DEMA : $id_demanda)) ?>" class="btn btn-info btn-sm mb-1">LISTADO DE LIQUID.</a>
 <?php  if( $OPERACION == "V" || $OPERACION == "M"  ):  ?>
-   <!--MANDAR A IMPRIMIR -->
-   <a  data-toggle="modal" data-target="#show_opc_rep"   onclick="mostrar_informe(event)" style="color:black;" href="#"> <i class="fa fa-print fa-lg " aria-hidden="true"></i>
-    </a>
+<!--MANDAR A IMPRIMIR -->
+<a   data-toggle="modal" data-target="#show_opc_rep"   onclick="mostrar_informe(event)" style="color:black;" href="<?=url("liquida")."/".$dato->IDNRO?>"> <i class="fa fa-print fa-lg " aria-hidden="true"></i>
+</a>
 <?php  endif;  ?>
 
 <div id="myform">
 @include("liquidaciones.form")
 </div>
+ 
+
+
 
      <!-- MODAL TIPO DE INFORME -->
-     <div id="show_opc_rep" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-sm">
-    <div class="modal-content" >
-    <a  id="info-xls" onclick="callToXlsGen(event, 'LIQUIDACION')" class="btn btn-sm btn-info" href="<?=url("jsonliquida")?>"><i class="fa fa-file-excel-o fa-2x" aria-hidden="true"></i> <h3>EXCEL</h3></a>
-   
-    <a  id="info-pdf"  class="btn btn-sm btn-info" href="<?=url("pdfliquida")?>"><i class="fa fa-file-pdf-o fa-2x" aria-hidden="true"></i><h3>PDF</h3></a>
-    <a  id="info-print" class="btn btn-sm btn-info" href="<?=url("jsonliquida")?>"><i class="fa fa-print fa-2x" aria-hidden="true"></i><h3>Printer</h3></a>
-    </div>
-  </div>
-</div>
+
+     @include("layouts.report", ["TITULO"=>"LIQUIDACIONES" ]  )
+
 
 @endsection 
 

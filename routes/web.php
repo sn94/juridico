@@ -14,7 +14,9 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-$raiz="/juridico";
+ 
+
+    
 Route::get('/', "WelcomeController@index");
 /*
 Datos personales
@@ -43,21 +45,23 @@ Route::post( "demandas-editar", 'DemandaController@editar_demandan');//editar de
 Route::get( "demandas-borrar/{iddeman}", 'DemandaController@borrar');//Borrar demanda
 Route::get("demandas-by-ci/{ci}", 'DemandaController@demandas_by_ci');//lista  de demandas por CEDULA
 Route::get("ficha-demanda/{idnro}", "DemandaController@ver_demandan");//ficha de demandas
+
+
 /**************LIQUIDACION********************* */
-Route::get( "demandas-liquidar", 'DemandaController@liquidar');//liquidar demanda
+/*Route::get( "demandas-liquidar", 'DemandaController@liquidar');//liquidar demanda
 //Route::get("ficha-demanda/{codemp}", "DemandaController@ficha_demanda");//ficha de demandas
 Route::get("liquidaciones", 'DemandaController@demandas_p_liquidi');//lista de demandas para liquidacion
 Route::get("liquida-by-o/{origen}", 'DemandaController@demandas_p_liquidi_b_o');//lista  de demandas para notif. por origen
-
+*/
 
 
 
 /**
  * Notificacion-seguimiento
  */
- 
+ /*
 Route::post("enotifi", "NotifiController@editar"); //nuevo seguimiento (notificacion)
-Route::get("vnotifi/{iddeman}", "NotifiController@ficha"); //ficha de seguimiento (notificacion) individual
+Route::get("vnotifi/{iddeman}", "NotifiController@ficha"); //ficha de seguimiento (notificacion) individual*/
 Route::get("dema-noti-venc", "NotifiController@notificaciones_venc");//lista de demandas con notificaciones vencidas
 Route::get("proce-noti-venc", "NotifiController@procesar_notifi_venc");//procesar demandas con notificaciones vencidas
 
@@ -66,9 +70,9 @@ Route::get("proce-noti-venc", "NotifiController@procesar_notifi_venc");//procesa
  * Observacion
  */
 
- 
+ /*
 Route::post("eobser", "ObservaController@editar"); //nueva observacion de demanda
-Route::get("vobser/{iddeman}", "ObservaController@ficha"); //nueva observacion de demanda
+Route::get("vobser/{iddeman}", "ObservaController@ficha"); //nueva observacion de demanda*/
 
 /**CTA JUDICIAL */
 Route::get("ctajudicial/{iddeman}", "JudicialController@index"); //con la grilla
@@ -81,7 +85,7 @@ Route::get("dcuentajudi/{idnro}", "JudicialController@delete");
 Route::get("lcuentajudi/{idnro}", "JudicialController@listar"); 
 Route::get("calcsaldo/{iddeman}", "JudicialController@ver_saldo"); 
 
-
+/**LIQUIDACION */
 Route::get("nliquida/{iddeman}", "LiquidaController@nuevo"); 
 Route::post("nliquida", "LiquidaController@nuevo"); 
 Route::get("eliquida/{idnro}", "LiquidaController@editar"); 
@@ -91,12 +95,9 @@ Route::get("dliquida/{idnro}", "LiquidaController@delete");
 Route::get("lliquida/{iddeman}", "LiquidaController@list"); 
 Route::get("liquida/{iddeman}", "LiquidaController@index"); 
 
-Route::get("html_liquida/{idnro}", "LiquidaController@list_html"); //una liquidacion 
-Route::get("jsonliquida/{idnro}", "LiquidaController@liquida_json"); //un solo reg. de liquid.
-Route::get("pdfliquida/{idnro}", "LiquidaController@liquida_pdf"); //lista de liquidaciones en pdf
-Route::get("pdflliquida/{iddeman}", "LiquidaController@list_pdf"); //list. de liquid. de una demanda en pdf
+Route::get("liquida/{idnro}/{tipo}", "LiquidaController@reporte"); //reporte xls o pdf de liquidacion
 
-
+/***TABLAS AUXILIARES */
 Route::get('auxiliar',   'AuxiController@index');
 Route::get('auxiliar/{tabl}',   'AuxiController@index');
 Route::post('nuevoaux',   'AuxiController@agregar');
@@ -106,7 +107,7 @@ Route::post('editaux',   'AuxiController@editar');
 Route::get('lauxiliar/{tabl}',   'AuxiController@list');
 
 
-
+/**  PARAMETROS** */
 Route::get('params',   'ParamController@index');
 Route::get('lparams',   'ParamController@listar_odema');
 Route::get('nparam',   'ParamController@agregar');
@@ -117,15 +118,15 @@ Route::get('eodema/{id}',   'ParamController@editarOdemanda');
 Route::post('eodema',   'ParamController@editarOdemanda');
 Route::get('dodema/{id}',   'ParamController@borrar');
 
-
+/***FILTROS */
 Route::get('filtros',   'FilterController@index');
 Route::get('nfiltro',   'FilterController@agregar');
 Route::post('nfiltro',   'FilterController@agregar');
 Route::get('efiltro/{id}',   'FilterController@editar');
 Route::post('efiltro',   'FilterController@editar');
-Route::get('exexlsfiltro',   'FilterController@xlsfiltro');
-Route::get('exepdffiltro',   'FilterController@pdffiltro');
-
+Route::get('filtro/{id}/{tipo}',   'FilterController@reporte');
+Route::get('filtro/{id}/{tipo}',   'FilterController@reporte');
+/***USUARIOS */
 Route::get('users',   'UserController@index');
 Route::get('new-user',   'UserController@agregar');
 Route::post('new-user',   'UserController@agregar');
@@ -133,9 +134,19 @@ Route::get('edit-user/{idnro}',   'UserController@editar');
 Route::post('edit-user',   'UserController@editar');
 Route::get('del-user/{id}',   'UserController@borrar');
 Route::get('list-user',   'UserController@list');
+Route::get('signin',   'UserController@sign_in');
+Route::post('signin',   'UserController@sign_in');
+Route::get('signout',   'UserController@sign_out'); 
 
 
-
+/**         BANCOS          ** */
+Route::get('bank',   'BancoController@index'); 
+Route::get('nbank',   'BancoController@agregar'); 
+Route::post('nbank',   'BancoController@agregar'); 
+Route::get('ebank/{id}',   'BancoController@editar'); 
+Route::post('ebank',   'BancoController@editar'); 
+Route::get('dbank/{id}',   'BancoController@borrar'); 
+Route::get('vbank/{id}',   'BancoController@viewbanco'); 
 
 
 
@@ -145,3 +156,6 @@ Route::get('test/{ci}',   'DemandaController@adjuntarSaldosDemanda');
 //Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+
+ 

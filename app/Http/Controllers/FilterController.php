@@ -24,9 +24,7 @@ class FilterController extends Controller
 
     
 
-public function index( ){ 
-    //$ls= DB::table("filtros")->get();
-
+public function index( ){  
     $lista= Filtros::paginate(20);
     return view('filtros.index', [ "lista"=> $lista, 'OPERACION'=>"A", 
     'ejecucionxls'=> url("exexlsfiltro"),  'ejecucionpdf'=> url("exepdffiltro") ] );
@@ -123,56 +121,52 @@ EOF;*/
 
 
 
-public function  xlsfiltro(){
-    echo json_encode(  DB::table( "filtros")->get()  );
+private function limpiarQuery( $id_consulta ){
+    $sql= Filtros::find( $id_consulta )->FILTRO;
+    //Verificar si es una sentencia sql antigua
+    if( ! preg_match("/\s*select\s*/i", $sql)  ){
+
+        //Quitar comillas innecesarias
+        $sql= preg_replace('/(^")|("$)/',"", $sql);
+        //Verificar uso de funciones de fecha
+        $sql= preg_replace('/(ctod)\(""(\d+\/\d+\/\d+)""\)/i', "str_to_date('$2','%d/%m/%Y')", $sql);
+        $sql= "select * from demandas2,notificaciones where demandas2.IDNRO=notificaciones.IDNRO AND ".$sql; 
+    }
+    //lIMPIAR
+    $sql_1=preg_replace("/(&&)|(\.AND\.)/i"," AND ", $sql);
+    $sql_2= preg_replace("/(\|\|)|(\.or\.)/i", "OR", $sql_1);
+
+    //EJECUTAR
+   $ls= DB::select(  $sql_2);
+    return $ls;
 }
+ 
 
-public function  pdffiltro(){
-   $ls= DB::table( "filtros")->get() ; 
-   
-    $html=<<<EOF
-    <style>
-    span{
-        font-weight: bolder;
-    }
-    td{ 
-        text-align:left;
-    }
-    table.tabla{ 
-        font-family: helvetica;
-        font-size: 8pt; 
-    }
-    </style>
-    <table class='tabla'>
-        <thead>
-            <tr>
-                <th>NOMBRE</th>
-                <th>FILTRO</th>
-            </tr>
-        </thead>
-        <tbody>
-    EOF;
-    foreach( $ls as $DATO):
-      
-        $AX= $DATO->FILTRO;
-        //'DEPOSITADO > 0 .AND. SD_NRO <> 0 .AND. EXTRAIDO_C = 0' ;
-        // substr( $DATO->FILTRO, 0,2);
-      
-    endforeach;
-    
-    $html.="
-    </tbody> </table> ";
-    /********* */
 
-$ht="";
-foreach( $ls as $DATO):
-$ht= "$DATO->NOMBRE - $DATO->FILTRO";
-endforeach;
-    $tituloDocumento= "FILTROS-".date("d")."-".date("m")."-".date("yy")."-".rand();
 
-        $pdf = new PDF(); 
+public function  reporte( $id_consulta, $tipo="xls"){
+    $ls= $this->limpiarQuery( $id_consulta);
+    if( $tipo == "xls"){  echo json_encode( $ls );   }
+    else{//ini Pdf Gen
+
+    }//End Pdf gen
+    //EJECUTAR
+        $Titulo= Filtros::find( $id_consulta)->NOMBRE; 
+        $html = '<table>';
+        //Formar cabecera
+        $html.="<thead><tr>";
+        foreach( $ls as $clave=>$valor):
+            $html.="<td>$clave</td>";
+        endforeach;
+        $html.="</tr></thead>"; 
+        $html.='</table>';
+
+       // echo $html;
+  
+        $tituloDocumento= $Titulo."-".date("d")."-".date("m")."-".date("yy")."-".rand();
+        $pdf = new PDF( "L", array(215, 340)); 
         $pdf->prepararPdf("$tituloDocumento.pdf", $tituloDocumento, ""); 
-        $pdf->generarHtml( $ht  );
+        $pdf->generarHtml( $html , "L" );
         $pdf->generar();
 }
 

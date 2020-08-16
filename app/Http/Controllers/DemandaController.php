@@ -117,63 +117,28 @@ class DemandaController extends Controller
             return view('demandas.agregar.index', ['ci'=>  $ci ,'id_demandado'=>$id_d, 'nombre'=> $nom ]); 
         }
     }
-    /**
-     * request
-     * ultimo codigo generado, id de demandado
-     */
-    public function nueva_demanda(Request $request, $idd=0){
-         
-        if( ! strcasecmp(  $request->method() , "post"))  {
-            
-            //Quitar el campo _token
-            $Params=  $request->input(); 
-            //Devuelve todo elemento de Params que no este presente en el segundo argumento
-            $Newparams= array_udiff_assoc(  $Params,  array("_token"=> $Params["_token"] ),function($ar1, $ar2){
-                if( $ar1 == $ar2) return 0;    else 1; 
-             } ); 
-          
-            $demandado=Demandados::find( $idd);
-            $ci= $demandado->CI;//cedula de demandado
-            $nombre= $demandado->TITULAR;
-            //DB INSERT
-            //instancia de demanda
-            $obdema=new Demanda();
-            $obdema->fill(  $Newparams );
-            if($obdema->save()){//exito
-                //ULTIMO ID GENERADO
-                $ultimoIdGen=  $obdema->IDNRO;
-                //MENSAJE RESPUESTA JSON
-                echo json_encode(array(  'ci'=> $ci, 'nombre'=> $nombre,'id_demanda'=>$ultimoIdGen  ));
-                //return view('demandas.msg_agregado', [  'ci'=> $ci, 'nombre'=> $nombre,'id_demanda'=>$ultimoIdGen ]     ); 
+     
 
-            }else{
-                //fallo
-                echo json_encode(array(  'error'=> 'Un problema en el servidor impidió guardar los datos. Contacte con su desarrollador.' ));
-               
-            }
-        }
-        else{
-            if(  $idd!= 0){//id de demandado 
-                $qu= Demandados::find( $idd);
-                if( is_null( $qu) ){  echo "Código inválido";
-                }else{
-                    $ci= $qu->CI;//cedula  
-                    $nom=$qu->TITULAR;//nombre
-                    return view('demandas.agregar.index', ['ci'=>  $ci ,'id_demandado'=>$idd, 'nombre'=> $nom ]); 
-                }
-            }else{
-                //Vista sin valores iniciales
-              // return view('demandas.agregar_nodata'); 
-               return view('demandas.agregar.index'); 
-            }
-            
-        }
+    private function formar_parametros(){//parametros basicos
+        $origen= DB::table("odemanda")->get();//Origen de demanda
+        $demandantes= DB::table("demandan")->get();//Demandantes
+        $actuarias= DB::table("actuaria")->get();//Actuarias
+        $jueces= DB::table("juez")->get();//Juez
+        $instituciones= DB::table("instituc")->get();//Instituciones
+        $inst_tipo= DB::table("instipo")->get();//tipo de Instituciones 
+        $juzgados= DB::table("juzgado")->get();// JUzgado
+        $localidades= DB::table("localida")->get();// Localidad
+        $bancos= DB::table("bancos")->get();// Bancos
+
+        return array("origen"=>$origen ,"demandantes"=> $demandantes ,   "actuarias"=> $actuarias, "jueces"=>$jueces,
+         "instituciones"=> $instituciones, "instipos"=>$inst_tipo, "juzgados"=> $juzgados, "localidades"=>$localidades,
+        "bancos"=> $bancos );
     }
 
 
     public function nueva_demandan(Request $request, $ci=0){//idd id_demandado
          
-        $origen= DB::table("odemanda")->get();
+        
         if( ! strcasecmp(  $request->method() , "post"))  {
             
             //Quitar el campo _token
@@ -204,7 +169,8 @@ class DemandaController extends Controller
                 $ficha= Demandados::where("CI", $ci)->first();
                 return view('demandas.agregarn.index',    [ 'ci'=>$ci, 'nombre'=>$ficha->TITULAR, 'ficha0'=> $ficha, 'OPERACION'=>"A+", "origen"=>$origen]); 
             }else{
-                return view('demandas.agregarn.index',    [   'OPERACION'=>"A", "origen"=>$origen  ]);  
+                $pars= array_merge( $this->formar_parametros() , array( 'OPERACION'=>"A"  ) );
+                return view('demandas.agregarn.index', $pars);  
             } 
         }
     }
@@ -213,7 +179,7 @@ class DemandaController extends Controller
 
     
     public function editar_demandan(Request $request, $iddeman=0){//idd id_demanda
-        $origen= DB::table("odemanda")->get();
+       
 
            //instancia de demanda
            $obdema= NULL;
@@ -250,7 +216,11 @@ class DemandaController extends Controller
             $nom= Demandados::where("CI",$ci)->first()->TITULAR;//nombre 
             //Devolver
             //Cedula    ID demanda  Nombre  Operacion   
-            return view('demandas.agregarn.index', [ 'ci'=>  $ci ,'id_demanda'=>$iddeman,'ficha0'=>$obDataPerso, 'ficha'=> $obdema, 'ficha2'=>$obnoti, 'ficha3'=>$obobs, 'nombre'=> $nom , 'OPERACION'=>"M", "origen"=>$origen]); //Modificar M  
+            $pars= array_merge( $this->formar_parametros() ,
+             array( 'ci'=>  $ci ,'id_demanda'=>$iddeman,'ficha0'=>$obDataPerso, 'ficha'=> $obdema, 'ficha2'=>$obnoti,
+            'ficha3'=>$obobs, 'nombre'=> $nom , 'OPERACION'=>"M" ) 
+        );
+            return view('demandas.agregarn.index',  $pars); //Modificar M  
             }
         }
 
@@ -268,10 +238,11 @@ class DemandaController extends Controller
          $nom= Demandados::where("CI",$ci)->first()->TITULAR;//nombre 
          //Devolver
          //Cedula    ID demanda  Nombre  Operacion   
-         return view('demandas.agregarn.index',
-          [ 'ci'=>  $ci ,'id_demanda'=>$iddeman,  "origen"=>  $origen,
-          'ficha0'=>$obDataPerso, 'ficha'=> $obdema, 'ficha2'=>$obnoti, 'ficha3'=>$obobs,
-           'nombre'=> $nom , 'OPERACION'=>"V"]); //ver V  
+         $pars= array_merge( $this->formar_parametros() , array( 'OPERACION'=>"A"  ) );
+         $propios= array(  'ci'=>  $ci ,'id_demanda'=>$iddeman, 
+         'ficha0'=>$obDataPerso, 'ficha'=> $obdema, 'ficha2'=>$obnoti, 'ficha3'=>$obobs,
+          'nombre'=> $nom , 'OPERACION'=>"V");
+         return view('demandas.agregarn.index',  array_merge( $pars, $propios ) ); //ver V   
          
      }
 
