@@ -100,7 +100,7 @@ public function editar( Request $request, $NRO=""){
 
 public function borrar( $NRO){
     $ob= DB::table("filtros")->where('NRO',$NRO , 1)->delete();
-   if( $ob ) echo json_encode( array('ok'=>  "BORRADO"  ) );
+   if( $ob ) echo json_encode( array('IDNRO'=>  $NRO  ) );
    else json_encode( array( 'error'=> "Hubo un error al guardar uno de los datos") );
 
 }

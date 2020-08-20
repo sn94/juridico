@@ -46,9 +46,9 @@ use App\Helpers\Helper;
       <?php for($x=0; $x< sizeof($lista); $x++):
         $item= $lista[$x];    ?>
           <tr id="{{$item->IDNRO}}"> 
-            <td><a href="<?= url("ficha-demanda/".$item->IDNRO)?>"><i class="fa fa-eye" aria-hidden="true"></i></a> </td> 
-           <td><a href="<?= url("demandas-editar/".$item->IDNRO)?>"><i class="fa fa-pencil" aria-hidden="true"></i></a> </td>
-           <td >  <a onclick="procesar_borrar(event)" href="<?= url("demandas-borrar/".$item->IDNRO)?>"><i class="fa fa-trash" aria-hidden="true"></i></a> </td> 
+            <td><a href="<?= url("ficha-demanda/".$item->IDNRO)?>"><i  style="color:black;" class="fa fa-eye" aria-hidden="true"></i></a> </td> 
+           <td><a href="<?= url("demandas-editar/".$item->IDNRO)?>"><i   style="color:black;" class="fa fa-pencil" aria-hidden="true"></i></a> </td>
+           <td >  <a onclick="procesar_borrar(event)" href="<?= url("demandas-borrar/".$item->IDNRO)?>"><i  style="color:black;" class="fa fa-trash" aria-hidden="true"></i></a> </td> 
             <td >  <?= $item->DEMANDANTE?> </td>
             <td > <?= $item->O_DEMANDA?></a> </td>
              <td>{{$item->PRESENTADO}}</td>

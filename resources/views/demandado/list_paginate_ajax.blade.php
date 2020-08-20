@@ -15,8 +15,8 @@ if ($detect->isMobile() == false) {
   <tbody>
   <?php foreach( $lista as $item): ?>
       <tr  id="{{$item->CI}}" > 
-    <td >  <a href="<?=url("demandas-by-ci/".$item->CI)?>" ><i class="fa fa-eye" aria-hidden="true"></i></a>   </td> 
-    <td > <p  > <a href="<?=url("ddemandado/".$item->CI)?>" onclick="procesar_borrar(event,'{{$item->CI}}')"><i class="fa fa-trash" aria-hidden="true"></i></a></p> </td> 
+    <td >  <a href="<?=url("demandas-by-ci/".$item->CI)?>" ><i class="fa fa-eye" aria-hidden="true" style="color:black;"></i></a>   </td> 
+    <td > <p  > <a href="<?=url("ddemandado/".$item->CI)?>" onclick="procesar_borrar(event,'{{$item->CI}}')"><i class="fa fa-trash"  style="color:black;" aria-hidden="true"></i></a></p> </td> 
     <td >  <?=$item->CI?> </td>
     <td >  <?= $item->TITULAR?> </td> 
     <td  > <?= $item->DOMICILIO?> </td>  

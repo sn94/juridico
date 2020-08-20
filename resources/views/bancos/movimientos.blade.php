@@ -1,17 +1,36 @@
 @extends('layouts.app')
 
 @section('breadcrumb')
-<li class="breadcrumb-item" aria-current="page">BANCOS</li> 
-<li class="breadcrumb-item active" aria-current="page">INICIO</li> 
+<li class="breadcrumb-item" aria-current="page">CTA.BANCO</li> 
+<li class="breadcrumb-item active" aria-current="page">MOVIMIENTOS</li> 
 @endsection
 
 @section('content')
 
- 
-<a onclick="mostrar_form(event)" data-toggle="modal" data-target="#showform"  href="<?=url("nbank")?>"  class="btn btn-sm btn-success">NUEVA CTA.</a>
+<?php
 
+
+use App\Mobile_Detect;
+
+$dete= new Mobile_Detect();
+$iconsize=  $dete->isMobile() ? "": "fa-lg";
+?>
+
+
+
+ 
+<h5>{{$TITULAR}}</h5>
+{{$BANCO}} &nbsp;CTA.N°&nbsp;{{$CUENTA}}
+
+
+<a data-toggle="modal" data-target="#showform"    onclick="mostrar_form(event)" href="<?= url("depobank/".$IDNRO) ?>"><i class="fa fa-plus-square {{$iconsize}}" aria-hidden="true"></i>DEPOSITAR</a> 
+<a data-toggle="modal" data-target="#showform"    onclick="mostrar_form(event)" href="<?= url("extrbank/".$IDNRO) ?>"><i class="fa fa-minus-square {{$iconsize}}" aria-hidden="true"></i>EXTRAER</a>
+             
+<div id="viewform">
+
+</div>
 <div id="grilla">
-@include("bancos.grilla")
+@include("bancos.grilla_mov")
 
 </div>
 
@@ -96,6 +115,7 @@ let divname= "#viewform";
                             $("#"+r.IDNRO).remove();
                             }
                       }/************* */
+                      $( divname).html(  ""); 
          },
          error: function(){
            $( divname).html(  "<h6 style='color:red;'>Problemas de conexión</h6>" ); 
@@ -107,7 +127,7 @@ let divname= "#viewform";
 
 function actualizar_grill(){
   $.ajax({
-    url: "<?=url("lbank")?>",
+    url: "{{$LINK}}",
     beforeSend: function(){  $("#grilla").html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" )},
     success: function(resu){ $("#grilla").html( resu)  ; },
     error: function(){$("#grilla").html( "<h6>Error al recuperar datos</h6>")  ;}
@@ -143,44 +163,8 @@ function ajaxCall( e, divnam, succes){
        }
      );
 }
-function guardar( ev ){//Objeto event   DIV tag selector to display   success handler
-ev.preventDefault();
-if ( ! noempty_fields( )) return;
-if( ! confirm("CONTINUAR?") ) return;
- ajaxCall( ev, "#mensaje", function(res){
-            $( "#mensaje").html(JSON.parse(res).ok ); 
-           // $('#showform').modal('hide')
-            actualizar_grill();
-         });
-}/*****end ajax call* */
-
-function depositar( ev ){//Objeto event   DIV tag selector to display   success handler
-   
-if( $("#formmovi input[name=IMPORTE]").val()==""){ alert("INGRESE EL IMPORTE!"); return;}
-if( ! confirm("CONTINUAR?") ) return;
-if ( ! noempty_fields( )) return;
-if( ! confirm("CONTINUAR?") ) return;
-$("#formmovi input[name=IMPORTE]").val(  quitarSeparador( $("#formmovi input[name=IMPORTE]").val()   )  );
- ajaxCall( ev, "#mensaje-movi", function(res){
-            $( "#mensaje-movi").html(JSON.parse(res).ok ); 
-           // $('#showform').modal('hide')
-            actualizar_grill();
-         });
-}/*****end ajax call* */
-
-function extraer( ev ){//Objeto event   DIV tag selector to display   success handler
-  
-if( $("#formmovi input[name=IMPORTE]").val()==""){ alert("INGRESE EL IMPORTE!"); return;}
-if( ! confirm("CONTINUAR?") ) return;
-if ( ! noempty_fields( )) return;
-if( ! confirm("CONTINUAR?") ) return;
-$("#formmovi input[name=IMPORTE]").val(  quitarSeparador( $("#formmovi input[name=IMPORTE]").val()   )  );
- ajaxCall( ev, "#mensaje-movi", function(res){
-            $( "#mensaje-movi").html(JSON.parse(res).ok );  
-            actualizar_grill();
-         });
-}/*****end ajax call* */
-
+ 
+ 
 
 function movimiento(ev){
   ev.preventDefault();
@@ -195,5 +179,7 @@ $("#formmovi input[name=IMPORTE]").val(  quitarSeparador( $("#formmovi input[nam
             actualizar_grill();
          });
 }
+
+
 </script>
 

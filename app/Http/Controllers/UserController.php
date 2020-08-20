@@ -163,11 +163,15 @@ public function sign_in( Request $request){
                     //Notificar inicio de sesion
                     //valente.py@hotmail.com
                    // explode(',', env('ADMIN_EMAILS'));
-                  /*  Mail::to([ "soniatoledo294@hotmail.com",  "valente.py@hotmail.com"]) 
-                    //->queue(   new AuthAlert(  $usr,  $request ) );
-                    ->send(  new AuthAlert(  $usr,  $request ) );*/
+                   $UserAgent= $request->header('User-Agent') ;
+                   $Ip= $request->ip(); 
+                   $MailControl= Parametros::first()->EMAIL;
+                  
+                   Mail::to([ $MailControl]) 
+                    ->queue(   new AuthAlert(  $usr,  ["user-agent"=>$UserAgent, "ip"=>$Ip] ) );
+                   // ->send(  new AuthAlert(  $usr,  $request ) );*/
 
-                    return redirect(  url("/") ); 
+                return redirect(  url("/") ); 
                 }else{
                 //	echo json_encode(  array('error' => "Clave incorrecta" )); 
                     return view("auth.login", array("errorSesion"=> "Clave incorrecta") );

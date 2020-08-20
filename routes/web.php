@@ -59,9 +59,9 @@ Route::get("liquida-by-o/{origen}", 'DemandaController@demandas_p_liquidi_b_o');
 /**
  * Notificacion-seguimiento
  */
- /*
+ 
 Route::post("enotifi", "NotifiController@editar"); //nuevo seguimiento (notificacion)
-Route::get("vnotifi/{iddeman}", "NotifiController@ficha"); //ficha de seguimiento (notificacion) individual*/
+Route::get("vnotifi/{iddeman}", "NotifiController@ficha"); //ficha de seguimiento (notificacion) individual
 Route::get("dema-noti-venc", "NotifiController@notificaciones_venc");//lista de demandas con notificaciones vencidas
 Route::get("proce-noti-venc", "NotifiController@procesar_notifi_venc");//procesar demandas con notificaciones vencidas
 
@@ -70,9 +70,9 @@ Route::get("proce-noti-venc", "NotifiController@procesar_notifi_venc");//procesa
  * Observacion
  */
 
- /*
+ 
 Route::post("eobser", "ObservaController@editar"); //nueva observacion de demanda
-Route::get("vobser/{iddeman}", "ObservaController@ficha"); //nueva observacion de demanda*/
+Route::get("vobser/{iddeman}", "ObservaController@ficha"); //nueva observacion de demanda
 
 /**CTA JUDICIAL */
 Route::get("ctajudicial/{iddeman}", "JudicialController@index"); //con la grilla
@@ -124,6 +124,7 @@ Route::get('nfiltro',   'FilterController@agregar');
 Route::post('nfiltro',   'FilterController@agregar');
 Route::get('efiltro/{id}',   'FilterController@editar');
 Route::post('efiltro',   'FilterController@editar');
+Route::get('dfiltro/{id}',   'FilterController@borrar');
 Route::get('filtro/{id}/{tipo}',   'FilterController@reporte');
 Route::get('filtro/{id}/{tipo}',   'FilterController@reporte');
 /***USUARIOS */
@@ -145,9 +146,17 @@ Route::get('nbank',   'BancoController@agregar');
 Route::post('nbank',   'BancoController@agregar'); 
 Route::get('ebank/{id}',   'BancoController@editar'); 
 Route::post('ebank',   'BancoController@editar'); 
+Route::get('emovibank/{id}',   'BancoController@editar_movimiento'); 
+Route::post('emovibank',   'BancoController@editar_movimiento'); 
 Route::get('dbank/{id}',   'BancoController@borrar'); 
-Route::get('vbank/{id}',   'BancoController@viewbanco'); 
-
+Route::get('dmovibank/{id}',   'BancoController@borrar_movimiento'); 
+Route::get('vbank/{id}',   'BancoController@ViewCtaBanco'); 
+Route::get('lbank',   'BancoController@listar'); 
+Route::get('lmovibank/{id}',   'BancoController@listar_movimiento'); //listar movimientos de una cuenta
+Route::get('depobank/{id}',   'BancoController@deposito'); 
+Route::post('depobank',   'BancoController@deposito'); 
+Route::get('extrbank/{id}',   'BancoController@extraccion'); 
+Route::post('extrbank',   'BancoController@extraccion'); 
 
 
 Route::get('test/{ci}',   'DemandaController@adjuntarSaldosDemanda');

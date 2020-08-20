@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Demanda;
 use App\Demandados;
+use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Notificacion;
 use App\Observacion;
+use App\pdf_gen\PDF;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -217,8 +219,8 @@ class DemandaController extends Controller
             //Devolver
             //Cedula    ID demanda  Nombre  Operacion   
             $pars= array_merge( $this->formar_parametros() ,
-             array( 'ci'=>  $ci ,'id_demanda'=>$iddeman,'ficha0'=>$obDataPerso, 'ficha'=> $obdema, 'ficha2'=>$obnoti,
-            'ficha3'=>$obobs, 'nombre'=> $nom , 'OPERACION'=>"M" ) 
+             array( 'ci'=>  $ci ,'id_demanda'=>$iddeman,'ficha0'=>$obDataPerso, 'ficha'=> $obdema,
+              'ficha2'=>$obnoti,  'ficha3'=>$obobs, 'nombre'=> $nom , 'OPERACION'=>"M" ) 
         );
             return view('demandas.agregarn.index',  $pars); //Modificar M  
             }
@@ -351,6 +353,101 @@ public function demandas_p_liquidi_b_o( $origen){
 
  
 
+
+    public function reporte($id, $tipo){//ID_DEMANDA TIPO
+        $DEMANDA_OBJ=Demanda::find( $id );
+        $SEGUIMI_OBJ=Notificacion::find($id);
+        $OBSERVA_OBJ=Observacion::find( $id );
+         
+        if( $tipo == "xls"){
+            echo json_encode( array( "0"=> array_merge($DEMANDA_OBJ,$SEGUIMI_OBJ,$OBSERVA_OBJ)) );  
+        }else{
+            //Pdf format
+            //Demanda
+            $TOTAL=  Helper::number_f( $DATO->TOTAL );
+            $EXTRAIDO=Helper::number_f( $DATO->EXTRAIDO );
+            $SALDO= Helper::number_f( $DATO->SALDO );
+            $EXT_LIQUID=Helper::number_f( $DATO->EXT_LIQUID );
+            $NEW_SALDO= Helper::number_f( $DATO->NEW_SALDO );
+            $html=<<<EOF
+            <style>
+            h1,h2,h3,h4,h5,h6{  color: #151515;}
+            span{
+                font-weight: bolder;
+            }
+            .subtitulo{ font-size: 7pt; font-weight: bold; text-align: center;text-decoration: underline; background-color: #bcfdb0; border-bottom: 1px solid #8ef861;}
+            .panel{
+                margin-top:0px;
+                border-top: 1px solid #797979;
+                border-bottom: 1px solid #797979;
+                border-left: 1px solid #797979;
+                border-right: 1px solid #797979;
+            } 
+            td{ text-align:left; }
+            table.tabla{ 
+                font-family: helvetica;
+                font-size: 7pt; 
+                color: #151515;
+            }
+            </style>
+            
+            <h6>CI° {$DEMANDA_OBJ->CI} TITULAR: {$DEMANDA_OBJ->TITULAR}</h6>
+            <table class="tabla">
+            <tbody>
+            <tr> 
+            <td style='text-align:left;'>
+            <span>DIRECCIÓN:</span> {$DEMANDA_OBJ->DOMICILIO}<br><br>
+            <span>TELÉFONO:</span> {$DEMANDA_OBJ->TELEFONO}<br><br>
+            <span>CELULAR:</span> {$DEMANDA_OBJ->CELULAR}<br><br>
+            </td>
+            <td>
+            <span>DIRECCIÓN LABORAL:</span> {$DEMANDA_OBJ->CTA_MESES}<br><br>
+            <span>TELÉFONO LABORAL:</span> {$DEMANDA_OBJ->INT_X_MES}<br><br>
+            <span>LIQUIDACIÓN.:</span> {$DEMANDA_OBJ->LIQUIDACIO}
+            </td>
+            <td>
+            <span>FINIQUITO:</span> {$DEMANDA_OBJ->FINIQUITO}<br><br>
+            <span>IMP.EXTR.:</span> {$EXTRAIDO}<br><br>
+            <span>SALDO:</span> {$SALDO}<br><br>
+            </td>
+            <td>
+            <span>EXTR.LIQUID.:</span> {$EXT_LIQUID}<br><br>
+            <span>NUEVO SALDO:</span> {$NEW_SALDO}
+            </td>
+            </tr> 
+            </tbody> 
+            </table> 
+            <p class="subtitulo"> TOTALES</p>
+            <table class="tabla panel">
+            <tr>
+            <td><span>CAPITAL:</span> {$DATO->CAPITAL}<br></td>
+            <td><span>IMP.INTERÉS.:</span> {$DATO->IMP_INTERE}<br></td>
+            <td><span>GAST.NOTIF.:</span> {$DATO->GAST_NOTIF}<br></td>
+            <td><span>GAST.NOTIF.GTE.:</span> {$DATO->GAST_NOTIG}<br></td>
+            </tr>
+            <tr>
+            <td><span>GAST.EMBARGO.:</span> {$DATO->GAST_EMBAR}<br></td>
+            <td><span>GAST.INTIMAC.:</span> {$DATO->GAST_INTIM}<br></td>
+            <td><span>I.V.A.:</span> {$DATO->IVA}<br></td>
+            <td> <span>HONORARIOS.:</span> {$DATO->HONORARIOS}<br></td>
+            </tr>
+            <tr>
+            <td><span>TOTAL:</span> $TOTAL <br></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            </tr>
+            </table>
+            EOF; 
+           // echo $html;
+            $tituloDocumento= "LIQUIDACION-".date("d")."-".date("m")."-".date("yy")."-".rand();
+                $pdf = new PDF(); 
+                $pdf->prepararPdf("$tituloDocumento.pdf", $tituloDocumento, ""); 
+                $pdf->generarHtml( $html);
+                $pdf->generar();
+    
+        }//End pdf format option  
+    }//End Function
 
 
 }

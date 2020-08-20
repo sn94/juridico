@@ -28,11 +28,31 @@ use Illuminate\Support\Facades\URL;
             background-color: #a5efa0;
         }
 
-        table, label, select{
-            font-size: 12px !important; 
-        }
+<?php
+
+use App\Mobile_Detect;
+$adapta=new Mobile_Detect();
+if( $adapta->isMobile()): ?>
+
+        table, label, select{   font-size: 12px !important;    }
         table.table td{ padding: 0px !important;}
-        
+      
+<?php
+else: ?>
+        table{  font-size: 14px !important;      }
+        label, select{ font-size: 12.5px !important;  }
+        table.table td{ padding: 0px !important;}
+<?php
+endif;
+?>
+      
+      .toast{
+          color:#092804;
+          font-weight: bold;
+          font-size: 16px;
+          text-align: center;
+      }
+
         label{  font-weight: bold; text-transform: uppercase;  }
        
 
@@ -83,15 +103,18 @@ use Illuminate\Support\Facades\URL;
                        
                         </ul>
                     </li>
-                    <li class="sidebar-nav-group"><a href="<?=url("bank")?>" class="sidebar-nav-link" ><i class="icon-note"></i> BANCOS</a>
-                        <ul id="input-controls" class="collapse" data-parent="#sidebar-nav">
-                            <li><a href="./pages/input-controls/input-date.html" class="sidebar-nav-link">Dep&oacute;sitos/ingresos </a></li>
-                            <li><a href="./pages/input-controls/checkbox.html" class="sidebar-nav-link">Extracciones/egresos</a></li>
-                            <li><a href="./pages/input-controls/input-group.html" class="sidebar-nav-link">Informes</a></li>
-                            <li><a href="./pages/input-controls/input-suggestion.html" class="sidebar-nav-link">Cta.de Banco</a></li>
-                            <li><a href="./pages/input-controls/label.html" class="sidebar-nav-link">Dep&oacute;sito</a></li>
+                    <li class="sidebar-nav-group">
+                    <a href="#banco-menu" class="sidebar-nav-link" data-toggle="collapse" ><i class="icon-note"></i> BANCOS</a>
+                        <ul id="banco-menu" class="collapse" data-parent="#sidebar-nav">
+                        <li><a href="<?=url("bank")?>" class="sidebar-nav-link">Cta.de Banco</a></li>
+                        <li><a href="./pages/input-controls/label.html" class="sidebar-nav-link">Dep&oacute;sito</a></li>
                             <li><a href="./pages/input-controls/radio-button.html" class="sidebar-nav-link">Extracci&oacute;n</a></li>
-                            <li><a href="./pages/input-controls/toggle-switch.html" class="sidebar-nav-link">Estado de cuenta</a></li>
+                           
+                           <li><a href="./pages/input-controls/input-grosup.html" class="sidebar-nav-link">Informes</a></li>
+                           <li><a href="./pages/input-controls/input-date.html" class="sidebar-nav-link">Dep&oacute;sitos/ingresos </a></li>
+                            <li><a href="./pages/input-controls/checkbox.html" class="sidebar-nav-link">Extracciones/egresos</a></li>
+                          
+                         <li><a href="./pages/input-controls/toggle-switch.html" class="sidebar-nav-link">Estado de cuenta</a></li>
                         </ul>
                     </li>
                     <li class="sidebar-nav-group"><a href="#layout" class="sidebar-nav-link" data-toggle="collapse"><i class="icon-layers"></i> GASTOS</a>

@@ -3,10 +3,20 @@
 namespace App\Http;
 
 use App\Http\Middleware\CheckAuth;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
 {
+
+
+    protected function schedule(Schedule $schedule)
+  {
+    // Run once a minute
+    $schedule->command('queue:work')->cron('* * * * * *');
+  }
+
+
     /**
      * The application's global HTTP middleware stack.
      *
@@ -37,8 +47,8 @@ class Kernel extends HttpKernel
             // \Illuminate\Session\Middleware\AuthenticateSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            CheckAuth::class
+            \Illuminate\Routing\Middleware\SubstituteBindings::class
+            //CheckAuth::class
         ],
 
         'api' => [

@@ -127,12 +127,16 @@ var formDatosPerEnviado= false;
 
 
 function existeCI( handler){
+
   let ci= $("#form-person input[name=CI]").val();//Numero de cedula ingresado
   let rta= "<?=url("existe-ci")?>/"+ci; console.log("respuesta ci eval", rta);
   $.ajax( {url: rta, success: (re)=>{
     let resp=jsonReceiveHandler(re);console.log("respuesta ci eval", resp);
     if( typeof resp != "boolean"){
-        if( resp.existe == "s"){   alert("EL CI N° "+ci+" ya existe"); 
+        if( resp.existe == "s"){  
+          if( $("#CI-DEFAULT").val()== $("#form-person input[name=CI]").val())
+           handler();
+           else alert("EL CI N° "+ci+" ya existe"); 
         }else{
           //permitir grabar
           handler();
@@ -161,10 +165,12 @@ function ajaxCall( ev, divname, success_f){//Objeto event   DIV tag selector to 
          headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
          beforeSend: function(){
            $( divname).html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
+
          },
          success: success_f,
          error: function(){
-           $( divname).html(  "<h6 style='color:red;'>Problemas de conexión</h6>" ); 
+           $( divname).html(  "" ); 
+           alert("Problemas de conexión");
          }
        }
      );
@@ -180,27 +186,26 @@ function enviarDatosPerso( ev){
     if( $("#ci").val()=="") alert("INGRESE EL NUMERO DE CEDULA");
     return  ($("#titular").val()==""  ||   $("#ci").val()=="");
   };
-  if( ! confirm("CONTINUAR?") ) return;
+
   if( campos_vacios() ) return;
   let handler= function(){ 
-    let divname= "#persona-collapse";
+    let divname= "#persona-panel";
     let success= function( resp ){
     let res= jsonReceiveHandler( resp, divname);
     if( typeof res != "boolean" ){
                 formDatosPerEnviado= true;
-                //Asignar ID DE DEMANDA
+                //Asignar ID DE DEMANDA si existe
+                if( "id_demanda" in res) 
                 $("#IDNRO0,#IDNRO1,#IDNRO2").val( res.id_demanda);
                 //Asignar el numero de cedula
                 $("#CI1,#CI2,#CI3").val(  res.ci);
                 //HABILITAR FORMULARIOS RESTANTES
                 habilitarCampos("formDeman",true);  habilitarCampos("formNoti",true); habilitarCampos("formObser",true);
-                //Mostrar mensaje
-                var mens1= `
-                <div class="alert alert-success">
-                <h5>Se ha registrado a ${res.nombre} - CI° ${res.ci} </h5>
-                </div>
-                `;
-                $(divname).html(  mens1  ); //mensaje 
+                //Mostrar mensaje 
+                $(divname).html(  ""  ); //mensaje 
+                $("#pers-msg").text( "GUARDADO!");
+                $(".toast").toast("show");
+                //alert("Se ha registrado a "+res.nombre+" - CI° "+res.ci );
     }
 };
  ajaxCall(ev, divname, success);  }   ;//end handler
@@ -211,7 +216,7 @@ function enviarDatosPerso( ev){
 
  
 function enviar( ev){ // ENVIO FORM DEMANDA
- if(  !confirm("CONTINUAR?") ) return;
+  
   ev.preventDefault();  
  //limpiar campo demanda 
  $("#formDeman input[name=DEMANDA]").val( quitarSeparador( $("#formDeman input[name=DEMANDA]").val() )  );
@@ -226,21 +231,22 @@ function enviar( ev){ // ENVIO FORM DEMANDA
         
         headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
         beforeSend: function(){
-          $("#demanda-collapse").html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
+          $("#demanda-panel").html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
+          
         },
         success: function( resp ){ 
           try{
             let res= JSON.parse( resp);
             if( "error" in res){
-              $("#demanda-collapse").html(  `<h6 style='color:red;'>${res.error}</h6>` ); 
+              $("#demanda-panel").html( "" ); 
+              alert( res.error);
             }else{ 
-              //Mostrar mensaje
-              var mens1= `
-              <div class="alert alert-success">
-              <h5>Los cambios en "Demanda" para el CI° ${res.ci}  han sido guardados </h5>
-              </div>
-              `;
-              $("#demanda-collapse").html(  mens1  ); //mensaje 
+              //Mostrar mensaje 
+              $("#demanda-panel").html(  ""  ); //mensaje 
+              $("#dema-msg").text( "GUARDADO!");
+                $(".toast").toast("show");
+             // alert("Los cambios en Demanda para el CI° "+res.ci+" han sido guardados ");
+
               if($("#operacion").val() == "A+"){
                   //Asignar ID DE DEMANDA
                   $("#IDNRO1,#IDNRO2").val( res.id_demanda);
@@ -252,9 +258,14 @@ function enviar( ev){ // ENVIO FORM DEMANDA
               }/*** */
               
             }
-          }catch(err){      $("#demanda-collapse").html(  `<h6 style='color:red;'>${err}</h6>` );    } 
+          }catch(err){     
+             $("#demanda-panel").html( "");
+             alert(err);    } 
         },
-        error: function(){  $("#demanda-collapse").html(  "<h6 style='color:red;'>Problemas de conexión</h6>" );   }
+        error: function(){ 
+           $("#demanda-panel").html(  "" );
+           alert("Problemas de conexión");
+              }
       }
     );//fin ajax
 
@@ -280,7 +291,7 @@ function enviar2( ev){ //envio DE FORM SEGUIMIENTO
  
 
   ev.preventDefault();  
-  if(  !confirm("CONTINUAR?") ) return;
+ 
   limpiar_campos_seg();
         $.ajax(
         {
@@ -290,28 +301,33 @@ function enviar2( ev){ //envio DE FORM SEGUIMIENTO
           
           headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
           beforeSend: function(){
-            $("#seguimiento-collapse").html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
+            $("#seguimiento-panel").html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
           },
           success: function( resp ){
             try{
+             
               let res= JSON.parse( resp);
-              if( "error" in res){
-                $("#seguimiento-collapse").html(  `<h6 style='color:red;'>${res.error}</h6>` ); 
+              if( "error" in res){ 
+                $("#seguimiento-panel").html( "" ); 
+                alert(res.error);
               }else{ 
-                //Mostrar mensaje
-                var mens1= `
-                <div class="alert alert-success">
-                <h5>Datos de Seguimiento guardados para ${res.nombre} - CI° ${res.ci} </h5>
-                </div>
-                `;
-                $("#seguimiento-collapse").html(  mens1  ); //mensaje  
+                //Mostrar mensaje 
+                $("#seguimiento-panel").html( "" ); 
+                $("#noti-msg").text( "GUARDADO!");
+                $(".toast").toast("show");
+              //  alert("Datos de Seguimiento guardados para "+res.nombre+"- CI° "+res.ci);
+              
               }
             }catch(err){
-              $("#seguimiento-collapse").html(  `<h6 style='color:red;'>${err}</h6>` ); 
+              $("#seguimiento-panel").html( "" ); 
+              alert( err);
+            
             } 
           },
           error: function(){
-            $("#seguimiento-collapse").html(  "<h6 style='color:red;'>Problemas de conexión</h6>" ); 
+            $("#seguimiento-panel").html( "" ); 
+            alert(  "Problemas de conexión ");
+           
           }
         }
       );
@@ -324,7 +340,7 @@ function enviar2( ev){ //envio DE FORM SEGUIMIENTO
 function enviar3( ev){ //ENVIO DE FORM OBSERVACION
  
  ev.preventDefault();  
- if(  !confirm("CONTINUAR?") ) return;
+ 
        $.ajax(
        {
          url:  ev.target.action,
@@ -333,28 +349,29 @@ function enviar3( ev){ //ENVIO DE FORM OBSERVACION
          
          headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
          beforeSend: function(){
-           $("#observacion-collapse").html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
+           $("#observacion-panel").html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
          },
          success: function( resp ){
            try{
              let res= JSON.parse( resp);
              if( "error" in res){
-               $("#observacion-collapse").html(  `<h6 style='color:red;'>${res.error}</h6>` ); 
+               $("#observacion-panel").html(  "" ); 
+               alert(res.error);
              }else{ 
-               //Mostrar mensaje
-               var mens1= `
-               <div class="alert alert-success">
-               <h5> Observaciones guardadas para ${res.nombre} - CI° ${res.ci} </h5>
-               </div>
-               `;
-               $("#observacion-collapse").html(  mens1  ); //mensaje 
+               //Mostrar mensaje 
+               $("#observacion-panel").html( "" ); //mensaje 
+               $("#obse-msg").text( "GUARDADO!");
+                $(".toast").toast("show");
+             //  alert("Observaciones guardadas para "+res.nombre+" - CI° "+res.ci);
              }
            }catch(err){
-             $("#observacion-collapse").html(  `<h6 style='color:red;'>${err}</h6>` ); 
+             $("#observacion-panel").html(  "" ); 
+             alert(err);
            } 
          },
          error: function(){
-           $("#observacion-collapse").html(  "<h6 style='color:red;'>Problemas de conexión</h6>" ); 
+           $("#observacion-panel").html( "" ); 
+           alert("Problemas de conexión");
          }
        }
      );
@@ -366,6 +383,14 @@ return ele.replaceAll("[.]", "");
 }
 
    
+   function solo_numero(ev){
+    if( ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57){ 
+      ev.target.value= 
+      ev.target.value.substr( 0, ev.target.selectionStart-1) + 
+      ev.target.value.substr( ev.target.selectionStart );
+    }
+     
+   }
   function formatear(ev){
     console.log( ev.target.selectionStart, ev);
     if( ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57){ 
@@ -389,6 +414,7 @@ return ele.replaceAll("[.]", "");
  
  
 
+ 
 
 
     </script>

@@ -76,14 +76,14 @@ class DatosPersoController extends Controller
             //Quitar el campo _token
             $Params=  $request->input(); 
             //Devuelve todo elemento de Params que no este presente en el segundo argumento
-            $Newparams= array_udiff_assoc(  $Params,  array("_token"=> $Params["_token"] ), function($ar1, $ar2){
+            /*$Newparams= array_udiff_assoc(  $Params,  array("_token"=> $Params["_token"] ), function($ar1, $ar2){
             if( $ar1 == $ar2) return 0;    else 1; 
-            } ); 
+            } ); */
             //***********TRANSACCION SQL****** */
             DB::beginTransaction();
             try {
               //insert to DB ELOQUENT VERSION
-              $modelo= new Demandados();  $modelo->fill( $Newparams );  $modelo->save();
+              $modelo= new Demandados();  $modelo->fill( $Params );  $modelo->save();
               //$ultimoIdGen=  $modelo->IDNRO; 
               /**generar registro en demanda, en notifi y en observacion */
               $deman= new Demanda();   $deman->CI= $modelo->CI; $deman->save();
@@ -110,11 +110,11 @@ class DatosPersoController extends Controller
         //Quitar el campo _token
         $Params=  $request->input(); 
         //Devuelve todo elemento de Params que no este presente en el segundo argumento
-        $Newparams= array_udiff_assoc(  $Params,  array("_token"=> $Params["_token"] ),function($ar1, $ar2){
+       /* $Newparams= array_udiff_assoc(  $Params,  array("_token"=> $Params["_token"] ),function($ar1, $ar2){
         if( $ar1 == $ar2) return 0;    else 1; 
-        } ); 
+        } ); */
         //update to DB ELOQUENT VERSION 
-        $modelo->fill( $Newparams );
+        $modelo->fill( $Params );
         if($modelo->save()){
           echo json_encode(array(  'ci'=> $idnro, 'nombre'=> $modelo->TITULAR  ));
         }else{

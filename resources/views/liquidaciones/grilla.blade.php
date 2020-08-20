@@ -16,12 +16,12 @@ $icons_size= $detect->isMobile() ? "": " fa-lg";
           <?php  foreach( $lista as $it):?>
             <tr id="{{$it->IDNRO}}">
 
-              <td ><p class="p-0 m-0"><a  style="color:black;" href="<?= url("vliquida/".$it->IDNRO) ?>"><i class=" mr-2 ml-2 fa fa-eye {{$icons_size}}" aria-hidden="true"></i></a></p></td>
-              <td><p class="p-0 m-0"><a  style="color:black;"   href="<?= url("eliquida/".$it->IDNRO) ?>"><i class="mr-2 ml-2 fa fa-pencil {{$icons_size}}" aria-hidden="true"></i></a></p></td>
-              <td><p class="p-0 m-0"><a style="color:black;"  onclick="borrar(event)" href="<?= url("dliquida/".$it->IDNRO) ?>"><i class="mr-2 ml-2  fa fa-trash {{$icons_size}}" aria-hidden="true"></i></a></p></td>
+              <td ><p class="p-0 m-0"><a  style="color:black;" href="<?= url("vliquida/".$it->IDNRO) ?>"><i class=" mr-2 ml-2 fa fa-eye " aria-hidden="true"></i></a></p></td>
+              <td><p class="p-0 m-0"><a  style="color:black;"   href="<?= url("eliquida/".$it->IDNRO) ?>"><i class="mr-2 ml-2 fa fa-pencil " aria-hidden="true"></i></a></p></td>
+              <td><p class="p-0 m-0"><a style="color:black;"  onclick="borrar(event)" href="<?= url("dliquida/".$it->IDNRO) ?>"><i class="mr-2 ml-2  fa fa-trash " aria-hidden="true"></i></a></p></td>
               <td>
           <!--MANDAR A IMPRIMIR -->
-          <a  href="<?= url("liquida")?>" data-toggle="modal" data-target="#show_opc_rep" onclick="mostrar_informe(event)" style="color:black;" > <i class="mr-2 ml-2  fa fa-print {{$icons_size}} " aria-hidden="true"></i>
+          <a  href="<?= url("liquida")?>" data-toggle="modal" data-target="#show_opc_rep" onclick="mostrar_informe(event)" style="color:black;" > <i class="mr-2 ml-2  fa fa-print   " aria-hidden="true"></i>
           </a> 
           </td>
               <td class="text-right"><p class="p-0 m-0">{{Helper::number_f($it->SALDO)}}</p></td>
