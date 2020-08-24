@@ -1,3 +1,4 @@
+
 @extends('layouts.app')
 
 
@@ -8,8 +9,7 @@
 
 @section('content')
 
-
-
+ 
 <?php
 
 use App\Mobile_Detect; 
@@ -51,6 +51,25 @@ if ($detect->isMobile() == false):?>
         <i class="icon-credit-card"></i> Observacion
       </a>
     </li>
+
+    <li class="nav-item">
+      <a href="#contraparte" class="nav-link" data-toggle="tab">
+        <i class="icon-credit-card"></i> Interv. contraparte
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a href="#extrajudicial" class="nav-link" data-toggle="tab">
+        <i class="icon-credit-card"></i> Arreglo Extrajud.
+      </a>
+    </li>
+    
+    <li class="nav-item">
+      <a href="#honorarios" class="nav-link" data-toggle="tab">
+        <i class="icon-credit-card"></i> Honorarios
+      </a>
+    </li>
+
   </ul>
   <div id="formOrder" class="tab-content">
   <div id="persona" class="tab-pane show active">
@@ -106,6 +125,45 @@ if ($detect->isMobile() == false):?>
 
       </div>
     </div>
+
+    <div id="contraparte" class="tab-pane">
+      <div class="mb-3">
+        <a href="#contraparte-collapse" data-toggle="collapse">
+          <i class="icon-credit-card"></i> Interv. contraparte
+        </a>
+      </div>
+      <div id="contraparte-collapse" class="collapse" data-parent="#formOrder">
+     
+      @include("demandas.agregarn.contraparte_form")
+
+      </div>
+    </div>
+
+    <div id="extrajudicial" class="tab-pane">
+      <div class="mb-3">
+        <a href="#extrajudicial-collapse" data-toggle="collapse">
+          <i class="icon-credit-card"></i> Arreglo Extrajudicial
+        </a>
+      </div>
+      <div id="extrajudicial-collapse" class="collapse" data-parent="#formOrder">
+     
+      @include("demandas.agregarn.extrajudicial_form")
+
+      </div>
+    </div>
+
+    <div id="honorarios" class="tab-pane">
+      <div class="mb-3">
+        <a href="#honorarios-collapse" data-toggle="collapse">
+          <i class="icon-credit-card"></i> Honorarios
+        </a>
+      </div>
+      <div id="honorarios-collapse" class="collapse" data-parent="#formOrder">
+     
+      @include("demandas.agregarn.contraparte_form")
+
+      </div>
+    </div>
   
     <hr>
    
@@ -123,7 +181,7 @@ if ($detect->isMobile() == false):?>
 
 <script>
  
-var formDatosPerEnviado= false;
+var formEnviado= false;
 
 
 function existeCI( handler){
@@ -178,7 +236,7 @@ function ajaxCall( ev, divname, success_f){//Objeto event   DIV tag selector to 
 
 
 
-function enviarDatosPerso( ev){ 
+function enviarso( ev){ 
  
   ev.preventDefault(); 
   let campos_vacios= function(){
@@ -193,12 +251,12 @@ function enviarDatosPerso( ev){
     let success= function( resp ){
     let res= jsonReceiveHandler( resp, divname);
     if( typeof res != "boolean" ){
-                formDatosPerEnviado= true;
+                formEnviado= true;
                 //Asignar ID DE DEMANDA si existe
                 if( "id_demanda" in res) 
-                $("#IDNRO0,#IDNRO1,#IDNRO2").val( res.id_demanda);
+                $("#IDNRO0,#IDNRO1,#IDNRO2,#IDNRO3,#IDNRO4").val( res.id_demanda);
                 //Asignar el numero de cedula
-                $("#CI1,#CI2,#CI3").val(  res.ci);
+                $("#CI1,#CI2,#CI3,#CI4,#CI5").val(  res.ci);
                 //HABILITAR FORMULARIOS RESTANTES
                 habilitarCampos("formDeman",true);  habilitarCampos("formNoti",true); habilitarCampos("formObser",true);
                 //Mostrar mensaje 
@@ -213,16 +271,20 @@ function enviarDatosPerso( ev){
 }/** */
 
 
+function limpiar_campos_dema(){
+  //limpiar campos 
+  $("#formDeman .number-format").each( function( indice, obj){    quitarSeparador( obj); } );
+}
+function rec_formato_numerico_dema(){ 
+  $("#formDeman .number-format").each( function( indice, obj){    numero_con_puntuacion( obj); } );
+}
 
  
 function enviar( ev){ // ENVIO FORM DEMANDA
   
   ev.preventDefault();  
  //limpiar campo demanda 
- $("#formDeman input[name=DEMANDA]").val( quitarSeparador( $("#formDeman input[name=DEMANDA]").val() )  );
-  //limpiar campo saldo
-  $("#formDeman input[name=SALDO]").val( quitarSeparador( $("#formDeman input[name=SALDO]").val() )  );
-
+limpiar_campos_dema();
       $.ajax(
       {
         url:  ev.target.action,
@@ -255,16 +317,19 @@ function enviar( ev){ // ENVIO FORM DEMANDA
                 //HABILITAR FORMULARIOS RESTANTES
                  habilitarCampos("formNoti",true); habilitarCampos("formObser",true);
                
-              }/*** */
-              
+              } 
             }
+            rec_formato_numerico_dema();
           }catch(err){     
              $("#demanda-panel").html( "");
-             alert(err);    } 
+             alert(err); 
+             rec_formato_numerico_dema();
+          } 
         },
         error: function(){ 
            $("#demanda-panel").html(  "" );
            alert("Problemas de conexión");
+           rec_formato_numerico_dema();
               }
       }
     );//fin ajax
@@ -274,19 +339,12 @@ function enviar( ev){ // ENVIO FORM DEMANDA
 
 function limpiar_campos_seg(){
   //limpiar campos 
-  $("#formNoti input[name=AI_NRO]").val( quitarSeparador( $("#formNoti input[name=AI_NRO]").val() )  );
- $("#formNoti input[name=LIQUIDACIO]").val( quitarSeparador( $("#formNoti input[name=LIQUIDACIO]").val() )  );
- $("#formNoti input[name=ADJ_APROBA]").val( quitarSeparador( $("#formNoti input[name=ADJ_APROBA]").val() )  );
- $("#formNoti input[name=APROB_IMPO]").val( quitarSeparador( $("#formNoti input[name=APROB_IMPO]").val() )  );
- $("#formNoti input[name=SALDO_EXT]").val( quitarSeparador( $("#formNoti input[name=SALDO_EXT]").val() )  );
- $("#formNoti input[name=EMBARGO_N]").val( quitarSeparador( $("#formNoti input[name=EMBARGO_N]").val() )  );
- $("#formNoti input[name=EMBAR_EJEC]").val( quitarSeparador( $("#formNoti input[name=EMBAR_EJEC]").val() )  );
- $("#formNoti input[name=INIVISION]").val( quitarSeparador( $("#formNoti input[name=INIVISION]").val() )  );
- $("#formNoti input[name=LEVANTA]").val( quitarSeparador( $("#formNoti input[name=LEVANTA]").val() )  );
- $("#formNoti input[name=DEPOSITADO]").val( quitarSeparador( $("#formNoti input[name=DEPOSITADO]").val() )  );
- $("#formNoti input[name=EXTRAIDO_C]").val( quitarSeparador( $("#formNoti input[name=EXTRAIDO_C]").val() )  );
- $("#formNoti input[name=EXTRAIDO_L]").val( quitarSeparador( $("#formNoti input[name=EXTRAIDO_L]").val() )  );
+  $("#formNoti .number-format").each( function( indice, obj){    quitarSeparador( obj); } );
 }
+function rec_formato_numerico_noti(){ 
+  $("#formNoti .number-format").each( function( indice, obj){    numero_con_puntuacion( obj); } );
+}
+
 function enviar2( ev){ //envio DE FORM SEGUIMIENTO
  
 
@@ -318,16 +376,17 @@ function enviar2( ev){ //envio DE FORM SEGUIMIENTO
               //  alert("Datos de Seguimiento guardados para "+res.nombre+"- CI° "+res.ci);
               
               }
+              rec_formato_numerico_noti();
             }catch(err){
               $("#seguimiento-panel").html( "" ); 
-              alert( err);
-            
+              alert( err); 
+              rec_formato_numerico_noti();
             } 
           },
           error: function(){
             $("#seguimiento-panel").html( "" ); 
             alert(  "Problemas de conexión ");
-           
+            rec_formato_numerico_noti();
           }
         }
       );
@@ -378,10 +437,15 @@ function enviar3( ev){ //ENVIO DE FORM OBSERVACION
  
 }/** */
 
-function quitarSeparador( ele){ 
-return ele.replaceAll("[.]", "");
+function numeroSinFormato( ele){ 
+  if( ele =="") return 0;
+  else return ele.replaceAll("[.]", "");
 }
 
+function quitarSeparador( obj){ 
+let w=  obj.value.replaceAll("[.]", "");
+obj.value= w;
+}
    
    function solo_numero(ev){
     if( ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57){ 
@@ -391,6 +455,13 @@ return ele.replaceAll("[.]", "");
     }
      
    }
+
+   function numero_con_puntuacion( obj ) {
+    let val_Act= obj.value;  
+    let enpuntos= new Intl.NumberFormat("de-DE").format( val_Act);
+		$(obj).val(  enpuntos);
+   }
+
   function formatear(ev){
     console.log( ev.target.selectionStart, ev);
     if( ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57){ 

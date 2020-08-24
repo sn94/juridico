@@ -33,105 +33,222 @@ $RUTA= $OPERACION == "A" ? url("ndemandado") : url("edemandado");
  
 <div class="row">
 
-<div class="col-12 col-md-6" style="background-color: #81c784; border-color: #87a8f5;">
-      <div class="row" >
-        <div class="col-12 col-md-6">
-            <div class="form-group">
-              <label for="titular">Titular:</label>
-              <input maxlength="60" value="{{! isset($ficha0) ? '' : $ficha0->TITULAR}}" name="TITULAR" type="text" id="titular" class="form-control form-control-sm   ">
+<div class="col-12 col-md-6 verde1"  >
+      <div class="row p-1" >
+        <!--PRIMERA COLUMNA -->
+        <div class="col-12 col-sm-6 col-md-12 col-lg-6">
+            <div class="row">
+              <div class="col-12 col-sm-3 col-md-12">  <label for="titular">Titular:</label></div>
+              <div class="col-12 col-sm-9 col-md-12">  <input maxlength="60" value="{{! isset($ficha0) ? '' : $ficha0->TITULAR}}" name="TITULAR" type="text" id="titular" class="form-control form-control-sm   "></div>
             </div>
-            <div class="form-group">
-              <label for="ci">CI:</label>
-              <input type="hidden" id="CI-DEFAULT" value="{{! isset($ficha0) ? '' : $ficha0->CI}}">
+
+            <div class="row">
+            <div class="col-2 col-sm-3">  <label for="ci">CI°:</label></div>
+            <div class="col-10 col-sm-9">
+            <input type="hidden" id="CI-DEFAULT" value="{{! isset($ficha0) ? '' : $ficha0->CI}}">
               <input oninput="solo_numero(event)" maxlength="9"  value="{{! isset($ficha0) ? '' : $ficha0->CI}}" name="CI" type="text" id="ci" class="form-control form-control-sm   ">
             </div>
-            <div class="form-group">
-              <label for="direccion">Direccion:</label>
-              <input maxlength="78" value="{{! isset($ficha0) ? '' : $ficha0->DOMICILIO}}" name="DOMICILIO" type="text" id="direccion" class="form-control form-control-sm   ">
-            </div>
-            <div class="form-group">
-              <label for="telefono">Telefono:</label>
+          </div>
+
+            <div class="row">
+            <div class="col-12 col-sm-3 col-md-12 col-lg-12"><label for="direccion">Direccion:</label>  </div>
+            <div class="col-12 col-sm-9 col-md-12 col-lg-12"> <input maxlength="78" value="{{! isset($ficha0) ? '' : $ficha0->DOMICILIO}}" name="DOMICILIO" type="text" id="direccion" class="form-control form-control-sm   ">
+            </div></div>
+            <!--telefono y celular-->
+            <div class="row">
+            <div class="col-12  col-sm-6 col-md-12     col-lg-12">
+            <div class="input-group input-group-sm">
+              <div class="input-group-prepend">
+              <span class="input-group-text" id="basic-addon1"><i class="fa fa-phone fa-lg" aria-hidden="true"></i></span>
+              </div> 
               <input maxlength="20" value="{{! isset($ficha0) ? '' : $ficha0->TELEFONO}}" name="TELEFONO" type="text" id="telefono" class="form-control form-control-sm   ">
+          </div>
             </div>
-        </div>
-        <div class="col-12 col-md-6">
-            
-            <div class="form-group">
-              <label for="celular">Celular</label>
+            <div class="col-12 col-sm-6 col-md-12    col-lg-12">
+            <div class="input-group input-group-sm">
+              <div class="input-group-prepend">
+              <span class="input-group-text" id="basic-addon1"><i class="fa fa-mobile fa-lg" aria-hidden="true"></i></span>
+              </div>  
               <input maxlength="20" value="{{! isset($ficha0) ? '' : $ficha0->CELULAR}}" name="CELULAR" type="text"   class="form-control form-control-sm   ">
+          </div>
             </div>
-            <div class="form-group">
-              <label for="laboral">Lugar de trabajo:</label>
-              <input maxlength="30" value="{{! isset($ficha0) ? '' : $ficha0->TRABAJO}}"  name="TRABAJO" type="text"   class="form-control form-control-sm   ">
             </div>
-            <div class="form-group">
-              <label for="laboral">Direccion laboral:</label>
-              <input maxlength="79" value="{{! isset($ficha0) ? '' : $ficha0->LABORAL}}"  name="LABORAL" type="text"   class="form-control form-control-sm   ">
+             <!--Telefono y celular-->
+           
+            
+      
+
+         
+
+        </div><!--END PRIMERA COLUMNa-->
+
+        <!-- SEGUNDA COLUMNA -->
+        <div class="col-12 col-sm-6  col-md-12 col-lg-6">
+            
+           
+          <p style="text-decoration: underline; text-align: center;">Datos laborales</p>
+            <div class="row">
+            <div class="col-3 col-sm-3"><label for="laboral">Lugar:</label></div>
+            <div class="col-9 col-sm-9"><input maxlength="30" value="{{! isset($ficha0) ? '' : $ficha0->TRABAJO}}"  name="TRABAJO" type="text"   class="form-control form-control-sm   ">
+            </div></div>
+
+            <div class="row">
+            <div class="col-12 col-sm-3 col-md-12 col-lg-12"><label for="laboral">Direccion:</label></div>
+            <div class="col-12 col-sm-9 col-md-12  col-lg-12"><input maxlength="79" value="{{! isset($ficha0) ? '' : $ficha0->LABORAL}}"  name="LABORAL" type="text"   class="form-control form-control-sm   ">
+            </div></div>
+
+
+            <div class="input-group input-group-sm">
+              <div class="input-group-prepend">
+              <span class="input-group-text" id="basic-addon1"><i class="fa fa-phone fa-lg" aria-hidden="true"></i></span>
+              </div>
+              <input maxlength="21" value="{{! isset($ficha0) ? '' : $ficha0->TEL_TRABAJ}}" name="TEL_TRABAJ" type="text" id="tel_trabaj" class="form-control form-control-sm   ">
             </div>
-            <div class="form-group">
-            <label for="tel_trabaj">Telefono laboral:</label>
-            <input maxlength="21" value="{{! isset($ficha0) ? '' : $ficha0->TEL_TRABAJ}}" name="TEL_TRABAJ" type="text" id="tel_trabaj" class="form-control form-control-sm   ">
-            </div>
-        </div>
+
+             
+        </div>   <!-- END SEGUNDA COLUMNA -->
         
       </div>
 </div>
-<div class="col-12 col-md-6" style="background-color: #aed581; border-color: #78fc8c;">
+
+
+<div class="col-12 col-md-6 verde2"  >
+<p style="text-decoration: underline;text-align: center;">Garante </p>
     <div class="row" >
-      <div class="col-12 col-md-6">
-          <div class="form-group">
-            <label for="garante">Garante:</label>
-            <input maxlength="35" value="{{! isset($ficha0) ? '' : $ficha0->GARANTE}}"  name="GARANTE" type="text" id="garante" class="form-control form-control-sm   ">
+      <!--TERCERA COLUMNA -->
+      <div class="col-12 col-sm-6 col-md-12 col-lg-6">
+          <div class="row">
+          <div class="col-12 col-sm-3 col-lg-12 col-xl-3"><label for="garante">Nombres:</label></div>
+          <div class="col-12 col-sm-9 col-lg-12 col-xl-9"><input maxlength="35" value="{{! isset($ficha0) ? '' : $ficha0->GARANTE}}"  name="GARANTE" type="text" id="garante" class="form-control form-control-sm   ">
+          </div></div>
+          <div class="row">
+          <div class="col-2 col-sm-3"><label for="cigarante">CI°:</label></div>
+          <div class="col-10 col-sm-9"><input maxlength="9" value="{{! isset($ficha0) ? '' : $ficha0->CI_GARANTE}}"  name="CI_GARANTE" type="text" id="cigarante" class="form-control form-control-sm   ">
+          </div>  
+        </div>
+          <div class="row">
+          <div class="col-12 col-sm-3 col-md-12 "> <label for="dgarante">Direccion:</label></div>
+          <div class="col-12 col-sm-9 col-md-12"> <input maxlength="75" value="{{! isset($ficha0) ? '' : $ficha0->DOM_GARANT}}"  name="DOM_GARANT" type="text" id="dgarante" class="form-control form-control-sm   ">
+          </div></div>
+          <!--TELEFONO Y CELULAR-->
+          <div class="row">
+          <div class="col-12 col-sm-6  col-lg-12">
+          <div class="input-group input-group-sm">
+          <div class="input-group-prepend">
+          <span class="input-group-text" id="basic-addon1"><i class="fa fa-phone fa-lg" aria-hidden="true"></i></span>
           </div>
-          <div class="form-group">
-            <label for="cigarante">CI Garante:</label>
-            <input maxlength="9" value="{{! isset($ficha0) ? '' : $ficha0->CI_GARANTE}}"  name="CI_GARANTE" type="text" id="cigarante" class="form-control form-control-sm   ">
+          <input  maxlength="20" value="{{! isset($ficha0) ? '' : $ficha0->TEL_GARANT}}" name="TEL_GARANT" type="text" id="tgarante" class="form-control form-control-sm   ">
           </div>
-          <div class="form-group">
-            <label for="dgarante">Direccion Garante:</label>
-            <input maxlength="75" value="{{! isset($ficha0) ? '' : $ficha0->DOM_GARANT}}"  name="DOM_GARANT" type="text" id="dgarante" class="form-control form-control-sm   ">
           </div>
-          <div class="form-group">
-            <label for="tgarante">Telefono Garante:</label>
-            <input  maxlength="20" value="{{! isset($ficha0) ? '' : $ficha0->TEL_GARANT}}" name="TEL_GARANT" type="text" id="tgarante" class="form-control form-control-sm   ">
+          <div class="col-12 col-sm-6   col-lg-12">
+          <div class="input-group input-group-sm">
+          <div class="input-group-prepend">
+          <span class="input-group-text" id="basic-addon1"><i class="fa fa-mobile fa-lg" aria-hidden="true"></i></span>
           </div>
-      </div>
-      <div class="col-12 col-md-6">
+          <input  maxlength="20" value="{{! isset($ficha0) ? '' : $ficha0->CEL_GARANT}}" name="CEL_GARANT" type="text" id="tgarante" class="form-control form-control-sm   ">
+          </div>
+          </div>
+          </div> <!--TELEFONO Y CELULAR-->
+
+        
+
+            
+
+      </div><!--END TERCERA COL-->
+
+<!--CUARTA COL-->
+      <div class="col-12  col-sm-6 col-md-12 col-lg-6">
       
-      <div class="form-group">
-            <label for="dlabogarante">Celular Garante:</label>
-            <input maxlength="20" value="{{! isset($ficha0) ? '' : $ficha0->CEL_GARANT}}" name="CEL_GARANT" type="text"   class="form-control form-control-sm   ">
-          </div>
+      <div class="row">
+      <div class="col-12 col-sm-4"><label for="dlabogarante">Trabajo:</label></div>
+      <div class="col-12 col-sm-8"><input maxlength="30" value="{{! isset($ficha0) ? '' : $ficha0->TRABAJO_G}}" name="TRABAJO_G" type="text"   class="form-control form-control-sm   ">
+          </div></div>
 
-      <div class="form-group">
-            <label for="dlabogarante">Trabajo/Garante:</label>
-            <input maxlength="30" value="{{! isset($ficha0) ? '' : $ficha0->TRABAJO_G}}" name="TRABAJO_G" type="text"   class="form-control form-control-sm   ">
-          </div>
-          <div class="form-group">
-            <label for="dlabogarante">Dir.Lab.Garante:</label>
-            <input maxlength="75" value="{{! isset($ficha0) ? '' : $ficha0->LABORAL_G}}" name="LABORAL_G" type="text"   class="form-control form-control-sm   ">
-          </div>
-          <div class="form-group">
-            <label for="tlabogarante">Tel.Lab.Garante:</label>
-            <input maxlength="20" value="{{! isset($ficha0) ? '' : $ficha0->TEL_LAB_G}}" name="TEL_LAB_G" type="text"   class="form-control form-control-sm   ">
-          </div>
+          <div class="row">
+             <div class="col-12 col-sm-4 col-md-12"><label for="dlabogarante">Dir.Laboral:</label></div>
+             <div class="col-12 col-sm-8 col-md-12"><input maxlength="75" value="{{! isset($ficha0) ? '' : $ficha0->LABORAL_G}}" name="LABORAL_G" type="text"   class="form-control form-control-sm   ">
+          </div></div>
+
+          <div class="input-group input-group-sm">
+              <div class="input-group-prepend">
+              <span class="input-group-text" id="basic-addon1"><i class="fa fa-phone fa-lg" aria-hidden="true"></i></span>
+              </div>
+              <input maxlength="20" value="{{! isset($ficha0) ? '' : $ficha0->TEL_LAB_G}}" name="TEL_LAB_G" type="text"   class="form-control form-control-sm   ">
+        </div>
+
+         
       </div>
-     
-    </div>
-</div>
-</div>
+     <!--CUARTA COL-->
 
-<div class="row"  style="background-color: #a5d6a7; border-color: #87a8f5;">
-<div class="col-12 col-sm-5 col-md-4 col-lg-3">
-    <div class="form-group">
-                 <label for="actuaria">Domic.denunciado:</label>
-                  <input name="DOC_DENUNC"   type="text"   class="form-control form-control-sm" value="{{ !isset($ficha0)? '' : $ficha0->DOC_DENUNC}}">
-             </div> 
+
     </div>
-    <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-    <div class="form-group">
-                 <label for="actuaria">Localidad:</label>
-                 <select name="LOCALIDAD" class="form-control form-control-sm">
+</div>
+</div><!-- fin FILA UNO  -->
+
+
+
+<!--contenedor panel 3 y 4-->
+<div class="row">
+<!--Inicio panel 3-->
+
+<div class="col-12 col-sm-6 col-md-6 p-1 verde3"  >
+<p style="text-decoration: underline; text-align: center;">3er Garante </p>
+
+    <div class="row ">
+    <div class="col-2 col-sm-3 col-lg-2 col-xl-2"> <label for="ctactecatas">Cedula:</label></div>
+    <div class="col-10 col-sm-9 col-lg-3 col-xl-3">
+        <input maxlength="8"  oninput="solo_numero(event)"  value="{{! isset($ficha0) ? '' : $ficha0->CI_GAR_3}}" name="CI_GAR_3" type="text" id="ctactecatas" class="form-control form-control-sm   ">
+    </div>
+    <div class="col-12 col-sm-3 col-lg-2 col-xl-2"><label for="ctactecatas">Nombres:</label></div>
+    <div class="col-12 col-sm-9 col-lg-5 col-xl-5"><input maxlength="35" value="{{! isset($ficha0) ? '' : $ficha0->GARANTE_3}}" name="GARANTE_3" type="text" id="ctactecatas" class="form-control form-control-sm   ">
+      </div>
+  </div>
+
+     
+
+
+      <div class="row">
+      <div class="col-12 col-sm-3 col-md-3 col-lg-2"><label for="ctactecatas">Domicilio:</label></div>
+      <div class="col-12 col-sm-9 col-md-9 col-lg-10"><input maxlength="50" value="{{! isset($ficha0) ? '' : $ficha0->DIR_GAR_3}}" name="DIR_GAR_3" type="text" id="ctactecatas" class="form-control form-control-sm   ">
+    </div></div>
+<!--TELEFONO Y CELULAR -->
+    <div class="row">
+      <div class="col-12 col-sm-6 col-md-12 col-lg-6">
+      <div class="input-group input-group-sm">
+              <div class="input-group-prepend">
+              <span class="input-group-text" id="basic-addon1"><i class="fa fa-phone fa-lg" aria-hidden="true"></i></span>
+              </div>
+              <input maxlength="17" value="{{! isset($ficha0) ? '' : $ficha0->TEL_GAR_3}}" name="TEL_GAR_3" type="text" id="ctactecatas" class="form-control form-control-sm   ">
+    </div>
+      </div>
+      <div class="col-12 col-sm-6 col-md-12  col-lg-6">
+      <div class="input-group input-group-sm">
+              <div class="input-group-prepend">
+              <span class="input-group-text" id="basic-addon1"><i class="fa fa-mobile fa-lg" aria-hidden="true"></i></span>
+              </div>
+              <input maxlength="17" value="{{! isset($ficha0) ? '' : $ficha0->CEL_GAR_3}}" name="CEL_GAR_3" type="text" id="ctactecatas" class="form-control form-control-sm   ">
+    </div>
+      </div>
+    </div><!--TELEFONO Y CELULAR -->
+
+
+</div>
+<!--end panel 3-->
+
+
+
+<!--panel 4-->
+<div class="col-12 col-sm-6 col-md-6 p-1 verde4"  >
+   
+    <div class="row">
+    <div class="col-12 col-sm-4"><label for="actuaria">Domic. denunciado:</label></div>
+    <div class="col-12 col-sm-8"><input name="DOC_DENUNC" maxlength="75"  type="text"   class="form-control form-control-sm" value="{{ !isset($ficha0)? '' : $ficha0->DOC_DENUNC}}">
+    </div> </div> 
+  
+
+    <div class="row">
+    <div class="col-3 col-sm-4"><label for="actuaria">Localidad:</label></div>
+    <div class="col-9 col-sm-8"><select name="LOCALIDAD" class="form-control form-control-sm">
                     <?php 
 
                      $loc=  !isset($ficha0)? '' : $ficha0->LOCALIDAD;
@@ -143,20 +260,20 @@ $RUTA= $OPERACION == "A" ? url("ndemandado") : url("edemandado");
                          }
                          
                     endforeach;  ?>
-             </select> 
+             </select> </div>
          </div>
-    </div>
 
-    <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-    <div class="form-group">
-                 <label for="actuaria">Dom.denun.Gte:</label>
-                  <input  name="DOC_DEN_GA"  type="text"   class="form-control form-control-sm" value="{{ !isset($ficha0)? '' : $ficha0->DOC_DEN_GA}}">
-         </div>
-    </div>
-    <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-    <div class="form-group">
-             <label for="actuaria">Localidad del Gte.:</label>
-             <select name="LOCALIDA_G" class="form-control form-control-sm">
+    
+
+ 
+    <div class="row">
+    <div class="col-12 col-sm-4"><label for="actuaria">Dom.denun. Gte:</label></div>
+    <div class="col-12 col-sm-8"><input   maxlength="75" name="DOC_DEN_GA"  type="text"   class="form-control form-control-sm" value="{{ !isset($ficha0)? '' : $ficha0->DOC_DEN_GA}}">
+         </div></div>
+
+    <div class="row">
+    <div class="col-12 col-sm-4"><label for="actuaria">Localidad del Gte.:</label></div>
+    <div class="col-12 col-sm-8"><select name="LOCALIDA_G" class="form-control form-control-sm">
                     <?php 
 
                      $loc=  !isset($ficha0)? '' : $ficha0->LOCALIDA_G;
@@ -168,13 +285,15 @@ $RUTA= $OPERACION == "A" ? url("ndemandado") : url("edemandado");
                          }
                          
                     endforeach;  ?>
-             </select>  
+             </select>  </div>
          </div>
-    </div>
+
+  
    
 </div>
 
- 
+</div><!--contenedor panel 3 y 4 -->
+
 </form>
  
 <script>

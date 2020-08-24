@@ -35,297 +35,353 @@
 <input id="CI2" type="hidden" name="CI" value="{{  !isset($ficha2) ? '' : $ficha2->CI }}">
  
 
+<!--PRIMER PANEL-->
+<div class="row p-1" >
 
-<div class="row  .no-gutters"> 
-  <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-    <div class="form-group">
-      <label for="ctactecatas">Presentado:</label>
-      <input         value="{{Helper::fecha_f((! isset($ficha2) ? '' : $ficha2-> PRESENTADO))}}" name="PRESENTADO" type="date" id="ctactecatas" class="form-control form-control-sm   ">
+<div class="col-12 col-sm-6 col-md-6 col-lg-3 verde1"  >
+
+<div class="form-group"> <label for="ctactecatas">Presentado:</label>
+<input         value="{{Helper::fecha_f((! isset($ficha2) ? '' : $ficha2-> PRESENTADO))}}" name="PRESENTADO" type="date"  class="form-control form-control-sm">
     </div>
-  </div>
-  <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-      <div class="form-group">
-                <label for="ctactecatas">Providencia:</label>
-                <input   value="{{Helper::fecha_f( (! isset($ficha2) ? '' : $ficha2-> PROVI_1) )}}" name="PROVI_1"   type="date"    id="ctactecatas" class="form-control form-control-sm   ">
+
+    <div class="form-group"> <label for="ctactecatas">Providencia:</label> 
+      <input   value="{{Helper::fecha_f( (! isset($ficha2) ? '' : $ficha2-> PROVI_1) )}}" name="PROVI_1"   type="date"   class="form-control form-control-sm   ">
       </div>
-  </div>
-  <div class="col-12 col-sm-5 col-md-4 col-lg-3">
+
       <div class="form-group">
-                <label for="ctactecatas">Notificación:</label>
-                <input   value="{{Helper::fecha_f((! isset($ficha2) ? '' : $ficha2-> NOTIFI_1))}}" name="NOTIFI_1"   type="date"    id="ctactecatas" class="form-control form-control-sm   ">
-      </div>  
-  </div>
-  <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-      <div class="form-group">
-                <label for="ctactecatas">Adjunto I.A.:</label>
-                <input   value="{{Helper::fecha_f((! isset($ficha2) ? '' : $ficha2-> ADJ_AI))}}" name="ADJ_AI"   type="date"    id="ctactecatas" class="form-control form-control-sm   ">
+        <label for="ctactecatas">Notificación:</label>
+      <input   value="{{Helper::fecha_f((! isset($ficha2) ? '' : $ficha2-> NOTIFI_1))}}" name="NOTIFI_1"   type="date"    class="form-control form-control-sm   ">
       </div>
-  </div>
-  <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-    <div class="form-group">
-                <label for="ctactecatas">A.I. Nro.:</label>
-                <input  oninput="formatear(event)"  value="{{Helper::number_f((! isset($ficha2) ? '' : $ficha2-> AI_NRO))}}" name="AI_NRO" type="text" id="ctactecatas" class="form-control form-control-sm   ">
-              </div>
-  </div>
-  <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-  <div class="form-group">
-                <label for="ctactecatas">A.I. Fecha:</label>
-                <input   value="{{Helper::fecha_f((! isset($ficha2) ? '' : $ficha2-> AI_FECHA))}}" name="AI_FECHA"   type="date"    id="ctactecatas" class="form-control form-control-sm   ">
-              </div>
-  </div>
-  <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-  <div class="form-group">
-                <label for="ctactecatas">Intimación:</label>
-                <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2-> INTIMACI_1)}}" name="INTIMACI_1"   type="date"    id="ctactecatas" class="form-control form-control-sm   ">
-              </div>
-  </div>
-  <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-  <div class="form-group">
-                <label for="ctactecatas">Notificación:</label>
-                <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2-> INTIMACI_2)}}" name="INTIMACI_2"   type="date"    id="ctactecatas" class="form-control form-control-sm   ">
-              </div>
-  </div>
-  <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-  <div class="form-group">
-                <label for="ctactecatas">Citación:</label>
-                <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2-> CITACION)}}" name="CITACION"   type="date"    id="ctactecatas" class="form-control form-control-sm   ">
-            </div>
-  </div>
-  <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-  <div class="form-group">
-                <label for="ctactecatas">Providencia de Citación:</label>
-                <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2-> PROVI_CITA)}}" name="PROVI_CITA"   type="date"    id="ctactecatas" class="form-control form-control-sm   ">
-            </div>
-  </div>
-  <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-     
-  <div class="form-group">
-                <label for="ctactecatas">Notificación:</label>
-                <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2-> NOTIFI_2)}}" name="NOTIFI_2"   type="date"    id="ctactecatas" class="form-control form-control-sm   ">
-            </div>
-  </div>
-  <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-  <div class="form-group">
-                <label for="ctactecatas">Adjunto S.D.:</label>
-                <input   value="{{! isset($ficha2) ? '' : $ficha2-> ADJ_SD}}" name="ADJ_SD" type="text" id="ctactecatas" class="form-control form-control-sm   ">
-            </div>
-  </div>
-  <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-  <div class="form-group">
-                <label for="ctactecatas">S.D.:</label>
-                <input   value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2-> SD_NRO)}}" name="SD_NRO" type="text" id="ctactecatas" class="form-control form-control-sm   ">
-              </div>
-  </div>
-  <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-  <div class="form-group">
-                <label for="ctactecatas">Fecha:</label>
-                <input    value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2-> SD_FECHA)}}" 	     type="date"     name="SD_FECHA"   id="ctactecatas" class="form-control form-control-sm   ">
-              </div>
-  </div>
-  <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-  <div class="form-group">
-                <label for="ctactecatas">Notificación:</label>
-                <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2-> NOTIFI_3)}}" name="NOTIFI_3"   type="date"    id="ctactecatas" class="form-control form-control-sm   ">
-            </div>
-  </div>
-  <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-  <div class="form-group">
-                <label for="ctactecatas">Adjunto liquidación:</label>
-                <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2-> ADJ_LIQUI)}}" name="ADJ_LIQUI"   type="date"    id="ctactecatas" class="form-control form-control-sm   ">
-            </div>
-  </div>
-  <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-  <div class="form-group">
-                  <label for="ctactecatas">Liquidación:</label>
-                  <input   oninput="formatear(event)"  value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2-> LIQUIDACIO)}}" name="LIQUIDACIO" type="text" id="ctactecatas" class="form-control form-control-sm   ">
-            </div>
-  </div>
-  <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-  <div class="form-group">
-                  <label for="ctactecatas">Providencia:</label>
-                  <input   value="{{! isset($ficha2) ? '' : $ficha2-> PROVI_2}}" name="PROVI_2" type="text" id="ctactecatas" class="form-control form-control-sm   ">
-              </div>
-  </div>
-  <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-  <div class="form-group">
-                  <label for="ctactecatas">Notifica:</label>
-                  <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2-> NOTIFI_4)}}" name="NOTIFI_4"   type="date"    id="ctactecatas" class="form-control form-control-sm   ">
-              </div>
-  </div>
-  <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-    <div class="form-group">
-          <label for="ctactecatas">Adjunto aprobación:</label>
-          <input  oninput="formatear(event)"  value="{{! isset($ficha2) ? '' : $ficha2-> ADJ_APROBA}}" name="ADJ_APROBA" type="text" id="ctactecatas" class="form-control form-control-sm   ">
+
+      <div class="form-group">
+        <label for="ctactecatas">Adjunto I.A.:</label>
+      <input   value="{{Helper::fecha_f((! isset($ficha2) ? '' : $ficha2-> ADJ_AI))}}" name="ADJ_AI"   type="date"      class="form-control form-control-sm   ">
+      </div>   
+
+      <div class="form-group">
+        <label for="ctactecatas">A.I. Nro.:</label> 
+      <input maxlength="10"  oninput="formatear(event)"  value="{{Helper::number_f((! isset($ficha2) ? '' : $ficha2-> AI_NRO))}}" name="AI_NRO" type="text"   class="form-control form-control-sm   ">
+      </div>
+
+      <div class="form-group"> 
+        <label for="ctactecatas">A.I. Fecha:</label> 
+      <input   value="{{Helper::fecha_f((! isset($ficha2) ? '' : $ficha2-> AI_FECHA))}}" name="AI_FECHA"   type="date"     class="form-control form-control-sm   ">
+      </div>
+
+      <div class="form-group"> 
+        <label for="ctactecatas">Intimación:</label>
+      <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2-> INTIMACI_1)}}" name="INTIMACI_1"   type="date"     class="form-control form-control-sm   ">
     </div>
-  </div>
-  <div class="col-12 col-sm-5 col-md-4 col-lg-3">
+
+    <div class="form-group"> 
+      <label for="ctactecatas">Notificación:</label>
+      <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2-> INTIMACI_2)}}" name="INTIMACI_2"   type="date"      class="form-control form-control-sm   ">
+      </div>
+
+</div><!--COLUMNA 1-->
+
+
+
+ <!--COLUMNA 2-->
+<div class="col-12 col-sm-6 col-md-6 col-lg-3 verde1" >
+
+<div class="form-group"> <label for="ctactecatas">Adj. Citación:</label>
+      <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2-> CITACION)}}" name="CITACION"   type="date"   class="form-control form-control-sm   ">
+    </div>
+
     <div class="form-group">
-        <label for="ctactecatas">Aprobación A.I:</label>
-        <input    value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2-> APROBA_AI)}}" name="APROBA_AI" type="text" id="ctactecatas" class="form-control form-control-sm  number-format ">
+      <label for="ctactecatas">Providencia de Citación:</label>
+      <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2-> PROVI_CITA)}}" name="PROVI_CITA"   type="date"     class="form-control form-control-sm   ">
     </div> 
-   </div>
-   <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-      <div class="form-group">
-            <label for="ctactecatas">Fecha aprob. AI:</label>
-            <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2-> APRO_FECHA)}}" 	   type="date"     name="APRO_FECHA"   id="ctactecatas" class="form-control form-control-sm   ">
+
+<div class="form-group"> <label for="ctactecatas">Notificación:</label>
+      <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2-> NOTIFI_2)}}" name="NOTIFI_2"   type="date"     class="form-control form-control-sm   ">
+    </div>
+
+    <div class="form-group">
+        <label for="ctactecatas">Adjunto S.D.:</label> 
+       <input   value="{{  Helper::fecha_f( !isset($ficha2) ? '' : $ficha2-> ADJ_SD) }}" name="ADJ_SD" type="date"   class="form-control form-control-sm">  </div>
+     
+   
+    <div class="form-group">  <label for="ctactecatas">Nro.S.D.:</label> 
+      <input  maxlength="10"  value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2-> SD_NRO)}}" name="SD_NRO" type="text"  class="form-control form-control-sm   ">
+    </div>
+
+      <div class="form-group"> <label for="ctactecatas">Fecha S.D:</label>
+      <input    value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2-> SD_FECHA)}}" 	     type="date"     name="SD_FECHA"    class="form-control form-control-sm   ">
+    </div>
+
+     <div class="form-group"> <label for="ctactecatas">Notificación:</label>
+      <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2->NOTIFI_3)}}" name="NOTIFI_3"   type="date"    class="form-control form-control-sm   ">
+    </div>
+
+</div><!--COLUMNA 2-->
+
+
+
+ <!--COLUMNA 3-->
+ <div class="col-12 col-sm-6 col-md-6 col-lg-3 verde2">
+   <!--liquid-->
+   <div class="form-group"> <label for="ctactecatas">Adj. liquidación:</label>
+      <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2-> ADJ_LIQUI)}}" name="ADJ_LIQUI"   type="date"    class="form-control form-control-sm   ">
+    </div>
+
+    <div class="form-group"> 
+      <label for="ctactecatas">Providencia:</label> 
+      <input   value="{{ Helper::fecha_f( !isset($ficha2) ? '' : $ficha2-> PROVI_2) }}" name="PROVI_2" type="date"   class="form-control form-control-sm   ">
+    </div>
+
+    <div class="form-group">
+      <label for="ctactecatas">Adjunto aprobación:</label>
+      <input  oninput="formatear(event)"  value="{{  Helper::fecha_f( !isset($ficha2) ? '' : $ficha2-> ADJ_APROBA) }}" name="ADJ_APROBA" type="date"  class="form-control form-control-sm   ">
+    </div> 
+
+    <div class="form-group"> <label for="ctactecatas">Importe aprobación:</label>
+      <input maxlength="10"  oninput="formatear(event)"  value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2-> APROB_IMPO)}}" name="APROB_IMPO" type="text"  class="form-control form-control-sm  number-format ">
+    </div> 
+
+   <div class="form-group"> <label for="ctactecatas">Adj.Oficio:</label>
+      <input   value="{{   Helper::fecha_f( !isset($ficha2) ? '' : $ficha2-> ADJ_OFICIO)  }}" name="ADJ_OFICIO" type="date"  class="form-control form-control-sm   ">
+    </div>
+
+    <div class="form-group">
+      <label for="ctactecatas">Embargo Liq.N°:</label>
+      <input   oninput="formatear(event)" value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2-> EMBARGO_N)}}" name="EMBARGO_N" type="text"   class="form-control form-control-sm   ">
+    </div> 
+
+    
+<div class="form-group">
+  <label for="ctactecatas">Fecha Emb.Liq.:</label>
+      <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2->EMB_FECHA)}}" 	     type="date"     name="EMB_FECHA"   class="form-control form-control-sm   ">
+    </div> 
+
+<div class="form-group">
+       <label for="ctactecatas">Institución Emb.:</label>
+       <select name="OTRA_INSTI" class="form-control form-control-sm">
+                    <?php 
+
+                     $instituc=  !isset($ficha2)? '' : $ficha2->OTRA_INSTI;
+                    foreach($instituciones as $it): 
+                         if( $instituc == $it->DESCR || $instituc == $it->IDNRO)//Ojo
+                           echo "<option selected value='{$it->IDNRO}'>{$it->DESCR}</option>"; 
+                         else{
+                              echo "<option value='{$it->IDNRO}'>{$it->DESCR}</option>";      
+                         }
+                         
+                    endforeach;  ?>
+             </select>   
+</div> 
+
+     <div class="form-group">
+       <label for="ctactecatas">Monto Liquid.:</label>
+      <input maxlength="10"  oninput="formatear(event)"  value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2-> LIQUIDACIO)}}" name="LIQUIDACIO" type="text"   class="form-control form-control-sm number-format  ">
+    </div> 
+
+
+
+ </div><!-- ************** -->
+
+
+
+  <!--COLUMNA 4-->
+  <div class="col-12 col-sm-6 col-md-6 col-lg-3 verde2"  >
+    
+<div class="form-group">
+  <label for="ctactecatas">Saldo Liq.:</label>
+      <input maxlength="10"  oninput="formatear(event)"  value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2->SALDO_LIQUI)}}" name="SALDO_LIQUI" type="text"  class="form-control form-control-sm  number-format ">
+      </div> 
+
+    <div class="form-group">
+      <label for="ctactecatas">Importe:</label>
+      <input maxlength="10"  oninput="formatear(event)"  value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2->IMPORT_LIQUI)}}" name="IMPORT_LIQUI" type="text"   class="form-control form-control-sm number-format  ">
+    </div> 
+
+   <div class="form-group">
+     <label for="ctactecatas">Notif. Liquid.:</label>
+      <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2->NOTIFI_LIQUI)}}" name="NOTIFI_LIQUI"   type="date"   class="form-control form-control-sm   ">
+    </div> 
+
+    <div class="form-group">
+      <label for="ctactecatas">Aprobación A.I:</label>
+      <input maxlength="10"   value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2->APROBA_AI)}}" name="APROBA_AI" type="text"   class="form-control form-control-sm  number-format ">
+    </div>  
+
+    <div class="form-group">
+      <label for="ctactecatas">Fecha aprob. AI:</label> 
+      <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2->APRO_FECHA)}}" 	   type="date"     name="APRO_FECHA"     class="form-control form-control-sm   ">
+      </div>  
+
+    <div class="form-group">
+      <label for="ctactecatas">Honorarios+IVA:</label>
+      <input  maxlength="10"  value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2->HONO_MAS_IVA )}}" name="HONO_MAS_IVA" type="text"  class="form-control form-control-sm  number-format ">
+    </div>  
+
+    
+
+    <div class="form-group">
+      <label for="ctactecatas">Notificación:</label>
+      <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2->NOTIFI_HONOIVA )}}" name="NOTIFI_HONOIVA"   type="date"     class="form-control form-control-sm   ">
+    </div> 
+
+    <div class="row">
+                    <div class="col-12 col-sm-5 col-md-6"> <label >Con depósito:</label><br>  </div>
+                    <div class="col-12 col-sm-7 col-md-6">
+                         <div class="form-check form-check-inline">
+                         <input {{isset($dato->CON_DEPOSITO)? (  $dato->CON_DEPOSITO =="S"?"checked":"") : 'checked'}} onchange="cambiar(event)"  class="form-check-input" type="radio" name="CON_DEPOSITO" id="inlineRadio1" value="S">
+                         <label class="form-check-label" for="inlineRadio1">SI</label>
+                         </div>
+                         <div class="form-check form-check-inline">
+                         <input {{isset($dato->CON_DEPOSITO)? (  $dato->CON_DEPOSITO =="N"?"checked":""): ''}}  onchange="cambiar(event)" class="form-check-input" type="radio" name="CON_DEPOSITO" id="inlineRadio2" value="N">
+                         <label class="form-check-label" for="inlineRadio2">NO</label>
+                         </div>
+                    </div>
+    </div>
+
+    <div class="form-group">
+      <label>Observación</label>
+      <input maxlength="100" name="OBS"   type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->OBS}}">                
+    </div>
+
+  </div><!-- ************ -->
+</div> <!--END PRIMER PANEL-->
+ 
+
+
+
+ 
+ 
+
+ <!--tercer PANEL -->
+ 
+<!--- ***************************-->
+<div class="row">
+    <div class="col-12 col-md-12 col-lg-8">
+      <div class="row pt-1 verde3"  >
+      <p> Adj.Informe al registro</p>
+              <div class="col-12 col-sm-1 col-md-2 col-lg-1"><label for="ctactecatas">Fecha:</label></div>
+              <div class="col-12 col-sm-3 col-md-4 col-lg-3">
+                <input   oninput="formatear(event)"  value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2->ADJ_INFO_FECHA )}}" name="ADJ_INFO_FECHA" type="date"  class="form-control form-control-sm   ">
+          </div>
+      </div> 
+ 
+
+<div class="row p-1 verde4"  >
+
+  <!-- PRIMER COL -->
+  <div class="col-12 col-sm-4 col-md-4 ">
+  <div class="row"><!-- INF. AUTOMOTORES -->
+        <div class="form-group"><label for="ctactecatas">Inform. automotores:</label>
+         <input  maxlength="30" oninput="formatear(event)"  value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2->INFO_AUTOMOTOR )}}" name="INFO_AUTOMOTOR" type="text"   class="form-control form-control-sm   ">
         </div>
-   </div>
-   <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-   <div class="form-group">
-              <label for="ctactecatas">Importe aprobado AI:</label>
-              <input  oninput="formatear(event)"  value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2-> APROB_IMPO)}}" name="APROB_IMPO" type="text" id="ctactecatas" class="form-control form-control-sm   ">
-          </div>
-   </div>
-   <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-   <div class="form-group">
-              <label for="ctactecatas">Saldo:</label>
-              <input   oninput="formatear(event)"  value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2-> SALDO_EXT)}}" name="SALDO_EXT" type="text" id="ctactecatas" class="form-control form-control-sm   ">
-          </div>
-   </div>
-   <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-   <div class="form-group">
-              <label for="ctactecatas">Adj.Oficio:</label>
-              <input   value="{{! isset($ficha2) ? '' : $ficha2-> ADJ_OFICIO}}" name="ADJ_OFICIO" type="text" id="ctactecatas" class="form-control form-control-sm   ">
-          </div>
-   </div>
-   <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-      <div class="form-group">
-                  <label for="ctactecatas">Notifica:</label>
-                  <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2-> NOTIFI_5)}}" name="NOTIFI_5"   type="date"    id="ctactecatas" class="form-control form-control-sm   ">
-          </div>
-   </div>
-   <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-   <div class="form-group">
-              <label for="ctactecatas">Embargo N°:</label>
-              <input   oninput="formatear(event)" value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2-> EMBARGO_N)}}" name="EMBARGO_N" type="text" id="ctactecatas" class="form-control form-control-sm   ">
-          </div>
-   </div>
-   <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-   <div class="form-group">
-              <label for="ctactecatas">Fecha:</label>
-              <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2-> EMB_FECHA)}}" 	     type="date"     name="EMB_FECHA"   id="ctactecatas" class="form-control form-control-sm   ">
-          </div>
-   </div>
-   <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-   <div class="form-group">
-              <label for="ctactecatas">Monto:</label>
-              <input   oninput="formatear(event)"  value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2-> EMBAR_EJEC)}}" name="EMBAR_EJEC" type="text" id="ctactecatas" class="form-control form-control-sm   ">
-          </div>
-   </div>
-   <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-   <div class="form-group">
-                    <label for="ctactecatas">Otra Institución:</label>
-                    <input   value="{{! isset($ficha2) ? '' : $ficha2-> OTRA_INSTI}}" name="OTRA_INSTI" type="text" id="ctactecatas" class="form-control form-control-sm   ">
-            </div>
-   </div>
-   <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-   <div class="form-group">
-                  <label for="SD_FINIQUI">SD Finiquito:</label>
-                  <input    value="{{! isset($ficha2) ? '' : $ficha2-> SD_FINIQUI}}" name="SD_FINIQUI" type="text" id="ctactecatas" class="form-control form-control-sm   "> 
-                </div>
-   </div>
-   <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-   <div class="form-group">
-                    <label for="ctactecatas">Fecha:</label>
-                    <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2-> FEC_FINIQU)}}" name="FEC_FINIQU"   type="date"    id="ctactecatas" class="form-control form-control-sm   ">
-                </div>
-   </div>
 
-             
- 
-</div><!--end master row -->
-
- 
-
-  
- 
-
- 
-<div class="row" style="background-color: #bcfda6;">
-    <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-    <div class="form-group">
-            <label for="ctactecatas">Inhibición:</label>
-            <input   oninput="formatear(event)"   value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2-> INIVISION)}}" name="INIVISION" type="text" id="ctactecatas" class="form-control form-control-sm   ">
-          </div>
-    </div>
-    <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-    <div class="form-group">
-            <label for="ctactecatas">Fecha:</label>
-            <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2-> FEC_INIVI)}}"     type="date"     name="FEC_INIVI"   id="ctactecatas" class="form-control form-control-sm   ">
-          </div>
-    </div>
-    <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-    <div class="form-group">
-          <label for="ctactecatas">Arreglo Ex.J:</label>
-          <input    value="{{! isset($ficha2) ? '' : $ficha2-> ARREGLO_EX}}" name="ARREGLO_EX" type="text" id="ctactecatas" class="form-control form-control-sm   ">
+        <div class="form-group"> <label for="ctactecatas">Vehículo:</label>
+          <input maxlength="30"  oninput="formatear(event)"  value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2->INFO_AUTOVEHIC )}}" name="INFO_AUTOVEHIC" type="text"  class="form-control form-control-sm   ">
         </div>
-    </div>
-    <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-    <div class="form-group">
-              <label for="ctactecatas">Levantamiento N° i=S:</label>
-              <input  oninput="formatear(event)"  value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2-> LEVANTA)}}" name="LEVANTA" type="text" id="ctactecatas" class="form-control form-control-sm   ">
-            </div> 
-    </div>
-    <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-    <div class="form-group">
-              <label for="ctactecatas">Fecha:</label> 
-              <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2-> FEC_LEVANT)}}" 	     type="date"     name="FEC_LEVANT"   id="ctactecatas" class="form-control form-control-sm   ">
-            </div> 
-    </div>
-    <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-    <div class="form-group">
-              <label for="ctactecatas">Depósito:</label>
-              <input   oninput="formatear(event)"  value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2-> DEPOSITADO)}}" name="DEPOSITADO" type="text" id="ctactecatas" class="form-control form-control-sm   ">
-            </div>
-    </div>
-    <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-    <div class="form-group">
-              <label for="ctactecatas">Extracción. C.:</label>
-              <input  oninput="formatear(event)"   value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2-> EXTRAIDO_C)}}" name="EXTRAIDO_C" type="text" id="ctactecatas" class="form-control form-control-sm   ">
-            </div>
-    </div>
-    <div class="col-12 col-sm-5 col-md-4 col-lg-3">
-    <div class="form-group">
-              <label for="ctactecatas">Extracción. L.:</label>
-              <input  oninput="formatear(event)"   value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2-> EXTRAIDO_L)}}" name="EXTRAIDO_L" type="text" id="ctactecatas" class="form-control form-control-sm   ">
-            </div>  
-    </div>
- 
-    <div class="col-12 col-sm-5 col-md-4 col-lg-3"> 
         
-          
-            <div class="form-check">
-              <input  onclick="sele_desele(this)" <?=! isset($ficha2) ? '' : ($ficha2->EXCEPCION=='s'?"checked":"")?> class="form-check-input"   type="checkbox"  id="EXCEPCION">
-              <input type="hidden" name="EXCEPCION"  value="<?=! isset($ficha2) ? '' : $ficha2->EXCEPCION?>">
-              <label class="form-check-label" for="defaultCheck1">
-                Excepción
-              </label>
-            </div>
-            <div class="form-check">
-              <input onclick="sele_desele(this)"   <?= ! isset($ficha2) ? '' : ($ficha2->APELACION=='s'?"checked":"")?> class="form-check-input" type="checkbox"   id="APELACION">
-              <input type="hidden" name="APELACION"  value="<?=! isset($ficha2) ? '' : $ficha2->APELACION?>">
-              <label class="form-check-label" for="defaultCheck2">
-                Apelación
-              </label>
-            </div>
-            <div class="form-check">
-              <input onclick="sele_desele(this)"  <?= ! isset($ficha2) ? '' : ($ficha2-> INCIDENTE=='s'?"checked":"")?> class="form-check-input"  type="checkbox" id="INCIDENTE">
-              <input type="hidden" name="INCIDENTE"  value="<?=! isset($ficha2) ? '' : $ficha2->INCIDENTE?>">
-              <label class="form-check-label" for="defaultCheck3">
-                Incidente
-              </label>
-            </div>  
-          
+        <div class="form-group"> <label for="ctactecatas">Chasis:</label> 
+        <input maxlength="30"   oninput="formatear(event)"  value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2->INFO_AUTOCHASI )}}" name="INFO_AUTOCHASI" type="text"   class="form-control form-control-sm   ">
       </div>
-      
+    </div><!-- END  INF. AUTOMOTORES -->
+  </div><!-- PRIMER COL -->
+
+
+    <!-- SEGUNDO COL -->
+  <div class="col-12 col-sm-4  col-md-4 ">
+  <div class="row p-1 "><!-- INF. INMUEBLES -->
+          <div class="form-group"> <label for="ctactecatas">Inform.inmuebles:</label>
+          <input  maxlength="30"  oninput="formatear(event)"  value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2->INFO_INMUEBLES )}}" name="INFO_INMUEBLES " type="text"  class="form-control form-control-sm   "></div>
+        <div class="form-group"><label for="ctactecatas">Finca:</label>
+        <input maxlength="30"  oninput="formatear(event)"  value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2->INFO_INMUFINCA )}}" name="INFO_INMUFINCA " type="text"   class="form-control form-control-sm   "></div>
+        <div class="form-group"> <label for="ctactecatas">Distrito:</label>
+        <input maxlength="30"  oninput="formatear(event)"  value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2->INFO_INMUDISTRI )}}" name="INFO_INMUDISTRI " type="text"  class="form-control form-control-sm   "></div>  
+    </div><!-- END INF. INMUEBLES -->
+</div> <!-- SEGUNDO COL -->
+
+
+  <!-- TERCER COL -->
+<div class="col-12 col-sm-4 col-md-4 ">
+
+   <!-- EMBARGO -->
+ <p style="text-decoration: underline; text-align: center;">  Embargo </p>
+   <div class="row">
+      <div class="col-6 col-sm-6 col-md-12">
+      <div class="form-group"> <label >Inmueble:</label><br> 
+                         <div class="form-check form-check-inline">
+                         <input {{isset($dato->EMB_INMUEBLE)? (  $dato->EMB_INMUEBLE =="S"?"checked":"") : 'checked'}} onchange="cambiar(event)"  class="form-check-input" type="radio" name="EMB_INMUEBLE" id="inlineRadio1" value="S">
+                         <label class="form-check-label" for="inlineRadio1">SI</label>
+                         </div>
+                         <div class="form-check form-check-inline">
+                         <input {{isset($dato->EMB_INMUEBLE)? (  $dato->EMB_INMUEBLE =="N"?"checked":""): ''}}  onchange="cambiar(event)" class="form-check-input" type="radio" name="EMB_INMUEBLE" id="inlineRadio2" value="N">
+                         <label class="form-check-label" for="inlineRadio2">NO</label>
+                         </div>
+                    </div>
+      </div>
+      <div class="col-6 col-sm-6 col-md-12">
+      <div class="form-group"> <label >Vehículo:</label><br>
+                    
+                    <div class="form-check form-check-inline">
+                    <input {{isset($dato->EMB_VEHICULO)? (  $dato->EMB_VEHICULO =="S"?"checked":"") : 'checked'}} onchange="cambiar(event)"  class="form-check-input" type="radio" name="EMB_VEHICULO" id="inlineRadio1" value="S">
+                    <label class="form-check-label" for="inlineRadio1">SI</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                    <input {{isset($dato->EMB_VEHICULO)? (  $dato->EMB_VEHICULO =="N"?"checked":""): ''}}  onchange="cambiar(event)" class="form-check-input" type="radio" name="EMB_VEHICULO" id="inlineRadio2" value="N">
+                    <label class="form-check-label" for="inlineRadio2">NO</label>
+                    </div>
+               </div> 
+      </div>
+   </div>
+                   
+         
+       
+         <!-- END EMBARGO -->
+</div><!-- TERCER COL -->
+ 
+    </div>
+    </div>
+
+    <div class="col-12 col-md-8 col-lg-4 p-1 verde5"  >
+ <!--INHIBICION -->
   
-  </div><!--end second row-->
+ <p>Adj.Inhibición</p>
+ <div class="row">
+          <div class="col-12 col-md-5">   <label for="ctactecatas">Fecha:</label></div>
+          <div class="col-12 col-md-7"> 
+             <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2->ADJ_INHI_FEC)}}"     type="date"     name="ADJ_INHI_FEC"    class="form-control form-control-sm   "></div>
+</div>
  
+  Inhibición
+<div class="row">
+          <div class="col-12 col-md-5">  <label for="ctactecatas">A.I. N°:</label></div>
+          <div class="col-12 col-md-7">
+            <input maxlength="10"  oninput="formatear(event)"   value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2->INHI_AI_NRO)}}" name="INHI_AI_NRO" type="text"   class="form-control form-control-sm   "></div>
+</div>
 
+  <div class="row">
+          <div class="col-12 col-md-5">    <label for="ctactecatas">Fecha A.I.:</label></div>
+          <div class="col-12 col-md-7">
+            <input   oninput="formatear(event)"   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2->INHI_AI_FEC)}}" name="INHI_AI_FEC" type="date"   class="form-control form-control-sm   ">
+  </div></div>
 
+  <div class="row">
+          <div class="col-12 col-md-5"> <label for="ctactecatas">Inhibición N°:</label></div>
+          <div class="col-12 col-md-7"><input maxlength="10"  oninput="formatear(event)"   value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2->INHI_NRO)}}" name="INHI_NRO" type="text"  class="form-control form-control-sm   ">
+  </div></div>
+
+ <div class="row">
+          <div class="col-12 col-md-5"> <label for="ctactecatas">Fecha Inhibición:</label></div>
+          <div class="col-12 col-md-7">
+            <input   oninput="formatear(event)"   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2-> FEC_INIVI)}}" name="FEC_INIVI" type="date"  class="form-control form-control-sm   ">
+  </div></div>
  
+   <!--end INHIBICION-->
+    </div>
+    </div><!--- ***************************-->
+
  
   </form>
+
+
+
 <script>
   var operacSt= document.getElementById("operacion").value;
 if(  operacSt =="A" || operacSt == "A+")
@@ -350,3 +406,26 @@ habilitarCampos("formNoti", true);
 
 
 </script>
+
+
+<!--
+  ALTER TABLE notificaciones add column ADJ_INHI_FEC date null;
+ALTER TABLE notificaciones add column ADJ_AI_FEC date null;
+ALTER TABLE notificaciones add column INHI_NRO date null;
+
+ALTER TABLE notificaciones add column SALDO_LIQUI int(10) unsigned DEFAULT 0;
+ALTER TABLE notificaciones add column IMPORT_LIQUI int(10) unsigned DEFAULT 0;
+ALTER TABLE notificaciones add column HONO_MAS_IVA int(10) unsigned DEFAULT 0;
+ALTER TABLE notificaciones add column NOTIFI_LIQUI date null;
+ALTER TABLE notificaciones add column CON_DEPOSITO char(1) DEFAULT 'N';
+ALTER TABLE notificaciones add column OBSERVACION  varchar(100);
+ALTER TABLE notificaciones add column ADJ_INFO_FECHA date null;
+ALTER TABLE notificaciones add column INFO_AUTOMOTOR VARCHAR(30);
+ALTER TABLE notificaciones add column INFO_AUTOVEHIC VARCHAR(30);
+ALTER TABLE notificaciones add column INFO_AUTOCHASI VARCHAR(30);
+ALTER TABLE notificaciones add column INFO_INMUEBLES VARCHAR(30);
+ALTER TABLE notificaciones add column INFO_INMUFINCA VARCHAR(30);
+ALTER TABLE notificaciones add column INFO_INMUDISTRI VARCHAR(30);
+ALTER TABLE notificaciones add column EMB_INMUEBLE CHAR(1) DEFAULT 'N';
+ALTER TABLE notificaciones add column EMB_VEHICULO CHAR(1) DEFAULT 'N';
+-->

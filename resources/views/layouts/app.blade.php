@@ -36,12 +36,14 @@ if( $adapta->isMobile()): ?>
 
         table, label, select{   font-size: 12px !important;    }
         table.table td{ padding: 0px !important;}
+        input{ font-size: 14px; }
       
 <?php
 else: ?>
         table{  font-size: 14px !important;      }
         label, select{ font-size: 12.5px !important;  }
         table.table td{ padding: 0px !important;}
+        input{ font-size: 12px !important; font-weight: 600;}
 <?php
 endif;
 ?>
@@ -53,7 +55,7 @@ endif;
           text-align: center;
       }
 
-        label{  font-weight: bold; text-transform: uppercase;  }
+        label{  font-weight: 600; text-transform: uppercase;  }
        
 
  
@@ -63,6 +65,37 @@ endif;
        .name-titular{
         font-size: 14px; text-transform: capitalize; font-weight: bold;
        }
+
+
+    
+
+.verde1 {
+    background-color: #9E9E9E;
+}
+
+.verde2 {
+    background-color: #BDBDBD;
+}
+
+.verde3 {
+    background-color: #a6a6a6;
+}
+
+.verde4 {
+    background-color: #b4b4b4;
+}
+
+.verde5 {
+    background-color: #949494;
+}
+
+.verde6 {
+    background-color: #549751;
+}
+
+.verde7 {
+    background-color: #5B8959;
+}
      </style>
 </head>
 
