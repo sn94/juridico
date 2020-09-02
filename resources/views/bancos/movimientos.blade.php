@@ -37,11 +37,15 @@ $iconsize=  $dete->isMobile() ? "": "fa-lg";
 
 <div id="showform" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-sm">
-    <div class="modal-content" id="viewform">
+    <div class="modal-content" id="viewformmodal">
       
     </div>
   </div>
 </div>
+
+
+
+
 @endsection
 
 
@@ -68,7 +72,7 @@ return ele.replaceAll("[.]", "");
 
 
 function mostrar_form(ev){
-let divname= "#viewform";
+let divname= "#viewformmodal";
   $.ajax(
        {
          url:  ev.currentTarget.href, 
@@ -169,9 +173,9 @@ function ajaxCall( e, divnam, succes){
 function movimiento(ev){
   ev.preventDefault();
   if( $("#formmovi input[name=IMPORTE]").val()==""){ alert("INGRESE EL IMPORTE!"); return;}
-if( ! confirm("CONTINUAR?") ) return;
+ 
 if ( ! noempty_fields( )) return;
-if( ! confirm("CONTINUAR?") ) return;
+ 
 $("#formmovi input[name=IMPORTE]").val(  quitarSeparador( $("#formmovi input[name=IMPORTE]").val()   )  );
  ajaxCall( ev, "#mensaje-movi", function(res){
             $( "#mensaje-movi").html(JSON.parse(res).ok ); 

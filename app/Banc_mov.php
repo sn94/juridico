@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use PhpParser\Node\Expr\FuncCall;
 
 class Banc_mov extends Model
 {
@@ -16,10 +17,13 @@ class Banc_mov extends Model
 
     protected $primaryKey = 'IDNRO';
 
-    protected $fillable= [ 'BANCO','CUENTA','FECHA','NUMERO','CODIGO','IMPORTE','CONCEPTO','PROJECTO','NRO_RECIBO','PROVEEDOR','TIPO_MOV' ];
+    protected $fillable= [ 'IDBANCO', 'BANCO','CUENTA','FECHA','NUMERO','CODIGO','IMPORTE','CONCEPTO','PROJECTO','NRO_RECIBO','PROVEEDOR','TIPO_MOV' ];
 
     public $timestamps = false;
 
  
 
+    public function  bancos(){
+        return $this->belongsTo('App\Bancos', "IDNRO", "IDBANCO");
+    }
 }

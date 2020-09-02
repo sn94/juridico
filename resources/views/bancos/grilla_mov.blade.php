@@ -14,7 +14,7 @@ $tablaresponsiva= $dete->isMobile()?"table-responsive" : "";
     color:black;
   }
   tr{
-    background: #e9fca7 !important;
+    background:  #a3c5fc  !important;
   }
 </style>
 
@@ -23,7 +23,7 @@ $tablaresponsiva= $dete->isMobile()?"table-responsive" : "";
 
 <table id="ctabancos" class="table  table-sm table-bordered {{$tablaresponsiva}} table-striped">
         <thead class="thead-dark">
-            <tr><th></th><th></th><th class="text-right">DEBE</th><th class="text-right">HABER</th>
+            <tr><th></th><th></th> <th class="text-right">DEBE</th><th class="text-right">HABER</th>
             <th class="text-right">FECHA.</th><th>CONCEPTO</th> </tr>
         </thead>
         <tbody>
@@ -32,6 +32,7 @@ $tablaresponsiva= $dete->isMobile()?"table-responsive" : "";
             <tr id="{{$it->IDNRO}}"> 
               <td><p class="pt-1 mr-1 ml-1 mb-0 text-center"><a onclick="mostrar_form(event)" data-toggle="modal" data-target="#showform"   href="<?= url("emovibank/".$it->IDNRO) ?>"><i class="fa fa-pencil {{$iconsize}}" aria-hidden="true"></i></a></p></td>
               <td><p class="pt-1 mr-1 ml-1 mb-0 text-center"><a   onclick="borrar(event)" href="<?= url("dmovibank/".$it->IDNRO) ?>"><i class="fa fa-trash {{$iconsize}}" aria-hidden="true"></i></a></p></td>
+             
               <td class="text-right"><p class="pt-1 mr-1 ml-1 mb-0">{{$it->TIPO_MOV=="D" ? Helper::number_f($it->IMPORTE) : '*****'}}</p></td>
               <td  class="text-right"><p class="pt-1 mr-1 ml-1 mb-0">{{$it->TIPO_MOV=="E" ?  Helper::number_f($it->IMPORTE) : '*****'}}</p></td>
               <td  class="text-right"><p class="pt-1 mr-1 ml-1 mb-0">{{$it->FECHA}}</p></td>

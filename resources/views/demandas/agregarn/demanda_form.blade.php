@@ -8,7 +8,7 @@ if( $OPERACION == "A+")  $rutaEspecial = url("demandas-agregar");
 if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar") ;
 
 ?>
-<form  onsubmit="enviar(event)" id="formDeman" class="tab-content" method="post" action="<?=  $rutaEspecial ?>">
+<form  onsubmit="enviarDemanda(event)" id="formDeman" class="tab-content" method="post" action="<?=  $rutaEspecial ?>">
  
 {{csrf_field()}}
  
@@ -337,7 +337,7 @@ if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar
                     <div class="col-12 col-sm-5 col-md-5"> <label >Con depósito:</label><br>  </div>
                     <div class="col-12 col-sm-7 col-md-7">
                          <div class="form-check form-check-inline">
-                         <input {{isset($dato->CON_DEPOSITO)? (  $dato->CON_DEPOSITO =="S"?"checked":"") : 'checked'}} onchange="cambiar(event)"  class="form-check-input" type="radio" name="CON_DEPOSITO" id="inlineRadio1" value="S">
+                         <input {{isset($dato->CON_DEPOSITO)? (  $dato->CON_DEPOSITO =="S"?"checked":"") : ''}} onchange="cambiar(event)"  class="form-check-input" type="radio" name="CON_DEPOSITO" id="inlineRadio1" value="S">
                          <label class="form-check-label" for="inlineRadio1">SI</label>
                          </div>
                          <div class="form-check form-check-inline">
@@ -359,7 +359,7 @@ if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar
                <div class="col-12 col-sm-7 col-md-6"> <label >Con arreglo extrajud.:</label>  </div>
                <div class="col-12 col-sm-5 col-md-6">
                     <div class="form-check form-check-inline">
-                    <input {{isset($dato->ARR_EXTRAJUDI)? (  $dato->ARR_EXTRAJUDI =="S"?"checked":"") : 'checked'}} onchange="cambiar(event)"  class="form-check-input" type="radio" name="ARR_EXTRAJUDI" id="inlineRadio1" value="S">
+                    <input {{isset($dato->ARR_EXTRAJUDI)? (  $dato->ARR_EXTRAJUDI =="S"?"checked":"") : ''}} onchange="cambiar(event)"  class="form-check-input" type="radio" name="ARR_EXTRAJUDI" id="inlineRadio1" value="S">
                     <label class="form-check-label" for="inlineRadio1">SI</label>
                     </div>
                     <div class="form-check form-check-inline">
@@ -373,17 +373,99 @@ if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar
    
 </form>
 <script>
-    var Operstr= document.getElementById("operacion").value;
-if( Operstr =="A")
+
+var Operstr= document.getElementById("operacion").value;
+// Operacion A-gregar, deshabilitar inicialmente
+//Nueva Demandado y Nueva demanda
+if( Operstr =="A")  
  habilitarCampos('formDeman',false);
- 
+ //Nueva Demanda para Demandado ya existente en la BD  A+
+ //Actualizacion de datos de demandado y demanda       M
+
 if(Operstr =="A+"  || Operstr =="M")
 habilitarCampos('formDeman', true);
-  //Los datos personales ya estan en BD en este caso, habilitar solo campos de Demanda CASO 1
-           //Edicion, todas las instancias ya existen en la Bd CASO2
+
      
+// Deshabilitar campos para Vista de solo lectura V
 if(Operstr =="V"  )
 habilitarCampos('formDeman', false);
+
+
+
+
+//Elimina los puntos separadores para campos numericos con formato
+function limpiar_campos_dema(){ 
+  $("#formDeman .number-format").each( function( indice, obj){    quitarSeparador( obj); } );
+}
+//Restaura el formato de millares para campos numericos
+function rec_formato_numerico_dema(){ 
+  $("#formDeman .number-format").each( function( indice, obj){    numero_con_puntuacion( obj); } );
+}
+
+
+
+function control_post_registro(res){
+     if($("#operacion").val() == "A+"){
+     //Asignar ID DE DEMANDA
+     $("#formNoti input[name=IDNRO],#formObser input[name=IDNRO],#formContra input[name=IDNRO],#formExtrajudi input[name=IDNRO]").val( res.id_demanda);
+     //Asignar el numero de cedula
+     $("input[name=CI]").val(  res.ci);
+     //HABILITAR FORMULARIOS RESTANTES
+     habilitarCampos("formNoti",true); 
+     habilitarCampos("formObser",true);
+     habilitarCampos("formContra",true);
+     habilitarCampos("formExtrajudi",true);
+               
+} 
+}
+ 
+function enviarDemanda( ev){ // ENVIO FORM DEMANDA
+  
+  ev.preventDefault();  
+ //limpiar campo demanda 
+limpiar_campos_dema();
+      $.ajax(
+      {
+        url:  ev.target.action,
+        method: "post",
+        data: $("#"+ev.target.id).serialize(),
+        dataType: "json",
+        headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+        beforeSend: function(){
+          $("#demanda-panel").html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
+          
+        },
+        success: function( res ){  
+           
+            if( "error" in res){
+              $("#demanda-panel").html( "" ); 
+              alert( res.error);
+            }else{ 
+              //Mostrar mensaje 
+              $("#demanda-panel").html(  ""  ); //mensaje 
+              $("#dema-msg").text( "GUARDADO!");
+                $(".toast").toast("show"); 
+              control_post_registro( res );
+            }
+            rec_formato_numerico_dema();
+        },
+        error: function(){ 
+           $("#demanda-panel").html(  "" );
+           alert("Problemas de conexión");
+           rec_formato_numerico_dema();
+              }
+      }
+    );//fin ajax
+
+}
+
+
+
+
+
+
+
+
  </script>
   
 

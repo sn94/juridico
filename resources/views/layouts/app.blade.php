@@ -109,7 +109,11 @@ endif;
                 </div>
                 <div class="sidebar-header">
                     <a href="<?= url("/") ?>"><img src="<?=url("assets/img/balanza.jpg")?>" class="user-photo"></a>
-                    <p class="username">Estudio Jurídico Sa.<br><small>Administrator</small>
+                    <p class="username">Estudio Jurídico Sa.<br><small>
+                        {{session('nick').","}}
+                    {{  session('tipo')== "S" ? "SUPERVISOR": (session('tipo')=="U" ? "USUARIO" : "OPERADOR") }}
+
+                    </small>
                     </p>
                 </div>
                 <ul id="sidebar-nav" class="sidebar-nav">
@@ -123,39 +127,29 @@ endif;
                      
                     <li class="sidebar-nav-group">
                         <a href="#opcinformes" class="sidebar-nav-link" data-toggle="collapse"><i class="icon-pencil"></i> INFORMES</a>
-                        <ul id="opcinformes" class="collapse" data-parent="#sidebar-nav">
-                            <li><a href="<?=url("filtros")?>" class="sidebar-nav-link">FILTROS</a></li> 
-                            <li><a href="<?=url("dema-noti-venc")?>" class="sidebar-nav-link">Notif.vencidas</a></li>
-                            <li><a href="/depcta" class="sidebar-nav-link">Dep&oacute;sitos</a></li>
-                            <li><a href="/extcta" class="sidebar-nav-link">Extracciones</a></li>
-                            <li><a href="./pages/forms/tabbed-form.html" class="sidebar-nav-link">Est. Cta. Extracci&oacute;n</a></li>
-                            <li><a href="./pages/forms/multi-step-form.html" class="sidebar-nav-link">Dep&oacute;sitos Emb. prev.</a></li>
-                            <li><a href="./pages/forms/tabbed-form.html" class="sidebar-nav-link">Dep&oacute;sitos Liquidaci&oacute;n</a></li>   
-                            <li><a href="./pages/forms/tabbed-form.html" class="sidebar-nav-link">Resumen de cuentas</a></li>
-                            <li><a href="./pages/forms/multi-step-form.html" class="sidebar-nav-link">Recaudaci&oacute;n</a></li> 
-                       
+                        <ul id="opcinformes" class="collapse" data-parent="#sidebar-nav"> 
+                        
+                            <li><a href="/depcta" class="sidebar-nav-link">Dep&oacute;sitos capital</a></li>
+                            <li><a href="/extcta" class="sidebar-nav-link">Dep&oacute;sitos Liquidaci&oacute;n</a></li>
+                            <li><a href="./pages/forms/tabbed-form.html" class="sidebar-nav-link">Cobro extrajudicial</a></li>
+                            <li><a href="<?=url("filtros")?>" class="sidebar-nav-link">Filtros</a></li> 
                         </ul>
                     </li>
                     <li class="sidebar-nav-group">
                     <a href="#banco-menu" class="sidebar-nav-link" data-toggle="collapse" ><i class="icon-note"></i> BANCOS</a>
                         <ul id="banco-menu" class="collapse" data-parent="#sidebar-nav">
-                        <li><a href="<?=url("bank")?>" class="sidebar-nav-link">Cta.de Banco</a></li>
-                        <li><a href="./pages/input-controls/label.html" class="sidebar-nav-link">Dep&oacute;sito</a></li>
-                            <li><a href="./pages/input-controls/radio-button.html" class="sidebar-nav-link">Extracci&oacute;n</a></li>
-                           
-                           <li><a href="./pages/input-controls/input-grosup.html" class="sidebar-nav-link">Informes</a></li>
-                           <li><a href="./pages/input-controls/input-date.html" class="sidebar-nav-link">Dep&oacute;sitos/ingresos </a></li>
-                            <li><a href="./pages/input-controls/checkbox.html" class="sidebar-nav-link">Extracciones/egresos</a></li>
-                          
-                         <li><a href="./pages/input-controls/toggle-switch.html" class="sidebar-nav-link">Estado de cuenta</a></li>
+                        <li><a href="<?=url("bank")?>" class="sidebar-nav-link">Cta.de Banco</a></li> 
+                        <li><a href="./pages/input-controls/input-grosup.html" class="sidebar-nav-link">Informes</a></li>
                         </ul>
                     </li>
                     <li class="sidebar-nav-group"><a href="#layout" class="sidebar-nav-link" data-toggle="collapse"><i class="icon-layers"></i> GASTOS</a>
                         <ul id="layout" class="collapse" data-parent="#sidebar-nav">
+                            <li><a href="<?=  url("gastos") ?>" class="sidebar-nav-link">Cargar</a></li>
                             <li><a href="./pages/layout/sidebar.html" class="sidebar-nav-link">Plan de cta.</a></li>
                             <li><a href="./pages/layout/spinner.html" class="sidebar-nav-link">Gastos por demanda</a></li> 
                         </ul>
                     </li>
+                    @if( session("tipo") == "S")
                     <li class="sidebar-nav-group"><a href="#reference" class="sidebar-nav-link" data-toggle="collapse"><i class="icon-notebook"></i> AUXILIARES</a>
                         <ul id="reference" class="collapse" data-parent="#sidebar-nav">
                             <li><a href="<?= url("auxiliar")?>" class="sidebar-nav-link">Datos aux.</a></li>
@@ -164,6 +158,7 @@ endif;
 
                         </ul>
                     </li>
+                    @endif
                    
                 </ul>
                 <div class="sidebar-footer"><a href="./pages/content/chat.html" data-toggle="tooltip" title="Support"><i class="fa fa-comment"></i> </a><a href="./pages/content/settings.html" data-toggle="tooltip" title="Settings"><i class="fa fa-cog"></i> </a><a href="<?=url("signout")?>" data-toggle="tooltip" title="Logout"><i class="fa fa-power-off"></i></a></div>
@@ -173,16 +168,27 @@ endif;
                     <div class="navbar-brand">EST. JUR&Iacute;DICO &middot;  </div>
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item dropdown"><a href="#" class="nav-link dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="badge badge-pill badge-primary">3</span> <i class="fa fa-bell-o"></i></a>
-                            <div class="dropdown-menu dropdown-menu-right"><a href="./pages/content/notification.html" class="dropdown-item"><small class="dropdown-item-title">Lorem ipsum (today)</small><br>
-                                    <div>Lorem ipsum dolor sit amet...</div>
+                            <div class="dropdown-menu dropdown-menu-right"><a href="{{url('messenger')}}" class="dropdown-item"><small class="dropdown-item-title"> Nuevo mensaje</small><br>
+                                   
                                 </a>
+                                <div class="dropdown-divider"></div><a href="<?= url("list-msg/".session("id")."/R")?>" class="dropdown-item dropdown-link">Recibidos</a>
+
                                 <div class="dropdown-divider"></div><a href="./pages/content/notification.html" class="dropdown-item"><small class="text-secondary">Lorem ipsum (yesterday)</small><br>
                                     <div>Lorem ipsum dolor sit amet...</div>
                                 </a>
                                 <div class="dropdown-divider"></div><a href="./pages/content/notification.html" class="dropdown-item"><small class="text-secondary">Lorem ipsum (12/25/2017)</small><br>
                                     <div>Lorem ipsum dolor sit amet...</div>
                                 </a>
-                                <div class="dropdown-divider"></div><a href="<?=url("signout")?>" class="dropdown-item dropdown-link">CERRAR SESIÓN</a>
+
+                                <div class="dropdown-divider"></div><a href="<?= url("list-msg/".session("id")."/E") ?>" class="dropdown-item dropdown-link">Enviados</a>
+                               
+                                <div class="dropdown-divider"></div><a href="./pages/content/notification.html" class="dropdown-item"><small class="text-secondary">Lorem ipsum (yesterday)</small><br>
+                                    <div>Lorem ipsum dolor sit amet...</div>
+                                </a>
+                                <div class="dropdown-divider"></div><a href="./pages/content/notification.html" class="dropdown-item"><small class="text-secondary">Lorem ipsum (12/25/2017)</small><br>
+                                    <div>Lorem ipsum dolor sit amet...</div>
+                                </a>
+
                             </div>
                         </li>
                     </ul>

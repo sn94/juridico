@@ -34,13 +34,14 @@ use App\Helpers\Helper;
       <thead class="thead-dark pb-0 pt-0">
           <tr> <th></th> <th></th><th></th>
           <th class="pb-0 pt-0">DEMANDANTE</th>  
+          <th class="pb-0 pt-0">COD_EMP</th> 
           <th class="pb-0 pt-0">ORIGEN</th> 
           <th class="pb-0 pt-0">PRESENTADO</th> 
           <th class="pb-0 pt-0">SD.FINIQ.</th>
           <th class="pb-0 pt-0">FECHA</th>
           <th class="pb-0 pt-0">SALDO CAPITAL</th>
           <th class="pb-0 pt-0">SALDO LIQUID.</th>
-          <th class="pb-0 pt-0">COD_EMP</th>  </tr>
+          </tr>
       </thead>
       <tbody>
       <?php for($x=0; $x< sizeof($lista); $x++):
@@ -50,13 +51,14 @@ use App\Helpers\Helper;
            <td><a href="<?= url("demandas-editar/".$item->IDNRO)?>"><i   style="color:black;" class="fa fa-pencil" aria-hidden="true"></i></a> </td>
            <td >  <a onclick="procesar_borrar(event)" href="<?= url("demandas-borrar/".$item->IDNRO)?>"><i  style="color:black;" class="fa fa-trash" aria-hidden="true"></i></a> </td> 
             <td >  <?= $item->DEMANDANTE?> </td>
+            <td><?= $item->COD_EMP?></td>  
             <td > <?= $item->O_DEMANDA?></a> </td>
              <td>{{$item->PRESENTADO}}</td>
              <td>{{$item->SD_FINIQUI}}</td>
              <td>{{$item->FEC_FINIQU}}</td>
-             <td class="text-right">{{Helper::number_f($saldos[$x]["saldo_judi"])}}</td>
-             <td class="text-right" >{{Helper::number_f($saldos[$x]["saldo_en_c"])}}</td>
-              <td><?= $item->COD_EMP?></td>     </tr>
+             <td class="text-right">{{Helper::number_f($saldos[$x]["saldo_capital"])}}</td>
+             <td class="text-right" >{{Helper::number_f($saldos[$x]["saldo_liquida"])}}</td>
+                </tr>
       <?php  endfor; ?>
       </tbody>
       </table>

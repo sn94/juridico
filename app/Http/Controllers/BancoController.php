@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Arreglo_extrajudicial;
 use App\Banc_mov;
 use App\Bancos;
+use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
+use App\pdf_gen\PDF;
 use Exception; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB; 
@@ -163,12 +166,147 @@ class BancoController extends Controller
         $Bco= $dato->BANCO;
         $Titular= $dato->TITULAR;
 
-        //Consultar depositos y extracciones
-        $SQL="SELECT ctasban_mov.*,ctas_banco.CUENTA,ctas_banco.TITULAR FROM ctas_banco,ctasban_mov where ctas_banco.CUENTA=ctasban_mov.CUENTA AND ctas_banco.BANCO=ctasban_mov.BANCO";
-        $MOVS = DB::select( $SQL) ;
+        //Consultar depositos y extracciones 
+        $MOVS = $dato->banc_mov;
         return view("bancos.movimientos",
          [ 'IDNRO'=>$IDNRO,'TITULAR'=>$Titular,'BANCO'=>$Bco,'CUENTA'=>$Cta,'LINK'=>url("lmovibank")."/$id",
          "dato"=> $MOVS]);        
     }
+
+
+
+
+//tcpdf
+//para clases css referenciarlas mediante comillas dobles
+ 
+public function reporte( $idnro, $tipo="xls"){ 
+
+    $Bank= Bancos::find(  $idnro);
+    
+    $Movi= $Bank->banc_mov; 
+    
+    if( $tipo == "xls"){
+        echo json_encode(   $Movi );  
+    }else{
+        //Pdf format
+        //Preparar variables que representan montos
+         
+        $html= <<<EOF
+        <style>
+            tr.cabecera{
+                font-size: 7pt;
+                background-color: #c2fcca;
+                font-weight: bold;
+            }
+            table.tabla{ 
+                border-top: 1px solid #606060;
+                border-bottom: 1px solid #606060;
+            }
+            tr.cuerpo{
+                color: #363636;
+                font-size: 9px;
+                font-weight: bold;
+            }
+            tr.cuerpo td{
+                border-bottom: 1px solid #606060;
+            }
+            tr.pie td{ 
+                color: #0f0f0f;
+                font-weight: bold;
+                font-size: 11px;
+                border-bottom: 1px solid #606060;
+            }
+            .saldo-ok{
+                color: #035009;
+            }
+            .saldo-rojo{
+                color: #b80c07;
+            }
+            .numero{
+                text-align: right;
+            }
+        </style>
+        <h6>BANCO: {$Bank->BANCO},CUENTA N°: {$Bank->CUENTA}</h6>
+        <table class="tabla">
+        <thead>
+        <tr class="cabecera"><th>FECHA</th><th>COMPROBANTE</th><th>DETALLE DE TRANS.</th><th>DÉBITO</th><th>CRÉDITO</th></tr>
+        </thead>
+        <tbody>
+        EOF; 
+       
+        foreach( $Movi as $mo): 
+            $debito= $mo->TIPO_MOV=="E" ?  $mo->IMPORTE : "*****"; 
+            $credito=  $mo->TIPO_MOV=="D" ?  $mo->IMPORTE : "*****";
+            //con formato
+            $f_debito= Helper::number_f( $debito );
+            $f_credito= Helper::number_f( $credito );
+            
+            $html.= "<tr class=\"cuerpo\"> <td>{$mo->FECHA}</td><td>{$mo->NUMERO}</td><td>{$mo->CONCEPTO}</td><td class=\"numero\">$f_debito</td><td class=\"numero\">$f_credito</td></tr> ";
+        endforeach; 
+        //Sumas y saldo
+        $deb= $Movi->where("TIPO_MOV","E")->sum("IMPORTE");
+        $cred= $Movi->where("TIPO_MOV","D")->sum("IMPORTE");
+        //con formato
+        $f_deb= Helper::number_f( $deb);
+        $f_cred= Helper::number_f( $cred);
+
+        $saldo= $cred - $deb;
+        $f_saldo= Helper::number_f( $saldo );//con formato
+        $tr_saldo='saldo-ok';
+        if( $saldo < 0)  $tr_saldo="saldo-rojo"; 
+        $html.= <<<EOF
+        <tr class="pie"><td></td><td></td><td>SUMAS</td><td class="numero">$f_deb</td><td class="numero">$f_cred</td></tr>
+        <tr><td></td><td></td><td></td><td class="numero">SALDO</td><td  class="$tr_saldo numero">$f_saldo</td></tr>
+        </tbody></table>
+        EOF;
+         
+        $tituloDocumento= "EXTRACTO-".date("d")."-".date("m")."-".date("yy")."-".rand();
+        $pdf = new PDF(); 
+        $pdf->prepararPdf("$tituloDocumento.pdf", $tituloDocumento, ""); 
+        $pdf->generarHtml( $html);
+        $pdf->generar();
+
+    }//End pdf format option
+     
+
+}//End reporte function
+ 
+
+
+
+
+//CODIGO DE COMPATIBILIDAD
+
+
+public function  importar_registros(){
+
+
+    //Obtener instancias de movimiento de cuenta
+    //Actualizar el campo IDBANCO de los mismos
+    $Bancos= Bancos::get();
+    DB::beginTransaction();
+    try{
+
+        foreach($Bancos as $banco){
+            $idnro=  $banco->IDNRO;
+            $movs= Banc_mov::where("CUENTA", $banco->CUENTA)->get();
+            foreach( $movs as $movimiento){
+                $movimiento->IDBANCO= $idnro; 
+                $val= $movimiento->save();
+                
+                echo "$val<br>";
+            }
+        }
+        DB::commit();
+    }catch (\Exception $e) {
+        DB::rollback();
+        echo json_encode( array( 'error'=> "Hubo un error al guardar uno de los datos<br>$e") );
+    } 
+  
+
+}
+
+
+
 
 }

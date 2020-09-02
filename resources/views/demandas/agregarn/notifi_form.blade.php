@@ -1,5 +1,5 @@
  
-  <form  id="formNoti" class="tab-content" method="post" action="<?= url("enotifi")?>" onsubmit="enviar2(event)">
+  <form  id="formNoti" class="tab-content" method="post" action="<?= url("enotifi")?>" onsubmit="enviarSeguimiento(event)">
 
 
   <?php 
@@ -227,7 +227,7 @@
                     <div class="col-12 col-sm-5 col-md-6"> <label >Con depósito:</label><br>  </div>
                     <div class="col-12 col-sm-7 col-md-6">
                          <div class="form-check form-check-inline">
-                         <input {{isset($dato->CON_DEPOSITO)? (  $dato->CON_DEPOSITO =="S"?"checked":"") : 'checked'}} onchange="cambiar(event)"  class="form-check-input" type="radio" name="CON_DEPOSITO" id="inlineRadio1" value="S">
+                         <input {{isset($dato->CON_DEPOSITO)? (  $dato->CON_DEPOSITO =="S"?"checked":"") : ''}} onchange="cambiar(event)"  class="form-check-input" type="radio" name="CON_DEPOSITO" id="inlineRadio1" value="S">
                          <label class="form-check-label" for="inlineRadio1">SI</label>
                          </div>
                          <div class="form-check form-check-inline">
@@ -271,15 +271,15 @@
   <div class="col-12 col-sm-4 col-md-4 ">
   <div class="row"><!-- INF. AUTOMOTORES -->
         <div class="form-group"><label for="ctactecatas">Inform. automotores:</label>
-         <input  maxlength="30" oninput="formatear(event)"  value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2->INFO_AUTOMOTOR )}}" name="INFO_AUTOMOTOR" type="text"   class="form-control form-control-sm   ">
+         <input  maxlength="30"    value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2->INFO_AUTOMOTOR )}}" name="INFO_AUTOMOTOR" type="text"   class="form-control form-control-sm   ">
         </div>
 
         <div class="form-group"> <label for="ctactecatas">Vehículo:</label>
-          <input maxlength="30"  oninput="formatear(event)"  value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2->INFO_AUTOVEHIC )}}" name="INFO_AUTOVEHIC" type="text"  class="form-control form-control-sm   ">
+          <input maxlength="30"    value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2->INFO_AUTOVEHIC )}}" name="INFO_AUTOVEHIC" type="text"  class="form-control form-control-sm   ">
         </div>
         
         <div class="form-group"> <label for="ctactecatas">Chasis:</label> 
-        <input maxlength="30"   oninput="formatear(event)"  value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2->INFO_AUTOCHASI )}}" name="INFO_AUTOCHASI" type="text"   class="form-control form-control-sm   ">
+        <input maxlength="30"     value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2->INFO_AUTOCHASI )}}" name="INFO_AUTOCHASI" type="text"   class="form-control form-control-sm   ">
       </div>
     </div><!-- END  INF. AUTOMOTORES -->
   </div><!-- PRIMER COL -->
@@ -289,11 +289,11 @@
   <div class="col-12 col-sm-4  col-md-4 ">
   <div class="row p-1 "><!-- INF. INMUEBLES -->
           <div class="form-group"> <label for="ctactecatas">Inform.inmuebles:</label>
-          <input  maxlength="30"  oninput="formatear(event)"  value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2->INFO_INMUEBLES )}}" name="INFO_INMUEBLES " type="text"  class="form-control form-control-sm   "></div>
+          <input  maxlength="30"    value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2->INFO_INMUEBLES )}}" name="INFO_INMUEBLES " type="text"  class="form-control form-control-sm   "></div>
         <div class="form-group"><label for="ctactecatas">Finca:</label>
-        <input maxlength="30"  oninput="formatear(event)"  value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2->INFO_INMUFINCA )}}" name="INFO_INMUFINCA " type="text"   class="form-control form-control-sm   "></div>
+        <input maxlength="30"    value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2->INFO_INMUFINCA )}}" name="INFO_INMUFINCA " type="text"   class="form-control form-control-sm   "></div>
         <div class="form-group"> <label for="ctactecatas">Distrito:</label>
-        <input maxlength="30"  oninput="formatear(event)"  value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2->INFO_INMUDISTRI )}}" name="INFO_INMUDISTRI " type="text"  class="form-control form-control-sm   "></div>  
+        <input maxlength="30"  value="{{Helper::number_f(! isset($ficha2) ? '' : $ficha2->INFO_INMUDISTRI )}}" name="INFO_INMUDISTRI " type="text"  class="form-control form-control-sm   "></div>  
     </div><!-- END INF. INMUEBLES -->
 </div> <!-- SEGUNDO COL -->
 
@@ -307,7 +307,7 @@
       <div class="col-6 col-sm-6 col-md-12">
       <div class="form-group"> <label >Inmueble:</label><br> 
                          <div class="form-check form-check-inline">
-                         <input {{isset($dato->EMB_INMUEBLE)? (  $dato->EMB_INMUEBLE =="S"?"checked":"") : 'checked'}} onchange="cambiar(event)"  class="form-check-input" type="radio" name="EMB_INMUEBLE" id="inlineRadio1" value="S">
+                         <input {{isset($dato->EMB_INMUEBLE)? (  $dato->EMB_INMUEBLE =="S"?"checked":"") : ''}} onchange="cambiar(event)"  class="form-check-input" type="radio" name="EMB_INMUEBLE" id="inlineRadio1" value="S">
                          <label class="form-check-label" for="inlineRadio1">SI</label>
                          </div>
                          <div class="form-check form-check-inline">
@@ -320,7 +320,7 @@
       <div class="form-group"> <label >Vehículo:</label><br>
                     
                     <div class="form-check form-check-inline">
-                    <input {{isset($dato->EMB_VEHICULO)? (  $dato->EMB_VEHICULO =="S"?"checked":"") : 'checked'}} onchange="cambiar(event)"  class="form-check-input" type="radio" name="EMB_VEHICULO" id="inlineRadio1" value="S">
+                    <input {{isset($dato->EMB_VEHICULO)? (  $dato->EMB_VEHICULO =="S"?"checked":"") : ''}} onchange="cambiar(event)"  class="form-check-input" type="radio" name="EMB_VEHICULO" id="inlineRadio1" value="S">
                     <label class="form-check-label" for="inlineRadio1">SI</label>
                     </div>
                     <div class="form-check form-check-inline">
@@ -384,12 +384,14 @@
 
 <script>
   var operacSt= document.getElementById("operacion").value;
+  //A   Nueva demanda Nuevo Demandado
+  //A+ Nueva demanda para demandado ya existente
 if(  operacSt =="A" || operacSt == "A+")
 habilitarCampos('formNoti',false);
-
+//Actualizacion de demandado y demanda
 if(operacSt =="M")
 habilitarCampos("formNoti", true);
- 
+ //Solo lectura
  if( operacSt =="V")
  habilitarCampos("formNoti", false);
 
@@ -405,27 +407,61 @@ habilitarCampos("formNoti", true);
 
 
 
+
+
+
+  function limpiar_campos_seg(){ 
+  $("#formNoti .number-format").each( function( indice, obj){    quitarSeparador( obj); } );
+}
+function rec_formato_numerico_noti(){ 
+  $("#formNoti .number-format").each( function( indice, obj){    numero_con_puntuacion( obj); } );
+}
+
+
+
+
+function enviarSeguimiento( ev){ //envio DE FORM SEGUIMIENTO
+  ev.preventDefault();  
+  limpiar_campos_seg();
+        $.ajax(
+        {
+          url:  ev.target.action,
+          method: "post",
+          data: $("#"+ev.target.id).serialize(),
+          dataType: "json",
+          headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+          beforeSend: function(){
+            $("#seguimiento-panel").html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
+          },
+          success: function( res ){ 
+              if( "error" in res){ 
+                $("#seguimiento-panel").html( "" ); 
+                alert(res.error);
+              }else{ 
+                //Mostrar mensaje 
+                $("#seguimiento-panel").html( "" ); 
+                $("#noti-msg").text( "GUARDADO!");
+                $(".toast").toast("show"); 
+              }
+              rec_formato_numerico_noti();
+              
+          },
+          error: function(){
+            $("#seguimiento-panel").html( "" ); 
+            alert(  "Problemas de conexión ");
+            rec_formato_numerico_noti();
+          }
+        }
+      );
+  
+}/** */
+
+
+
+
+
+
 </script>
 
 
-<!--
-  ALTER TABLE notificaciones add column ADJ_INHI_FEC date null;
-ALTER TABLE notificaciones add column ADJ_AI_FEC date null;
-ALTER TABLE notificaciones add column INHI_NRO date null;
-
-ALTER TABLE notificaciones add column SALDO_LIQUI int(10) unsigned DEFAULT 0;
-ALTER TABLE notificaciones add column IMPORT_LIQUI int(10) unsigned DEFAULT 0;
-ALTER TABLE notificaciones add column HONO_MAS_IVA int(10) unsigned DEFAULT 0;
-ALTER TABLE notificaciones add column NOTIFI_LIQUI date null;
-ALTER TABLE notificaciones add column CON_DEPOSITO char(1) DEFAULT 'N';
-ALTER TABLE notificaciones add column OBSERVACION  varchar(100);
-ALTER TABLE notificaciones add column ADJ_INFO_FECHA date null;
-ALTER TABLE notificaciones add column INFO_AUTOMOTOR VARCHAR(30);
-ALTER TABLE notificaciones add column INFO_AUTOVEHIC VARCHAR(30);
-ALTER TABLE notificaciones add column INFO_AUTOCHASI VARCHAR(30);
-ALTER TABLE notificaciones add column INFO_INMUEBLES VARCHAR(30);
-ALTER TABLE notificaciones add column INFO_INMUFINCA VARCHAR(30);
-ALTER TABLE notificaciones add column INFO_INMUDISTRI VARCHAR(30);
-ALTER TABLE notificaciones add column EMB_INMUEBLE CHAR(1) DEFAULT 'N';
-ALTER TABLE notificaciones add column EMB_VEHICULO CHAR(1) DEFAULT 'N';
--->
+ 

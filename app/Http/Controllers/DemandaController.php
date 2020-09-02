@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Arreglo_extrajudicial;
+use App\Contraparte;
 use App\Demanda;
 use App\Demandados;
 use App\Helpers\Helper;
@@ -63,7 +65,7 @@ class DemandaController extends Controller
     $n_lst= array();
     foreach( $lst as $it){
         $idn= $it->IDNRO;
-        $arr= $judi->ver_saldo_array( $idn);
+        $arr= $judi->saldo_C_y_L( $idn);
         $arr['IDNRO']= $idn;
        array_push( $n_lst, $arr);
 
@@ -144,19 +146,17 @@ class DemandaController extends Controller
         if( ! strcasecmp(  $request->method() , "post"))  {
             
             //Quitar el campo _token
-            $Params=  $request->input(); 
-            //Devuelve todo elemento de Params que no este presente en el segundo argumento
-            $Newparams= array_udiff_assoc(  $Params,  array("_token"=> $Params["_token"] ),function($ar1, $ar2){
-                if( $ar1 == $ar2) return 0;    else 1; 
-             } ); 
+            $Params=  $request->input();  
             /***ini transac */ 
              DB::beginTransaction();
              try {
                 $deman=new Demanda();
-                $deman->fill(  $Newparams );
+                $deman->fill(  $Params );
                 $deman->save();
                $noti= new Notificacion(); $noti->IDNRO= $deman->IDNRO; $noti->CI= $deman->CI; $noti->save();
-               $obs= new Observacion(); $obs->IDNRO= $deman->IDNRO;    $obs->CI= $deman->CI; $obs->save(); 
+               $obs= new Observacion(); $obs->IDNRO= $deman->IDNRO;    $obs->CI= $deman->CI; $obs->save();
+               $contra= new Contraparte(); $contra->IDNRO= $deman->IDNRO; $contra->save();
+               $obarre= new Arreglo_extrajudicial();  $obarre->IDNRO= $deman->IDNRO;  $obarre->save(); 
                DB::commit();
                echo json_encode( array( 'ci'=> $deman->CI, "id_demanda"=> $deman->IDNRO) );
              } catch (\Exception $e) {
@@ -169,7 +169,9 @@ class DemandaController extends Controller
         else{    
             if( $ci != 0){
                 $ficha= Demandados::where("CI", $ci)->first();
-                return view('demandas.agregarn.index',    [ 'ci'=>$ci, 'nombre'=>$ficha->TITULAR, 'ficha0'=> $ficha, 'OPERACION'=>"A+", "origen"=>$origen]); 
+                return view('demandas.agregarn.index',  
+                array_merge( $this->formar_parametros() ,
+                 [ 'ci'=>$ci, 'nombre'=>$ficha->TITULAR, 'ficha0'=> $ficha, 'OPERACION'=>"A+"])     ); 
             }else{
                 $pars= array_merge( $this->formar_parametros() , array( 'OPERACION'=>"A"  ) );
                 return view('demandas.agregarn.index', $pars);  
@@ -190,25 +192,30 @@ class DemandaController extends Controller
            $obnoti= Notificacion::find( $iddeman);
            $obobs= Observacion::find( $iddeman);
            $obDataPerso= Demandados::where("CI", $obdema->CI)->first();
+           //Contraparte-intervencion
+           $obcontraparte= Contraparte::find( $iddeman);
+           if( is_null( $obcontraparte) ){//Crear una instancia de intervencion-contraparte si no existe
+               $obcontraparte= new Contraparte();
+               $obcontraparte->IDNRO= $iddeman;
+               $obcontraparte->save();
+           }
+           //Existe Arreglo Extrajudicial?
+           $obarre=Arreglo_extrajudicial::find( $iddeman );
+           if( is_null( $obarre)  ){//Crear una inst. de arreglo ext.judicial si no existe
+               $obarre= new Arreglo_extrajudicial();
+               $obarre->IDNRO= $iddeman;
+               $obarre->save();
+           }
+        
 
         if( ! strcasecmp(  $request->method() , "post"))  {
             
             //Quitar el campo _token
-            $Params=  $request->input(); 
-            //Devuelve todo elemento de Params que no este presente en el segundo argumento
-            $Newparams= array_udiff_assoc(  $Params,  array("_token"=> $Params["_token"] ),function($ar1, $ar2){
-                if( $ar1 == $ar2) return 0;    else 1; 
-             } );  
-          
-             /** DATOS DE TITULAR */
-            $demandado=Demandados::where("CI", $obdema->CI)->first();
-            //OBTENER DATOS
-            $ci= $obdema->CI;//cedula de demandado
-            $nombre= $demandado->TITULAR;
+            $Params=  $request->input();    
             //Actualizar en BD
-            $obdema->fill(  $Newparams );
+            $obdema->fill(  $Params );
             if($obdema->save() ){//exito  
-                echo json_encode(array(  'ci'=> $ci, 'nombre'=> $nombre,'id_demanda'=>$iddeman ));
+                echo json_encode(array(   'ok'=> "GUARDADO" ));
             }else{ //fallo
                 echo json_encode(array(  'error'=> 'Un problema en el servidor impidió guardar los datos. Contacte con su desarrollador.' )); 
             }
@@ -216,17 +223,29 @@ class DemandaController extends Controller
         else{  //get 
             $ci= $obdema->CI;//cedula  
             $nom= Demandados::where("CI",$ci)->first()->TITULAR;//nombre 
-            //Devolver
-            //Cedula    ID demanda  Nombre  Operacion   
+            //Devolver 
             $pars= array_merge( $this->formar_parametros() ,
              array( 'ci'=>  $ci ,'id_demanda'=>$iddeman,'ficha0'=>$obDataPerso, 'ficha'=> $obdema,
-              'ficha2'=>$obnoti,  'ficha3'=>$obobs, 'nombre'=> $nom , 'OPERACION'=>"M" ) 
-        );
+              'ficha2'=>$obnoti,  'ficha3'=>$obobs, 'ficha4'=> $obcontraparte,'ficha5'=> $obarre,
+               'nombre'=> $nom , 'OPERACION'=>"M" ) 
+                );
             return view('demandas.agregarn.index',  $pars); //Modificar M  
             }
         }
 
 
+
+    public function contraparte(Request $request, $iddeman=""){
+        $id_demanda= $iddeman =="" ?  $request->input("IDNRO") : $iddeman;
+       $contra=  Contraparte::find( $id_demanda);
+       //Si no existe
+       if( is_null($contra) )  $contra= new Contraparte();
+       $contra->fill(  $request->input() ); 
+       if($contra->save())
+       echo json_encode( array( 'ok'=>"GUARDADO" )    );
+       else
+       echo json_encode( array( 'error'=>"ERROR AL GUARDAR" )    ); 
+    }
         
     public function ver_demandan(Request $request, $iddeman=0){//idd id_demanda
         $origen= DB::table("odemanda")->get();
@@ -238,62 +257,20 @@ class DemandaController extends Controller
         $obDataPerso= Demandados::where("CI", $obdema->CI)->first();
          $ci= $obdema->CI;//cedula  
          $nom= Demandados::where("CI",$ci)->first()->TITULAR;//nombre 
+         //Arreglo extrajudicial
+         $arreglo=Arreglo_extrajudicial::find($iddeman);
          //Devolver
          //Cedula    ID demanda  Nombre  Operacion   
          $pars= array_merge( $this->formar_parametros() , array( 'OPERACION'=>"A"  ) );
          $propios= array(  'ci'=>  $ci ,'id_demanda'=>$iddeman, 
          'ficha0'=>$obDataPerso, 'ficha'=> $obdema, 'ficha2'=>$obnoti, 'ficha3'=>$obobs,
-          'nombre'=> $nom , 'OPERACION'=>"V");
+         'ficha4'=> $arreglo,  'nombre'=> $nom , 'OPERACION'=>"V");
          return view('demandas.agregarn.index',  array_merge( $pars, $propios ) ); //ver V   
          
      }
 
  
-/**
- * EDITAR DEMANDA
- */
-public function editar_demanda(Request $request, $iddeman=0){
-    //instancia de demanda
-    $obdema= Demanda::find( $iddeman);
-    $obnoti= Notificacion::find( $iddeman);
-    $obobs= Observacion::find( $iddeman);
-
-    if( ! strcasecmp(  $request->method() , "post"))  {
-        //Quitar el campo _token
-        $Params=  $request->input(); 
-        //Devuelve todo elemento de Params que no este presente en el segundo argumento
-        $Newparams= array_udiff_assoc(  $Params,  array("_token"=> $Params["_token"] ),function($ar1, $ar2){
-            if( $ar1 == $ar2) return 0;    else 1; 
-         } ); 
-        //DB INSERT 
-        $obdema->fill(  $Newparams );
-        $obdema->save();
-        //ULTIMO ID GENERADO
-        $ci= $obdema->CI; 
-        return view('demandas.msg_agregado', [  'ci'=> $ci, 'iddeman'=>$iddeman ]     ); 
-    }
-    else{
-        if(  $iddeman!= 0){
-            //datos para la vista 
-            $qu= Demandados::where( "CI", $obdema->CI)->first();
-            if( is_null( $qu) ){  echo "Código inválido";
-            }else{
-                $ci= $qu->CI;//cedula  
-                $nom=$qu->TITULAR;//nombre
-                 
-                return view('demandas.editar.index', 
-                ['ci'=>  $ci ,'id_demanda'=>$iddeman, 'nombre'=> $nom , 'ficha'=>$obdema, 'ficha2'=>$obnoti, 'ficha3'=>$obobs]); 
-            }
-        }else{
-            //Vista sin valores iniciales
-           return view('demandas.editar_nodata' , ['ci'=>  $obdema->CI ,'iddeman'=>$iddeman, 'nombre'=> $obdema->TITULAR, 'ficha'=>$obdema ]); 
-        }
-        
-    }
-}
-
-
-
+ 
 public function borrar($iddeman){
 
     DB::beginTransaction();

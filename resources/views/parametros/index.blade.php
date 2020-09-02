@@ -19,7 +19,8 @@
 //inserta, modifica registros de parametros y origen de demanda
 function ajaxCall( ev, divname){//Objeto event   DIV tag selector to display   success handler
 ev.preventDefault(); 
-
+//vALIDAR CHECK
+$("input[name=SHOW_COUNTERS]").val( $("input[type=checkbox]").prop("checked") ?"S":"N"  );
  $.ajax(
      {
        url:  ev.target.action,

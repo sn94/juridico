@@ -37,8 +37,18 @@ public function index( $tabl="demandan"){
 
 
 
+/**OBTENER REGISTROS A PARTIR DEL NOMBRE DE LA TABLA */
+ public function get( $tabla ){
+        //pROPORCIONAR RUTAS A LOS RECURSOS 
+        $registro= array();
+        
+        if( $tabla =="odemanda")
+        $registro=  DB::table($tabla)->pluck("NOMBRES", "IDNRO");
+        else
+        $registro=  DB::table($tabla)->pluck("DESCR", "IDNRO");
 
- 
+        echo json_encode(  $registro);
+ }
    
 
    
@@ -87,7 +97,6 @@ public function editar( Request $request, $tabl="", $idnro=""){
              ->update( $Newparams  );
              echo json_encode( array('ok'=>  "ACTUALIZADO"  ));    
             DB::commit();
-       
         } catch (\Exception $e) {
             DB::rollback();
             echo json_encode( array( 'error'=> "Hubo un error al guardar uno de los datos<br>$e") );

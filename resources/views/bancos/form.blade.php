@@ -1,4 +1,23 @@
+<style>
 
+#ctabcoform{
+background: #6f72ff;
+margin: 0;
+}
+
+    #ctabcoform label{
+        color: #000128;
+    }
+
+    #ctabcoform h6{
+        background-color: #6266ff;
+        color: wheat;
+    }
+
+    #buttonSave{
+background-color: #373dff;
+    }
+</style>
 
 <?php 
 use App\Helpers\Helper; 
@@ -11,8 +30,11 @@ use App\Helpers\Helper;
 <?php if( isset($OPERACION) && $OPERACION == "M"): ?>
 <input type="hidden" name="IDNRO" value="{{$dato->IDNRO}}" >
 <?php endif;?>
-<h6 class="text-center">{{$OPERACION=="A"?">NUEVA CUENTA":'ACTUALIZAR CTA.'}}</h6>
-<p id="mensaje" style="text-align: center; font-weight: bold; color: #05560c;"></p>
+
+<h6  class="text-center">{{$OPERACION=="A"?"NUEVA CUENTA":'ACTUALIZAR CTA.'}}</h6>
+
+
+<p id="mensaje" style="text-align: center; font-weight: bold; color: #000128 ;"></p>
 <div class="row p-2">
 <div class="col-12 col-md-12">
         <label >TITULAR:</label>
@@ -30,8 +52,8 @@ use App\Helpers\Helper;
         <label >TIPO DE CTA.:</label>
         <input readonly  value="{{isset($dato->TIPO_CTA)?$dato->TIPO_CTA: 'CtaCte'}}" name="TIPO_CTA"  type="text"  class="form-control form-control-sm">
     </div>
-    <div class="col-12 col-md-12 d-flex align-items-center">
-    <button class="btn btn-sm btn-info" type="submit">GUARDAR</button>
+    <div class="col-12 col-md-12 d-flex align-items-center mt-1">
+    <button id="buttonSave" class="btn btn-sm btn-info" type="submit">GUARDAR</button>
     </div>
 </div> 
 

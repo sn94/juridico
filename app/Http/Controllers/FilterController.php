@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;   
 use App\Parametros;
 use App\pdf_gen\PDF;
+use DeepCopy\Filter\Filter;
 use Illuminate\Http\Client\Request as ClientRequest;
 
 class FilterController extends Controller
@@ -25,7 +26,8 @@ class FilterController extends Controller
     
 
 public function index( ){  
-    $lista= Filtros::paginate(20);
+    
+    $lista= Filtros::orderBy('NRO','DESC')->paginate(20);
     return view('filtros.index', [ "lista"=> $lista, 'OPERACION'=>"A", 
     'ejecucionxls'=> url("exexlsfiltro"),  'ejecucionpdf'=> url("exepdffiltro") ] );
 
@@ -34,7 +36,34 @@ public function index( ){
 
 
 
-
+public function get_parametros( $opc){
+    
+    $tablas= array();
+    $parametr=array();
+    $pa=DB::table("param_filtros")-> select('TABLA' ,'TABLA_FRONT')->distinct()->where("TIPO", "<>", NULL)->get();
+    //tablas y sus nombres
+     foreach( $pa as $item){
+        $tablas[$item->TABLA]= $item->TABLA_FRONT;
+     }
+     if( $opc == "t"){
+        echo json_encode( $tablas);
+    }
+    if( $opc =="f"){
+   //demandas
+   foreach( $tablas as $clave=>$valor){
+    $campos=DB::table("param_filtros")->
+    select(  'CAMPO as back','CAMPO_FRONT as face', 'TIPO as tipo', 'LONGITUD as longitud' )->
+    where("TABLA",$clave)-> where("TIPO", "<>", NULL)->get();
+    $lista_Campos=array();
+    foreach( $campos as $ite_Campo){  
+        array_push(  $lista_Campos ,  array("back"=> $ite_Campo->back, "face"=>$ite_Campo->face, "tipo"=>$ite_Campo->tipo, "longitud"=>$ite_Campo->longitud ));
+    }
+    $parametr[$clave]= $lista_Campos ;
+ }
+ echo json_encode($parametr);
+    }
+  
+}
  
    
 
@@ -42,26 +71,30 @@ public function index( ){
 public function agregar( Request $request){
     if( ! strcasecmp(  $request->method() , "post"))  {//hay datos 
         //Quitar el campo _token
-        $Params=  $request->input(); 
-        //Devuelve todo elemento de Params que no este presente en el segundo argumento
-        $Newparams= array_udiff_assoc(  $Params,  array("_token"=> $Params["_token"]),function($ar1, $ar2){
-            if( $ar1 == $ar2) return 0;    else 1; 
-         } ); 
+        $Params=  $request->input();  
 
          DB::beginTransaction();
         try{
-             $r= DB::table("filtros"); 
-             $r->insert( $Newparams  );
-             echo json_encode( array('ok'=>  "GUARDADO"  ));    
+             $r=  new Filtros(); 
+             $r->fill( $Params  );
+             $r->save();
+             echo json_encode( array('ok'=>  url("filtro/".$r->NRO)  ));    
              DB::commit();
+         
        
         } catch (\Exception $e) {
             DB::rollback();
             echo json_encode( array( 'error'=> "Hubo un error al guardar uno de los datos<br>$e") );
         }   
     }
-    else  {   return view('filtros.form', ["OPERACION"=>"A"]);
-       }/** */    
+    else{    
+        $url_fields_res= url("res-filtro/f");
+        $url_table_res= url("res-filtro/t");
+        $url_inicio=url("filtros");
+        return view('filtros.form',
+         ["OPERACION"=>"A", "index"=> $url_inicio , "res_fields"=>$url_fields_res, 
+         "res_tables"=>$url_table_res ]);
+       } 
 }
 
 
@@ -130,13 +163,15 @@ private function limpiarQuery( $id_consulta ){
         $sql= preg_replace('/(^")|("$)/',"", $sql);
         //Verificar uso de funciones de fecha
         $sql= preg_replace('/(ctod)\(""(\d+\/\d+\/\d+)""\)/i', "str_to_date('$2','%d/%m/%Y')", $sql);
-        $sql= "select * from demandas2,notificaciones where demandas2.IDNRO=notificaciones.IDNRO AND ".$sql; 
+        $sql= "select * from demandas2,notificaciones where demandas2.IDNRO=notificaciones.IDNRO 
+        AND ".$sql; 
     }
     //lIMPIAR
     $sql_1=preg_replace("/(&&)|(\.AND\.)/i"," AND ", $sql);
     $sql_2= preg_replace("/(\|\|)|(\.or\.)/i", "OR", $sql_1);
 
     //EJECUTAR
+   // var_dump( $sql_2);
    $ls= DB::select(  $sql_2);
     return $ls;
 }
@@ -149,7 +184,6 @@ public function  reporte( $id_consulta, $tipo="xls"){
     if( $tipo == "xls"){  echo json_encode( $ls );   }
     else{//ini Pdf Gen
 
-    }//End Pdf gen
     //EJECUTAR
         $Titulo= Filtros::find( $id_consulta)->NOMBRE; 
         $html = '<table>';
@@ -168,6 +202,7 @@ public function  reporte( $id_consulta, $tipo="xls"){
         $pdf->prepararPdf("$tituloDocumento.pdf", $tituloDocumento, ""); 
         $pdf->generarHtml( $html , "L" );
         $pdf->generar();
+          }//End Pdf gen
 }
 
 }

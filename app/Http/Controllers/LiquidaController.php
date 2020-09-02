@@ -35,7 +35,8 @@ class LiquidaController extends Controller
         $nombre= Demandados::where("CI", $ci)->first()->TITULAR;
         $cta_bco= $obj_demanda->CTA_BANCO;
         return view("liquidaciones.index",
-         ["lista"=> $lista ,"CI"=>$ci, "TITULAR"=> $nombre, "CTA_BANCO"=> $cta_bco, "id_demanda"=> $obj_demanda->IDNRO] );
+         ["lista"=> $lista ,"CI"=>$ci, "TITULAR"=> $nombre, "CTA_BANCO"=> $cta_bco,
+          "id_demanda"=> $obj_demanda->IDNRO] );
     }
 
     public function nuevo(Request $request, $iddeman=0){
@@ -44,12 +45,12 @@ class LiquidaController extends Controller
                //Quitar el campo _token
                $Params=  $request->input(); 
                //Devuelve todo elemento de Params que no este presente en el segundo argumento
-               $Newparams= array_udiff_assoc(  $Params,  array("_token"=> $Params["_token"] ),function($ar1, $ar2){
+             /*  $Newparams= array_udiff_assoc(  $Params,  array("_token"=> $Params["_token"] ),function($ar1, $ar2){
                    if( $ar1 == $ar2) return 0;    else 1; 
-                } ); 
+                } ); */
         
            $cta= new Liquidacion();
-           $cta->fill(  $Newparams);
+           $cta->fill(  $Params);
            DB::beginTransaction();
            try {
             $cta->save(); 
@@ -70,11 +71,11 @@ class LiquidaController extends Controller
             $sdf= $N->SD_FINIQUI;
             $fecf= $N->FEC_FINIQU;
             $judici= new JudicialController();
-            $saldo_j= $judici->ver_saldo_array( $iddeman ); 
+            $saldo_j= $judici->saldo_C_y_L( $iddeman ); 
             return view('liquidaciones.cargar', 
             ["id_demanda"=>$iddeman, "CI"=>$ci, "TITULAR"=> $nombre, "CTA_BANCO"=> $cta_bco, 
             "SD_FINIQUI"=> $sdf,"FEC_FINIQU"=> $fecf, "CAPITAL"=> $demandaob->DEMANDA,
-             "SALDO"=> $saldo_j['saldo_judi'] , "OPERACION"=>"A"]); 
+             "SALDO"=> $saldo_j['saldo_liquida'] , "OPERACION"=>"A"]); 
         } 
     }
 

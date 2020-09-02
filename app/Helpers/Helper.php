@@ -1,5 +1,6 @@
 <?php
 namespace App\Helpers;
+use Exception;
 class Helper
 {
     
@@ -7,8 +8,13 @@ class Helper
      * Devuelve una cadena numerica con separadores de puntos
      */
     public static function number_f( $ar){
-        $v= floatval( $ar);
+
+      try{
+        $v= intval( $ar);
         return number_format($v, 0, '', '.');  
+      }catch( Exception $err){
+        return 0;
+      }
       }
 //Formato numero decimal de coma  a punto
       public static function fromComaToDot( $ar){

@@ -1,12 +1,38 @@
+<style>
 
-<h6  style=" background-color: #041402; color: white;" class="text-center mb-0">
+#formmovi{
+background: #6f72ff;
+margin: 0;
+}
+
+    #formmovi label{
+        color: #000128;
+    }
+
+    #formmovi h6{
+        background-color: #6266ff;
+        color: wheat;
+        margin: 0;
+        text-align: center;
+    }
+
+    #buttonSave{
+background-color: #373dff;
+    }
+</style>
+
+
+
+<form  id="formmovi" action="{{$RUTA}}" method="post"    onsubmit="movimiento(event)" >
+
+<h6 >
 {{ $TIPO_MOV=="D" ? "DEPÓSITO" : "EXTRACCIÓN" }}
 </h6>
-<h6  style=" background-color: #041402; color: white;"  class="text-center">{{$TITULAR}}-{{$CUENTA}}</h6>
+<h6 >{{$TITULAR}}-{{$CUENTA}}</h6>
 
 <p id="mensaje-movi" style="text-align: center; font-weight: bold; color: #05560c;"></p>
 
-<form class="p-2" id="formmovi" action="{{$RUTA}}" method="post"    onsubmit="movimiento(event)" >
+
 
 @csrf
 <input type="hidden" name="IDNRO" value="{{isset($dato->IDNRO)? $dato->IDNRO:''}}">
@@ -14,7 +40,7 @@
 <input type="hidden" name="BANCO" value="{{$BANCO}}">
 <input type="hidden" name="TIPO_MOV" value="{{$TIPO_MOV}}">
 <!-- Extraccion -->
-<div class="row">
+<div class="row" style="margin: 2px;">
 <div class="col-12 col-md-12">
         <label >FECHA DE OPERACIÓN:</label>
         <input  value="{{isset($dato->FECHA)? $dato->FECHA:''}}"  name="FECHA"  type="date"  class="form-control form-control-sm">
@@ -41,9 +67,13 @@
         <input name="CONCEPTO"  value="{{isset($dato->CONCEPTO)? $dato->CONCEPTO:''}}" type="text"  class="form-control form-control-sm">
     </div>
     
+    <div class="col-12 col-md-12 d-flex align-items-center">
+    <button id="buttonSave" class="btn btn-sm btn-info mt-1" type="submit">GUARDAR</button>
+    </div>
+
   
 </div><!--End extraccion -->
-<button class="btn btn-sm btn-info" type="submit">GUARDAR</button>
+
 </form>
 
 <script>

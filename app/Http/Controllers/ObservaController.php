@@ -108,18 +108,10 @@ public function editar( Request $request, $iddeman=0){
          //update to DB 
         
          $obsmodel->fill( $Newparams );
-         $obsmodel->save();
-        //obtener nombre de demandado a partir de idnro 
-       
-        $reg= Demanda::find( $iddeman);
-        if( is_null($reg) ){
-            echo "Código Inválido";
-        }else{
-            $ci= $reg->CI;
-            $demanObj=  Demandados::where("CI", $ci)->first();
-            $nom= $demanObj->TITULAR;
-            echo json_encode( array( 'ci'=> $ci, 'nombre'=> $nom, 'iddeman'=>$iddeman )    ); 
-        }/** */
+         if($obsmodel->save())
+         echo json_encode( array( 'ok'=>"GUARDADO" )    );
+         else
+         echo json_encode( array( 'error'=>"ERROR AL GUARDAR" )    ); 
     }
     else
     {

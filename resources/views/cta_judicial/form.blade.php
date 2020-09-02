@@ -30,11 +30,11 @@ use App\Helpers\Helper;
     <div class="col-12 col-md-2">
         <label >TIPO. CTA:</label>
         <div class="form-check">
-        <input {{ isset($dato->TIPO_CTA) ? ( substr($dato->TIPO_CTA,0,1)=="D"?'checked':'') : 'checked' }} onchange="cambiar(event)"  class="form-check-input" type="radio" name="TIPO_CTA" id="inlineRadio1" value="C">
+        <input {{ isset($dato->TIPO_CTA) ? ( substr($dato->TIPO_CTA,0,1)=="C"?'checked':'') : 'checked' }} onchange="cambiar(event)"  class="form-check-input" type="radio" name="TIPO_CTA" id="inlineRadio1" value="C">
         <label class="form-check-label" for="inlineRadio1">CAPITAL</label>
         </div>
         <div class="form-check">
-        <input {{isset($dato->TIPO_CTA)? (  substr($dato->TIPO_CTA,0,1)=="E"? 'checked': ''): ''}}  onchange="cambiar(event)" class="form-check-input" type="radio" name="TIPO_CTA" id="inlineRadio2" value="L">
+        <input {{isset($dato->TIPO_CTA)? (  substr($dato->TIPO_CTA,0,1)=="L"? 'checked': ''): ''}}  onchange="cambiar(event)" class="form-check-input" type="radio" name="TIPO_CTA" id="inlineRadio2" value="L">
         <label class="form-check-label" for="inlineRadio2">LIQUIDACIÓN</label>
         </div>
  
@@ -47,11 +47,11 @@ use App\Helpers\Helper;
     <div class="col-12 col-md-12">
         <label >TIPO DE MOVIMIENTO:</label><br>
         <div class="form-check">
-        <input {{isset($dato->TIPO_MOVI)? ( substr($dato->TIPO_MOVI,0,1)=="D"?"checked":"") : 'checked'}} onchange="cambiar(event)"  class="form-check-input" type="radio" name="TIPO_MOVI" id="inlineRadio1" value="D">
+        <input {{isset($dato->TIPO_MOVI)? ( substr($dato->TIPO_MOVI,0,1)=="D"?"checked":"") : ''}} onchange="cambiar(event)"  class="form-check-input" type="radio" name="TIPO_MOVI" id="inlineRadio1" value="D">
         <label class="form-check-label" for="inlineRadio1">DEPÓSITO</label>
         </div>
         <div class="form-check">
-        <input {{isset($dato->TIPO_MOVI)? (  substr($dato->TIPO_MOVI,0,1)=="E"?"checked":""): ''}}  onchange="cambiar(event)" class="form-check-input" type="radio" name="TIPO_MOVI" id="inlineRadio2" value="E">
+        <input {{isset($dato->TIPO_MOVI)? (  substr($dato->TIPO_MOVI,0,1)=="E"?"checked":""): 'checked'}}  onchange="cambiar(event)" class="form-check-input" type="radio" name="TIPO_MOVI" id="inlineRadio2" value="E">
         <label class="form-check-label" for="inlineRadio2">EXTRACCIÓN</label>
         </div>
     </div>

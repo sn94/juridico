@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use App\Demandados;
 use App\Liquidacion;
 use App\Observacion;
+use App\Parametros;
 
 class WelcomeController extends Controller
 {
@@ -24,18 +25,38 @@ class WelcomeController extends Controller
    
 
 
-    public function index(){
-        $demanda= Demanda::sum("DEMANDA");  
-        $judiob= new JudicialController();$judi= $judiob->ver_saldo_all();
-        $saldo_c= CuentaJudicial::where("TIPO_CTA", "C")->where("TIPO_MOVI","E")->sum("IMPORTE");
-        $saldo_l= CuentaJudicial::where("TIPO_CTA", "L")->where("TIPO_MOVI","E")->sum("IMPORTE");
+    public function index( Request $request){
+
         
-        return view('welcome',  [
-        "demanda"=>$demanda, //Demandas 
-        "saldo_judi"=> intval($judi['saldo_judi']) < 0 ? "0": $judi['saldo_judi'] ,//Saldos
-        "saldo_c"=> $saldo_c,//Saldo: Total de ext. de capital
-        "saldo_l"=> $saldo_l //Saldo: Total de ext. de Liquidacion
-        ]);
+        if ($request->session()->get('tipo') == "S"){
+            $Parametros= Parametros::first();
+            if( $Parametros->SHOW_COUNTERS == "S"){
+            $demanda= Demanda::sum("DEMANDA");  //Total monto demandas
+            //Obtencion de saldos
+            $judiob= new JudicialController();
+            $judi= $judiob->saldos_C_y_L();
+            $saldo_c= $judi["saldo_capital"];
+            $saldo_l= $judi["saldo_liquida"];
+            $demandados= Demandados::count();//numero de demandados
+            $demandas_nro=  Demanda::count();//numero de juiciso
+            $liquidacion= Liquidacion::sum("LIQUIDACIO");
+            // "saldo_judi"=> intval($judi['saldo_judi']) < 0 ? "0": $judi['saldo_judi'] ,//Saldos
+            return view('welcome',  [
+            "demanda"=>$demanda, //Demandas 
+           "demandados"=> $demandados,
+           "total_demandas"=> $demandas_nro,
+            "saldo_c"=> $saldo_c,//Saldo: Total de ext. de capital
+            "saldo_l"=> $saldo_l, //Saldo: Total de ext. de Liquidacion
+            "liquidacion"=> $liquidacion
+            ,"show"=>"S"
+            ]);
+            }else{
+                return view('welcome', ["show"=>"N"]);
+            }
+        }else{
+            return view('welcome', ["show"=>"N"]);
+        }
+       
 
     }
 

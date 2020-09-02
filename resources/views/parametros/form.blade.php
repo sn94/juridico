@@ -104,6 +104,20 @@ use App\Helpers\Helper;
   </div>
  
  
+  <div class="col-12 col-sm-5 col-md-5 col-lg-5">
+    <input type="hidden" name="SHOW_COUNTERS">
+  <div class="form-group">
+    <label >Mostrar datos en pantalla principal:</label>
+    <label class="switch switch-to-primary">
+  <span class="mr-1">No</span>
+  <input {{isset($DATO)? ($DATO->SHOW_COUNTERS=="S" ? 'checked': '') : '' }}    value="S" type="checkbox"/>
+  <span class="switch-slider"></span>
+  <span class="ml-1">Si</span>
+</label> 
+ </div>
+  </div>
+
+
 
   <div  class="col-12 col-sm-3 col-md-3 col-lg-3 d-flex align-items-center">
   <button type="submit" class="btn btn-sm btn-info">GUARDAR</button>

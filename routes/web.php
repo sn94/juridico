@@ -47,6 +47,14 @@ Route::get("demandas-by-ci/{ci}", 'DemandaController@demandas_by_ci');//lista  d
 Route::get("ficha-demanda/{idnro}", "DemandaController@ver_demandan");//ficha de demandas
 
 
+
+/***INTERVENCION CONTRAPARTE**** */
+Route::post("contraparte/{idnro}", "DemandaController@contraparte"); 
+Route::post("contraparte", "DemandaController@contraparte"); 
+
+
+
+
 /**************LIQUIDACION********************* */
 /*Route::get( "demandas-liquidar", 'DemandaController@liquidar');//liquidar demanda
 //Route::get("ficha-demanda/{codemp}", "DemandaController@ficha_demanda");//ficha de demandas
@@ -83,7 +91,7 @@ Route::post("ecuentajudi/{idnro}", "JudicialController@editar");
 Route::get("vcuentajudi/{idnro}", "JudicialController@view"); 
 Route::get("dcuentajudi/{idnro}", "JudicialController@delete"); 
 Route::get("lcuentajudi/{idnro}", "JudicialController@listar"); 
-Route::get("calcsaldo/{iddeman}", "JudicialController@ver_saldo"); 
+Route::get("calcsaldo/{iddeman}/{tipo}", "JudicialController@saldo_C_y_L"); 
 
 /**LIQUIDACION */
 Route::get("nliquida/{iddeman}", "LiquidaController@nuevo"); 
@@ -96,6 +104,13 @@ Route::get("lliquida/{iddeman}", "LiquidaController@list");
 Route::get("liquida/{iddeman}", "LiquidaController@index"); 
 
 Route::get("liquida/{idnro}/{tipo}", "LiquidaController@reporte"); //reporte xls o pdf de liquidacion
+
+
+
+
+/** ** SUPERVISOR  */
+Route::group(['middleware' => 'admin'], function () {
+
 
 /***TABLAS AUXILIARES */
 Route::get('auxiliar',   'AuxiController@index');
@@ -127,6 +142,10 @@ Route::post('efiltro',   'FilterController@editar');
 Route::get('dfiltro/{id}',   'FilterController@borrar');
 Route::get('filtro/{id}/{tipo}',   'FilterController@reporte');
 Route::get('filtro/{id}/{tipo}',   'FilterController@reporte');
+Route::get('res-filtro/{tipo}',   'FilterController@get_parametros'); 
+
+
+
 /***USUARIOS */
 Route::get('users',   'UserController@index');
 Route::get('new-user',   'UserController@agregar');
@@ -135,9 +154,17 @@ Route::get('edit-user/{idnro}',   'UserController@editar');
 Route::post('edit-user',   'UserController@editar');
 Route::get('del-user/{id}',   'UserController@borrar');
 Route::get('list-user',   'UserController@list');
+
+}  );
+
+
 Route::get('signin',   'UserController@sign_in');
 Route::post('signin',   'UserController@sign_in');
 Route::get('signout',   'UserController@sign_out'); 
+
+
+
+
 
 
 /**         BANCOS          ** */
@@ -157,14 +184,43 @@ Route::get('depobank/{id}',   'BancoController@deposito');
 Route::post('depobank',   'BancoController@deposito'); 
 Route::get('extrbank/{id}',   'BancoController@extraccion'); 
 Route::post('extrbank',   'BancoController@extraccion'); 
+Route::get('bank/{id}/{tipo}',   'BancoController@reporte'); //extracto
 
 
-Route::get('test/{ci}',   'DemandaController@adjuntarSaldosDemanda');
- 
 
-//Auth::routes();
+/* ***** ARREGLO EXTRAJUDICIAL  *********/
+Route::post('arreglo_extra',   'ArregloExtrajudiController@agregar'); 
 
-Route::get('/home', 'HomeController@index')->name('home');
+
+
+
+/**  GASTOS***** */
+Route::get('gastos',   'GastosController@index'); 
+Route::get('gasto',   'GastosController@cargar'); //insercion
+Route::get('gasto/{tipo}/{id}',   'GastosController@cargar'); //edicion
+Route::post('gasto',   'GastosController@cargar'); 
+Route::post('gasto/{tipo}',   'GastosController@cargar'); 
+Route::get('lgastos',   'GastosController@index'); 
+Route::get('dgasto/{id}',   'GastosController@borrar'); //vista completa con grilla
+Route::get('grillgastos',   'GastosController@listar'); //solo grilla
+Route::post('grillgastos',   'GastosController@listar'); //solo grilla
+Route::get('rep-gastos/{tipo}',   'GastosController@reporte'); //solo grilla
+
+
+
+
+//Mensajes
+/********************** */
+Route::get('messenger',   'MessengerController@index'); 
+Route::get('nuevo-msg',   'MessengerController@agregar'); 
+Route::post('nuevo-msg',   'MessengerController@agregar'); 
+Route::get('ver-msg/{id}',   'MessengerController@ver'); 
+Route::get('del-msg/{id}',   'MessengerController@borrar'); 
+Route::get('list-msg/{TIPO}',   'MessengerController@listar'); 
+
+
+Route::get('test',   'FilterController@get_parametros');
+
 
 
  

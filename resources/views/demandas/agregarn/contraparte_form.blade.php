@@ -1,6 +1,6 @@
  
  
-  <form  id="formContra"   method="post" action="<?= url("eobser")?>" onsubmit="enviar3(event)">
+  <form  id="formContra"   method="post" action="<?= url("contraparte")?>" onsubmit="enviarContraparte(event)">
 
   
    <?php if( $OPERACION != "V"): ?>
@@ -11,7 +11,7 @@
       </div>
       <div class="col-12 col-md-2">
         <div class="toast" role="alert" aria-live="polite" aria-atomic="true" data-delay="1000">
-        <div role="alert" aria-live="assertive" aria-atomic="true" id="obse-msg">GUARDADO</div>
+        <div role="alert" aria-live="assertive" aria-atomic="true" id="contra-msg">GUARDADO</div>
         </div>
       </div>
     </div>
@@ -26,7 +26,7 @@
 </div>
 
 <input id="IDNRO3"  type="hidden" name="IDNRO" value="{{isset($id_demanda)?$id_demanda:''}}">
-<input id="CI4" type="hidden" name="CI" value="{{isset($ci)?$ci:''}}">
+ 
 
       
 <!---HERE -->
@@ -35,7 +35,7 @@
   <div class="col-12 col-md-8"> 
     <div class="form-group">
         <label for="ctactecatas">Abogado:</label>
-        <input maxlength="32" value="{{! isset($ficha3) ? '' : $ficha3->OBS_ABOGAD}}" name="OBS_ABOGAD" type="text" id="ctactecatas" class="form-control form-control-sm   ">
+        <input maxlength="40" value="{{! isset($ficha3) ? '' : $ficha3->ABOGADO}}" name="ABOGADO" type="text"  class="form-control form-control-sm   ">
     </div>
     
   </div>
@@ -52,4 +52,42 @@
 
   if( document.getElementById("operacion").value=="V"  )
   habilitarCampos('formContra',false);
+
+
+
+
+  function enviarContraparte(ev){
+    
+ ev.preventDefault();  
+ 
+ $.ajax(
+ {
+   url:  ev.target.action,
+   method: "post",
+   data: $("#"+ev.target.id).serialize(),
+   dataType: "json",
+   headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+   beforeSend: function(){
+     $("#contraparte-panel").html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
+   },
+   success: function( res ){
+      if( "error" in res){
+         $("#contraparte-panel").html(  "" ); 
+         alert(res.error);
+       }else{ 
+         //Mostrar mensaje 
+         $("#contraparte-panel").html( "" ); //mensaje 
+         $("#contra-msg").text( "GUARDADO!");
+          $(".toast").toast("show"); 
+       }
+      
+   },
+   error: function(){
+     $("#contraparte-panel").html( "" ); 
+     alert("Problemas de conexión");
+   }
+ }
+);
+
+  }
   </script>

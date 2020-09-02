@@ -120,21 +120,21 @@ function verSaldos(){
 let divname= "#viewsaldo";
   $.ajax(
        {
-         url:  "<?=url("calcsaldo/$id_demanda")?>", 
+         url:  "<?=url("calcsaldo/$id_demanda/json")?>", 
          beforeSend: function(){
            $( divname).html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
          },
          success: function(res){
            let r= jsonReceiveHandler( res);
            console.log( typeof  r.saldo);
-           let formateado1= formatear_string( r.saldo_judi);
-           let formateado2= formatear_string( r.saldo_en_c);
+           let formateado1= formatear_string( r.saldo_capital);
+           let formateado2= formatear_string( r.saldo_liquida);
            if( typeof r != "boolean") $(divname).html(
              `
              <div style="background-color:red; padding: 30px;">
-             <h3 class="text-white text-center" style="text-decoration:underline;">SALDO JUDICIAL:</h3>
+             <h3 class="text-white text-center" style="text-decoration:underline;">SALDO CAPITAL:</h3>
              <h3 class="text-white text-center">${ formateado1} Gs.</h3>
-             <h3 class="text-white text-center" style="text-decoration:underline;">SALDO EN CUENTA:</h3>
+             <h3 class="text-white text-center" style="text-decoration:underline;">SALDO LIQUIDACION:</h3>
              <h3 class="text-white text-center">${ formateado2} Gs.</h3>
              </div>
              `

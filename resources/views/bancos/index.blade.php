@@ -23,6 +23,13 @@
     </div>
   </div>
 </div>
+
+
+    <!-- MODAL TIPO DE INFORME -->
+
+    @include("layouts.report", ["TITULO"=>"EXTRACTO BANC." ]  )
+
+    
 @endsection
 
 
@@ -146,7 +153,7 @@ function ajaxCall( e, divnam, succes){
 function guardar( ev ){//Objeto event   DIV tag selector to display   success handler
 ev.preventDefault();
 if ( ! noempty_fields( )) return;
-if( ! confirm("CONTINUAR?") ) return;
+ 
  ajaxCall( ev, "#mensaje", function(res){
             $( "#mensaje").html(JSON.parse(res).ok ); 
            // $('#showform').modal('hide')
@@ -171,7 +178,7 @@ $("#formmovi input[name=IMPORTE]").val(  quitarSeparador( $("#formmovi input[nam
 function extraer( ev ){//Objeto event   DIV tag selector to display   success handler
   
 if( $("#formmovi input[name=IMPORTE]").val()==""){ alert("INGRESE EL IMPORTE!"); return;}
-if( ! confirm("CONTINUAR?") ) return;
+ 
 if ( ! noempty_fields( )) return;
 if( ! confirm("CONTINUAR?") ) return;
 $("#formmovi input[name=IMPORTE]").val(  quitarSeparador( $("#formmovi input[name=IMPORTE]").val()   )  );
@@ -185,7 +192,7 @@ $("#formmovi input[name=IMPORTE]").val(  quitarSeparador( $("#formmovi input[nam
 function movimiento(ev){
   ev.preventDefault();
   if( $("#formmovi input[name=IMPORTE]").val()==""){ alert("INGRESE EL IMPORTE!"); return;}
-if( ! confirm("CONTINUAR?") ) return;
+ 
 if ( ! noempty_fields( )) return;
 if( ! confirm("CONTINUAR?") ) return;
 $("#formmovi input[name=IMPORTE]").val(  quitarSeparador( $("#formmovi input[name=IMPORTE]").val()   )  );

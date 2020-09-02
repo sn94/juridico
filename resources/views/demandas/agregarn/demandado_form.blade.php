@@ -297,8 +297,100 @@ $RUTA= $OPERACION == "A" ? url("ndemandado") : url("edemandado");
 </form>
  
 <script>
-  var operacSt= document.getElementById("operacion").value;
+
+var operacSt= document.getElementById("operacion").value;
+//Solo Lectura
 if(    operacSt == "V")
 habilitarCampos('form-person',false);
+
+
+
+//aL REGISTRAR UN NUEVO DEMANDADO, SE VERIFICA LA EXISTENCIA  DEL NUMERO DE CEDULA REGISTRADO
+//Si se trata de una operacion de Actualizacion, se pasa por alto el control
+function existeCI( handler){
+
+let ci= $("#form-person input[name=CI]").val();//Numero de cedula ingresado
+let rta= "<?=url("existe-ci")?>/"+ci;  
+$.ajax( {url: rta, success: (re)=>{
+  let resp=jsonReceiveHandler(re);
+  if( typeof resp != "boolean"){
+      if( resp.existe == "s"){  
+        if( $("#CI-DEFAULT").val()== $("#form-person input[name=CI]").val())
+         handler();
+         else alert("EL CI N° "+ci+" ya existe"); 
+      }else{
+        //permitir grabar
+        handler();
+      } 
+  }  
+  }    }  )
+}/***End existe ci */
+
+
+
+
+//Validacion
+function campos_vacios(){
+   if( $("#titular").val()=="") alert("INGRESE EL NOMBRE COMPLETO");
+   if( $("#ci").val()=="") alert("INGRESE EL NUMERO DE CEDULA");
+   return  ($("#titular").val()==""  ||   $("#ci").val()=="");
+ }
+
+
+
+//Tras crear el registro de demandado
+//Se habilitan los formularios de demanda, seguimiento,observacion, y otros
+ function habilitarFormJudiciales(){
+              habilitarCampos("formDeman",true);  
+               habilitarCampos("formNoti",true); 
+               habilitarCampos("formObser",true);
+               habilitarCampos("formContra",true);
+               habilitarCampos("formExtrajudi",true);
+}
+
+
+
+//Distribuir la clave de id_demanda entre los formularios
+//TRAS haber registrado al demandado
+function distribuirClavesGene( id_demanda, cedula){
+
+  $("#formDeman input[name=IDNRO],#formNoti input[name=IDNRO],#formObser input[name=IDNRO],#formContra input[name=IDNRO],#formExtrajudi input[name=IDNRO]").val(id_demanda);
+//Asignacion de clave a Demanda,Seguimiento,Observacion,Contraparte,Arreglo Extraj.
+//Asignar el numero de cedula
+$("input[name=CI]").val(  cedula); 
+}
+
+
+
+
+function enviarDatosPerso( ev){ 
+
+ 
+ ev.preventDefault(); 
+
+ if( campos_vacios() ) return;
+
+ let handler= function(){ 
+   let divname= "#persona-panel";
+   let success= function( resp ){
+   let res= jsonReceiveHandler( resp, divname);
+   if( typeof res != "boolean" ){
+               formEnviado= true;
+               //Asignar ID DE DEMANDA si existe
+               if( "id_demanda" in res) 
+               distribuirClavesGene( res.id_demanda, res.ci );
+               //HABILITAR FORMULARIOS RESTANTES
+               habilitarFormJudiciales();
+               //Mostrar mensaje 
+               $(divname).html(  ""  ); //mensaje 
+               $("#pers-msg").text( "GUARDADO!");
+               $(".toast").toast("show"); 
+   }
+};
+ajaxCall(ev, divname, success);  }   ;//end handler
+
+existeCI(  handler) ;
+}/** */
+
 
 </script>

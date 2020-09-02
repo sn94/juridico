@@ -66,6 +66,9 @@ if( $detect->isMobile() == false){
  
   
 <input type="hidden" id="OPERACION" value="{{ !isset($OPERACION)?'A': $OPERACION}}">
+<input type="hidden" id="index" value="{{ $index}}">
+<input type="hidden" id="res_fields" value="{{ $res_fields}}">
+<input type="hidden" id="res_tables" value="{{ $res_tables}}">
 <?php  
 $ruta= $OPERACION =="A" ? url("nfiltro") : url("efiltro");
   ?>
@@ -74,11 +77,12 @@ $ruta= $OPERACION =="A" ? url("nfiltro") : url("efiltro");
 <div class="row">
 
   
+<div id="instant-report" class="col-12 col-sm-9 col-md-10 col-lg-8">
 
+</div>
 <!-- FORM -->
   <div  class="col-12 col-sm-9 col-md-10 col-lg-8">
-    
- 
+
     <form id="filterform" action="<?=$ruta?>" method="POST" onsubmit="ajaxCall(event,'#statusform')">
     {{csrf_field()}}
      <div class="row">
@@ -93,7 +97,12 @@ $ruta= $OPERACION =="A" ? url("nfiltro") : url("efiltro");
             </div>
           </div> 
           <div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex align-items-center">
-          <button type="submit" class="btn btn-sm btn-info">GUARDAR</button>
+          <button type="submit" class="btn btn-sm btn-info">GUARDAR</button> 
+          </div>
+          <div class="col-12 col-sm-6 col-md-3 col-lg-3 d-flex align-items-center">
+              <div class="toast" role="alert" aria-live="polite" aria-atomic="true" data-delay="1000">
+            <div role="alert" aria-live="assertive" aria-atomic="true" id="dema-msg">GUARDADO</div>
+            </div>
           </div>
      </div>
  
@@ -127,32 +136,27 @@ $ruta= $OPERACION =="A" ? url("nfiltro") : url("efiltro");
  
  
 
+
+
+
+
+<!-- REPORTE --> 
+@include("layouts.report", ["TITULO"=> "FILTROS"])
+
 @endsection 
 
 
 <script>
-var wellTableNames=[ "DEMANDAS", "SEGUIMIENTOS", "CTA.JUDICIAL"];
-var allcampos=
-{
-  demandas2: [ { back: 'CI', face:'CEDULA'},{ back:'DEMANDANTE',face:"DEMANDANTE"},{ back:'O_DEMANDA',face:'ORIGEN_DEMANDA'},{back:'COD_EMP',face:'COD.EMP.'},
-  {back: 'DOC_DENUNC', face: 'DOCUMENTO_DENUNCIANTE'},{ back: 'LOCALIDAD', face:'LOCALIDAD'},
-  {back:'DOC_DEN_GA',face:"DOC.DENUNCIANTE_GARANTE"},{back: 'LOCALIDA_G', face:'LOCALIDAD_GARANTE'},
-  {back:'JUZGADO', face:'JUZGADO'},{back:'ACTUARIA',face:'ACTUARIA'},{back:'JUEZ',face:'JUEZ'},
- {back: 'FINCA_NRO', face: 'NRO.DE_FINCA'},{back:'CTA_CATAST', face:'CUENTA_CATASTRAL'},{back:'DEMANDA',face:'MONTO_DEMANDA'},
-  {back:'INSTITUCIO', face:'INSTITUCION'},{back:'INST_TIPO', face:'TIPO_INSTITUCION'},{back:'CTA_BANCO',face:'CUENTA_BANCO'},
-  {back:'BANCO', face:'BANCO' }  ],
+/*
+Sentencia de asentamiento de parametros para filtro
+INSERT INTO param_filtros(CAMPO,TABLA,LONGITUD) 
+SELECT COLUMN_NAME as CAMPO,TABLE_NAME as TABLA,CHARACTER_MAXIMUM_LENGTH as LONGITUD
+FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = 'juridico' AND 
+(TABLE_NAME = 'demandas2' or TABLE_NAME='notificaciones' or TABLE_NAME='arreglo_extrajudicial' or TABLE_NAME='inter_contraparte')
+*/
 
-  notificaciones: [ { back: 'CI', face:'CEDULA'},{back:'PRESENTADO',face:'PRESENTADO'},{back: 'PROVI_1', face:'PROVIDENCIA_1'},{back:'NOTIFI_1', face:'NOTIFICACION_1'},{ back:'ADJ_AI', face:'ADJ.AUTO.INTERLOCUTORIO'},{back:'AI_NRO', face:'NRO_AUTO_INTERLOCUTORIO'},
-  { back:'AI_FECHA', face: 'FECHA_AUTO_INTERLOCUTORIO'},{ back:'INTIMACI_1', face:'INTIMACION_1'},{ back:'INTIMACI_2', face: 'INTIMACION_2'},{back: 'CITACION',face:'CITACION'},{ back:'PROVI_CITA', face:'PROVIDENCIA_CITACION'},{ back: 'NOTIFI_2', face: 'NOTIFICACION_2'},{ back: 'ADJ_SD', face: 'ADJUNTO_S.D'},
-  { back: 'SD_NRO', face: 'NRO_SD'},{back:'SD_FECHA', face:'FECHA_SD'},{back:'NOTIFI_3', face:'NOTIFICACION_3'},
-  {back:'ADJ_LIQUI',face:'ADJ_LIQUIDACION'},{back:'LIQUIDACIO',face:'LIQUIDACION'},{back:'PROVI_2', face:'PROVIDENCIA_2'},{back: 'NOTIFI_4', face:'NOTIFICACION_4'},{ back:'ADJ_APROBA', face:'ADJ_APROBACION'},{ back:'APROBA_AI', face:'APROBACION_AI'},{back:'APRO_FECHA', face:'APROBACION_FECHA'},{back:'APROB_IMPO',face:'APROBACION_IMPORTE'},
-  { back:'SALDO_EXT', face:'SALDO_EXTRAIDO'}, {back:'ADJ_OFICIO', face:'ADJUNTO_OFICIO'},{ back:'NOTIFI_5', face:'NOTIFICACION_5'},{back:'EMBARGO_N', face: 'NRO_EMBARGO'},{ back:'EMB_FECHA', face: 'FECHA_EMBARGO'},{back:'EMBAR_EJEC',face:'EMBARGO_EJECUCION'},{back:'SD_FINIQUI', face:'SD_FINIQUITO'},{ back:'FEC_FINIQU', face:'FECHA_FINIQUITO'},
-  { back:'INIVISION', face:'INHIBICION'},{back:'FEC_INIVI', face:'FECHA_INHIBICION'}, { back:'ARREGLO_EX', face:'ARREGLO_EXTRAJUDICIAL'},{back:'LEVANTA',face:'LEVANTAMIENTO'},{ back:'FEC_LEVANT' , face: 'FECHA_LEVANTAMIENTO'},{ back:'DEPOSITADO', face:'DEPOSITADO'},{ back:'EXTRAIDO_C',face:'CAPITAL_EXTRAIDO'},{ back:'EXTRAIDO_L', face:'LIQUIDACION_EXTRAIDO'},
-  { back: 'OTRA_INSTI', face:'OTRA_INSTITUCION'}, {back:'EXCEPCION', face:'EXCEPCION'},{ back:'APELACION', face:'APELACION'} ,{back:'INCIDENTE', face: 'INCIDENTE'}  ] ,
-
-  cta_judicial: [{ back:'CTA_JUDICI', face:'CUENTA_JUDICIAL'},{ back:'BANCO', face: 'BANCO'},{ back: 'TIPO_CTA', face: 'TIPO_CUENTA'},{back:'TIPO_MOVI', face:'TIPO_MOVIMIENTO'},
-  {back:'FECHA', face: 'FECHA'},{ back:'TIPO_EXT', face:'TIPO_DE_EXTRACCION'},{ back:'IMPORTE', face: 'IMPORTE'},{ back:'CHEQUE_NRO', face: 'NRO_DE_CHEQUE'},{ back:'CI', face:'CEDULA'}   ]
-};
+var wellTableNames= {};
+var allcampos= {}; 
 
 //Relaciones
 var relations={
@@ -162,10 +166,42 @@ var relations={
 
 };
 
-
-function compatibilidad(  ar){
-
+function cargar_listas_reg_tab(){
+  
 }
+function cargar_params_tabla(){ 
+          //params campos
+        $.ajax( { url: $("#res_fields").val(), dataType: "json", 
+        success: function(data){ 
+          allcampos= data;
+          $("#statusform").html("");
+          init_filter(); },
+        beforeSend: function(){ $("#statusform").html("<p style='font-weight: 600;' >Cargando datos</p>"); }
+        }); 
+}
+
+/**OBTENCION DE RECURSOS */
+window.onload= function(){
+  //obtener recursos 
+  //params tablas
+    $.ajax( { url: $("#res_tables").val(), dataType: "json", 
+      success: function(data){    
+        wellTableNames= data;
+        $("#statusform").html("");
+        cargar_params_tabla();
+        },
+      beforeSend: function(){ $("#statusform").html("<p style='font-weight: 600;' >Cargando datos</p>"); }
+      });
+}
+
+
+function init_filter(){
+  selectFieldsOptions();
+  //sI ES EDICION, SE INFIERE A PARTIR DE LA CADENA SQL los controles de form
+  if($("#OPERACION").val() == "M") translate_sql( $("input[name=FILTRO]").val() );
+  else     condition_creator();
+}
+
 
 //A PARTIR DE UNA CAD SQL EXTRAER TOKENS
 function  translate_sql( arg){
@@ -223,6 +259,7 @@ function cargar_campos(ev){
     $( selectCampos).empty();
     let dt= allcampos[  valor ];//OBTENER CAMPOS DE LA TABLA SELECCIONADA 
     dt.forEach( function(ar){  $( selectCampos).append("<option value='"+ar.back+"'>"+ar.face+"</option>" ); }  );
+control_input(  ev);//Controlar tipo de dato
 } 
 
 
@@ -305,7 +342,7 @@ function crear_select_tabla(defaul){
   let expr=" <select class='form-control form-control-sm' onchange='cargar_campos(event)'    >";
   
   Object.keys( allcampos ).forEach( function( tab, index){
-    expr+="<option "+(defaul== tab? 'selected':'')+" value='"+tab+"'>"+ wellTableNames[index] +"</option>";
+    expr+="<option "+(defaul== tab? 'selected':'')+" value='"+tab+"'>"+ wellTableNames[tab] +"</option>";
   });
   expr+="</select> ";
   return expr;
@@ -313,16 +350,44 @@ function crear_select_tabla(defaul){
 function crear_select_campo( tabla, defaul){ 
   let defaultTableName=  tabla ==undefined ? Object.keys( allcampos )[0]  :  tabla;
   let options= return_table_fields( defaultTableName  , defaul);
-  let expr= "  <select class='form-control form-control-sm' >"+options+"</select>";
+  let expr= "  <select class='form-control form-control-sm' onchange='control_input(event);' >"+options+"</select>";
   return expr;
 }
-function crear_input_campo( defaul){
-  if( defaul == undefined) defaul="";
- return "<input value='"+defaul+"' type='text'  class='form-control form-control-sm'  >";
+
+
+
+function crear_input_campo( tabla, campo, defaul){ //tabla campo valor
+  if( defaul == undefined) defaul="";//valor por defecto
+  if(tabla ==undefined) tabla= Object.keys(wellTableNames)[0];//Nombre de tabla por defecto
+  if(campo == undefined ) campo= allcampos[tabla][0].back;//Nombre de campo default
+
+//Select Html
+let select_tag= function( arreglo, pordefecto){
+  let html= "<select  class='form-control form-control-sm'  >"
+  arreglo.forEach( function( keyvalue){
+    let clave=Object.keys(  keyvalue )[0];
+    let checkeable= pordefecto == clave ? "selected" : "";
+    html= html+"<option  "+checkeable+" value='"+clave+"'>"+keyvalue[clave]+"</option>";
+  });
+  html= html+"</select>";  return html;
+};
+
+  let metadata_campo=allcampos[tabla].filter( function( datafield){ return datafield.back==campo})[0];
+  console.log( metadata_campo);
+ switch( metadata_campo.tipo){
+   case 'N': return "<input value='"+defaul+"' type='text' maxlength='"+metadata_campo.longitud+"' oninput='solo_numero(event)' class='form-control form-control-sm'  >";break;
+   case 'C': return  "<input value='"+defaul+"' type='text' maxlength='"+metadata_campo.longitud+"'  class='form-control form-control-sm'  >";break
+   case 'F': return "<input value='"+defaul+"' type='date'   class='form-control form-control-sm'  >";break
+   case 'B': return select_tag( [{'N':'NO'},{'S':'SI'}], 'N'  );break
+   case 'L': return select_tag( [{'N':'NO'},{'S':'SI'}], 'N'  );break
+
+ }
+ 
 }
 
 function crear_select_ope_rela( defaul){
   if( defaul == undefined) defaul="=";
+
   let expr= "  <select class='form-control form-control-sm' >";
   expr+="<option "+(defaul=="="? 'selected':'')+" value='='>IGUAL</option>";
   expr+="<option "+(defaul==">"? 'selected':'')+" value='>'>MAYOR</option>";
@@ -342,10 +407,13 @@ function crear_select_ope_logico( defaul){
   return expr;
 }
 
+
+
+
 function  condition_creator( tabla, campo, operel, valor, opelog){
   let id_=  document.querySelector("#CONDICIONES tbody").children.length;
    
-  $("#CONDICIONES tbody").append("<tr id='"+id_+"'><td>"+crear_select_tabla(tabla)+"</td><td>"+crear_select_campo(tabla,campo)+"</td><td>"+crear_select_ope_rela(operel)+"</td><td>"+crear_input_campo(valor)+"</td><td>"+crear_select_ope_logico(opelog)+"</td></tr>");
+  $("#CONDICIONES tbody").append("<tr id='"+id_+"'><td>"+crear_select_tabla(tabla)+"</td><td>"+crear_select_campo(tabla,campo)+"</td><td>"+crear_select_ope_rela(operel)+"</td><td>"+crear_input_campo(tabla,campo,valor)+"</td><td>"+crear_select_ope_logico(opelog)+"</td></tr>");
 }
 
 
@@ -388,13 +456,13 @@ else $("#"+tabname).addClass("hide");
 }
 
 function selectFieldsOptions(){
-  let tablenames= Object.keys( allcampos);
+  let tablenames= Object.keys( wellTableNames);
   let html="";
   let buildme= function( t_table_name, index ){
   
-    html+="<td><p>"+ wellTableNames[index]+"</p>";
+    html+="<td><p>"+ wellTableNames[t_table_name]+"</p>";
     html+="<div class='multiselect'><div class='selectBox' onclick=\"displayFieldsFromSelect('"+t_table_name+"')\" ><select>";
-    html+="<option>Eliga una opcion</option> </select> <div class='overSelect'></div> </div>";
+    html+="<option>Elige los campos a mostrar</option> </select> <div class='overSelect'></div> </div>";
     html+="<div id='"+t_table_name+"'  class='fields hide'>";
 
     allcampos[t_table_name].forEach( function(campo, index){
@@ -415,7 +483,7 @@ function ajaxCall( ev, divname){//Objeto event   DIV tag selector to display   s
 ev.preventDefault(); 
 //preparar datos
 if( $("input[name=NOMBRE]").val() =="" ){  alert("INGRESE NOMBRE PARA EL FILTRO"); return;}
-if( !confirm("CONTINUAR?" )  ) return;
+ 
 $("input[name=FILTRO]").val(generar_sentencia_sql());
  $.ajax(
      {
@@ -429,7 +497,10 @@ $("input[name=FILTRO]").val(generar_sentencia_sql());
        success: function(res){
         $(divname).html("");
            let r= JSON.parse(res);
-           if("ok" in r)  alert( r.ok);
+           if("ok" in r){  
+             $(".toast").toast("show");
+             $("#instant-report").html("<a href='"+r.ok+"' data-toggle='modal' data-target='#show_opc_rep' onclick='mostrar_informe(event)' style='color:black;'><i class='mr-2 ml-2 fa fa-print fa-lg' aria-hidden='true'></i></a>");
+            }
             else alert( r.error);
             ev.target.reset();  
        },
@@ -446,12 +517,32 @@ $("input[name=FILTRO]").val(generar_sentencia_sql());
 
 
 
+/***VALIDACION*** */
+
+function solo_numero(ev){
+   if(ev.data == undefined ) return;
+   if( ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57){ 
+     ev.target.value= 
+     ev.target.value.substr( 0, ev.target.selectionStart-1) + 
+     ev.target.value.substr( ev.target.selectionStart ); 
+   }  
+ } 
+
+function control_input(e){
+ let row=e.target.parentNode.parentNode;
+ let campo= row.children[1].children[0].value;
+ let tabla=  row.children[0].children[0].value;
+//elemento a borrar
+ let to_remove=  row.children[3].children[0] ;
+ to_remove.remove();
+ row.children[3].innerHTML= crear_input_campo(tabla, campo) ;
+}
 
 //INICIALIZACION
-window.onload= function(){
+/*window.onload= function(){
   selectFieldsOptions();
   if($("#OPERACION").val() == "M") translate_sql( $("input[name=FILTRO]").val() );
   else      condition_creator();
-}
+}*/
  
 </script>

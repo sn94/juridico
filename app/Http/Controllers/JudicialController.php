@@ -6,6 +6,8 @@ use App\CuentaJudicial;
 use App\Demanda;
 use App\Demandados;
 use App\Http\Controllers\Controller;
+use App\Liquidacion;
+use App\Notificacion;
 use Exception;
 use Illuminate\Support\Facades\DB; 
 
@@ -163,25 +165,25 @@ class JudicialController extends Controller
     }
 
     public function ver_saldo_array( $iddeman){
-         //saldo judicial 
+         //****************SALDO JUDICIAL ************
         //monto de la demanda - extracciones
-        $demanda_=Demanda::find( $iddeman);
-        $SaldoJudicial=  intval($demanda_->DEMANDA);
+        $demanda_=Demanda::find( $iddeman);  //Buscar demanda por su ID
+        $SaldoJudicial=  intval($demanda_->DEMANDA);//Monto de la demanda
         $Extracciones=0;
-        $dt=CuentaJudicial::where( "CTA_JUDICI", $demanda_->CTA_BANCO)->get();
+        $dt=CuentaJudicial::where( "CTA_JUDICI", $demanda_->CTA_BANCO)->get();//Instancia de cta judicial de la demanda
         foreach( $dt as $it):
-            if(  $it->TIPO_MOVI == "E")
+            if(  $it->TIPO_MOVI == "E") //Si es extraccion
             $Extracciones+=  intval(  $it->IMPORTE);
         endforeach;
-        $SaldoJudicial-= $Extracciones;
-        //saldo en cuenta
+        $SaldoJudicial-= $Extracciones; // Restar del monto de demanda las extracciones
+        //***********SALDO EN CUENTA********** */
         //depositos - extracciones
         $Depositos=0; 
         foreach( $dt as $it):
-            if(  $it->TIPO_MOVI == "D")
+            if(  $it->TIPO_MOVI == "D") //deposito
             $Depositos+=  intval(  $it->IMPORTE);
         endforeach;
-        $SaldoEnCuenta= $Depositos - $Extracciones; 
+        $SaldoEnCuenta= $Depositos - $Extracciones; //Restar de los depositos acumula. las extracciones ya calculadas
         return array("saldo_judi"=> $SaldoJudicial, "saldo_en_c"=> $SaldoEnCuenta);
     }
 
@@ -190,8 +192,71 @@ class JudicialController extends Controller
     }
 
 
+
+
+//CALCULO DE SALDOS PARA UN JUICIO
+//Saldo capital
+// Saldo capital -  (Extracciones capital  )
+//Saldo liquidacion - (extracciones liquidacion)
+
+public function saldo_C_y_L(  $iddeman, $tipo="array" ){
+      //monto de la demanda - extracciones
+      $demanda_reg=Demanda::find( $iddeman);  //Buscar demanda por su ID
+      $MontoDemanda=  intval($demanda_reg->DEMANDA);//Monto de la demanda
+      //Consultar registro
+      $liquidacion_reg=Liquidacion::where( "CTA_BANCO",  $demanda_reg->CTA_BANCO);
+      $total_liquidaciones= 0;
+      if( $liquidacion_reg )
+      $total_liquidaciones=  intval(  $liquidacion_reg->sum("LIQUIDACIO") );
+
+      //EXTRACCIONES
+      $Extracciones_capital=0;
+      $Extracciones_liquida=0;
+
+    $cta_judi_reg=CuentaJudicial::where( "CTA_JUDICI", $demanda_reg->CTA_BANCO)->get();//Instancia de cta judicial de la demanda
+    //Extracciones de capital    
+    foreach( $cta_judi_reg as $it):
+            if(  $it->TIPO_MOVI == "E"  &&  $it->TIPO_CTA == "C") //Si es extraccion CAPITAL
+            $Extracciones_capital+=  intval(  $it->IMPORTE);
+    endforeach;
+      //Extracciones de liquidacion    
+      foreach( $cta_judi_reg as $it):
+        if(  $it->TIPO_MOVI == "E"  &&  $it->TIPO_CTA == "L") //Si es extraccion CAPITAL
+        $Extracciones_liquida+=  intval(  $it->IMPORTE);
+        endforeach;
+  //Calculo de saldos
+    //SALDO CAPITAL
+    $saldo_capital= $MontoDemanda -  $Extracciones_capital;
+    $saldo_liquida= $total_liquidaciones- $Extracciones_liquida;
+
+     
+    $data=array( "saldo_capital"=> $saldo_capital, "saldo_liquida"=> $saldo_liquida);
+    if( $tipo== "array")
+    return $data;
+    if( $tipo== "json")
+    echo json_encode($data);
+}
  
 
+
+public function saldos_C_y_L(){
+$id_deman_list= Demanda::select('IDNRO')->get();
+//Totalizar demandas
+$total_demandas= Demanda::sum("DEMANDA");  
+//Totalizar extracciones de capital
+$total_extr_capital= CuentaJudicial::where("TIPO_CTA", "C")->where("TIPO_MOVI","E")->sum("IMPORTE");
+//Saldo capital
+$saldo_C= $total_extr_capital -  $total_demandas;
+
+//Totalizar liquidaciones
+$total_liquidaciones=  Notificacion::sum("IMPORT_LIQUI");
+//tOTALIZAR extracciones de liquidacion
+$total_extr_liquida= CuentaJudicial::where("TIPO_CTA", "L")->where("TIPO_MOVI","E")->sum("IMPORTE");
+ //sALDO liquidacion
+ $saldo_L=  $total_liquidaciones - $total_extr_liquida;
+
+ return array( "saldo_capital"=> $saldo_C, "saldo_liquida"=> $saldo_L );
+}
 
 
 

@@ -20,6 +20,10 @@ class Bancos extends Model
 
     public $timestamps = false;
 
+
+    public function banc_mov(){
+        return $this->hasMany("App\Banc_mov", "IDBANCO", "IDNRO");
+    }
  
 
 }
