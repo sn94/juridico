@@ -36,6 +36,14 @@ public function index( ){
 
 
 
+
+/**
+ * 
+ */
+
+/**
+ * Recoge de la BD los campos de tablas que seran utilizados para crear filtros
+ */
 public function get_parametros( $opc){
     
     $tablas= array();
@@ -45,18 +53,18 @@ public function get_parametros( $opc){
      foreach( $pa as $item){
         $tablas[$item->TABLA]= $item->TABLA_FRONT;
      }
-     if( $opc == "t"){
+     if( $opc == "t"){//Nombre interno y estetico de tablas
         echo json_encode( $tablas);
     }
-    if( $opc =="f"){
+    if( $opc =="f"){//Nombres internos y esteticos de campos de cada tabla
    //demandas
    foreach( $tablas as $clave=>$valor){
     $campos=DB::table("param_filtros")->
-    select(  'CAMPO as back','CAMPO_FRONT as face', 'TIPO as tipo', 'LONGITUD as longitud' )->
+    select(  'CAMPO as back','CAMPO_FRONT as face', 'TIPO as tipo', 'LONGITUD as longitud','FUENTE as fuente' )->
     where("TABLA",$clave)-> where("TIPO", "<>", NULL)->get();
     $lista_Campos=array();
     foreach( $campos as $ite_Campo){  
-        array_push(  $lista_Campos ,  array("back"=> $ite_Campo->back, "face"=>$ite_Campo->face, "tipo"=>$ite_Campo->tipo, "longitud"=>$ite_Campo->longitud ));
+        array_push(  $lista_Campos ,  array("back"=> $ite_Campo->back, "face"=>$ite_Campo->face, "tipo"=>$ite_Campo->tipo, "longitud"=>$ite_Campo->longitud, "fuente"=>$ite_Campo->fuente ));
     }
     $parametr[$clave]= $lista_Campos ;
  }
@@ -65,17 +73,36 @@ public function get_parametros( $opc){
   
 }
  
-   
+/**
+ * Relaciones entre tablas
+ *
+ */
+
+public function relaciones_filtro(){
+    $tablas= array();
+    $pa=DB::table("param_filtros")-> select('TABLA')->where("TIPO", "<>", NULL)->get();
+    //tablas y sus nombres
+     foreach( $pa as $item){
+         //Relaciones
+        $Relaciones= DB::table("relaciones_filtros")->where("TABLA", $item->TABLA)->pluck("CAMPO_REL", "TABLA_REL");
+        $tablas[$item->TABLA]=  $Relaciones;
+     }
+    echo  json_encode( $tablas);
+}
+/**
+ * 
+ * 
+ */
 
    
-public function agregar( Request $request){
+public function cargar( Request $request, $OPERACION= "A", $id=""){
     if( ! strcasecmp(  $request->method() , "post"))  {//hay datos 
         //Quitar el campo _token
         $Params=  $request->input();  
 
          DB::beginTransaction();
         try{
-             $r=  new Filtros(); 
+             $r= $OPERACION=="A" ? new Filtros() : Filtros::find( $Params->NRO);
              $r->fill( $Params  );
              $r->save();
              echo json_encode( array('ok'=>  url("filtro/".$r->NRO)  ));    
@@ -90,10 +117,17 @@ public function agregar( Request $request){
     else{    
         $url_fields_res= url("res-filtro/f");
         $url_table_res= url("res-filtro/t");
+        $url_relaciones= url("rel-filtro");
+        $url_data_res= url("res-aux");
         $url_inicio=url("filtros");
+        if( $OPERACION=="A")
         return view('filtros.form',
-         ["OPERACION"=>"A", "index"=> $url_inicio , "res_fields"=>$url_fields_res, 
-         "res_tables"=>$url_table_res ]);
+         ["OPERACION"=> $OPERACION, "index"=> $url_inicio , "res_fields"=>$url_fields_res, 
+         "res_tables"=>$url_table_res, 'res_relaciones'=> $url_relaciones ,'url_data_res'=>$url_data_res]);
+         if( $OPERACION=="M")
+         return view('filtros.form',
+          ["OPERACION"=> $OPERACION, "DATO"=> Filtros::find($id ), "index"=> $url_inicio , "res_fields"=>$url_fields_res, 
+          "res_tables"=>$url_table_res, 'res_relaciones'=> $url_relaciones ,'url_data_res'=>$url_data_res]);
        } 
 }
 
@@ -154,8 +188,8 @@ EOF;*/
 
 
 
-private function limpiarQuery( $id_consulta ){
-    $sql= Filtros::find( $id_consulta )->FILTRO;
+private function limpiarQuery( $SqlParam ){
+    $sql= $SqlParam;
     //Verificar si es una sentencia sql antigua
     if( ! preg_match("/\s*select\s*/i", $sql)  ){
 
@@ -180,28 +214,30 @@ private function limpiarQuery( $id_consulta ){
 
 
 public function  reporte( $id_consulta, $tipo="xls"){
-    $ls= $this->limpiarQuery( $id_consulta);
-    if( $tipo == "xls"){  echo json_encode( $ls );   }
-    else{//ini Pdf Gen
+    $Filtro= Filtros::find( $id_consulta);
+    $resultados= $this->limpiarQuery( $Filtro->FILTRO );//Prepara la sentencia sql la ejecuta
+
+    if( $tipo == "xls"){  echo json_encode( $resultados );   }//Devuelve los datos en JSON
+    else{// Genera un PDF
 
     //EJECUTAR
-        $Titulo= Filtros::find( $id_consulta)->NOMBRE; 
-        $html = '<table>';
-        //Formar cabecera
-        $html.="<thead><tr>";
-        foreach( $ls as $clave=>$valor):
-            $html.="<td>$clave</td>";
-        endforeach;
-        $html.="</tr></thead>"; 
-        $html.='</table>';
+        $Titulo= $Filtro->NOMBRE; 
+        $html=  "";
+        foreach( $resultados as $clave=>$valor):
+            $html.=<<<EOF
+            <div>
+            $clave
+            </div>
+            EOF;
+        endforeach; 
 
-       // echo $html;
+       echo $html;
   
-        $tituloDocumento= $Titulo."-".date("d")."-".date("m")."-".date("yy")."-".rand();
+        /*$tituloDocumento= $Titulo."-".date("d")."-".date("m")."-".date("yy")."-".rand();
         $pdf = new PDF( "L", array(215, 340)); 
         $pdf->prepararPdf("$tituloDocumento.pdf", $tituloDocumento, ""); 
         $pdf->generarHtml( $html , "L" );
-        $pdf->generar();
+        $pdf->generar();*/
           }//End Pdf gen
 }
 

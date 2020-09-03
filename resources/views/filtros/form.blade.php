@@ -69,11 +69,23 @@ if( $detect->isMobile() == false){
 <input type="hidden" id="index" value="{{ $index}}">
 <input type="hidden" id="res_fields" value="{{ $res_fields}}">
 <input type="hidden" id="res_tables" value="{{ $res_tables}}">
+<input type="hidden" id="res_relaciones" value="{{ $res_relaciones}}">
+<input type="hidden" id="url_data_res" value="{{$url_data_res}}">
 <?php  
-$ruta= $OPERACION =="A" ? url("nfiltro") : url("efiltro");
+$ruta= $OPERACION =="A" ? url("nfiltro") : url("efiltro/M");
   ?>
 
- 
+
+<!----BLOQUEADOR DE PANTALLA MIENTRAS CARGAN RECURSOS -->
+
+<div id="spinner" class="spinner spinner-block">
+  <div class="spinner-bar"></div>
+  <div class="spinner-text">Recuperando datos...</div>
+</div>
+
+<!----BLOQUEADOR DE PANTALLA MIENTRAS CARGAN RECURSOS -->
+
+
 <div class="row">
 
   
@@ -85,6 +97,12 @@ $ruta= $OPERACION =="A" ? url("nfiltro") : url("efiltro");
 
     <form id="filterform" action="<?=$ruta?>" method="POST" onsubmit="ajaxCall(event,'#statusform')">
     {{csrf_field()}}
+
+    @if($OPERACION == "M")
+    @php
+    echo Form::hidden('NRO',  $DATO->NRO );
+    @endphp
+    @endif
      <div class="row">
         <div class="col-12 col-sm-6 col-md-9 col-lg-4">
             <div class="form-group">
@@ -155,44 +173,73 @@ FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = 'juridico' AND
 (TABLE_NAME = 'demandas2' or TABLE_NAME='notificaciones' or TABLE_NAME='arreglo_extrajudicial' or TABLE_NAME='inter_contraparte')
 */
 
-var wellTableNames= {};
-var allcampos= {}; 
+var wellTableNames= {};//Nombre interno y externo, de tablas
+var allcampos= {}; //Nombres internos y externos de campos, tipo de dato y longitud
 
 //Relaciones
-var relations={
-  demandas2: { notificaciones: "IDNRO", cta_judicial: "CTA_JUDICI"},
-  notificaciones: { demandas2: "IDNRO"},
-  cta_judicial: { demandas2: "CTA_BANCO"}
+var relations={ };
 
-};
+//Fuente DE DATOS
+var data_resources= {};
 
-function cargar_listas_reg_tab(){
-  
+
+function cargar_data_res( tableName){
+   if( ! (tableName in data_resources)  ){
+    let ruta= $("#url_data_res").val()+"/"+tableName;
+    $.ajax( { url:  ruta, dataType: "json", 
+      async: false,
+        success: function(data){  
+          data_resources[tableName]= data;
+          $("#statusform").html(""); 
+           },
+        beforeSend: function(){ $("#statusform").html("<p style='font-weight: 600;' >Cargando datos</p>"); },
+        error: function(){ $("#statusform").html(""); }
+        }); 
+   }  
 }
-function cargar_params_tabla(){ 
+
+
+function cargar_relaciones(){
+  $.ajax( { url: $("#res_relaciones").val(), dataType: "json", 
+        success: function(data){ 
+          relations= data;
+          $("#statusform").html("");
+          $('#spinner').removeClass('show');
+          init_filter(); },
+        beforeSend: function(){   },
+        error: function(){$('#spinner').removeClass('show');   }
+        }); 
+}
+function cargar_params_campos(){ 
           //params campos
         $.ajax( { url: $("#res_fields").val(), dataType: "json", 
         success: function(data){ 
           allcampos= data;
           $("#statusform").html("");
-          init_filter(); },
-        beforeSend: function(){ $("#statusform").html("<p style='font-weight: 600;' >Cargando datos</p>"); }
+         cargar_relaciones(); },
+        beforeSend: function(){  },
+        error: function(){$('#spinner').removeClass('show');}
         }); 
 }
 
 /**OBTENCION DE RECURSOS */
-window.onload= function(){
+function cargar_params_tablas(){
   //obtener recursos 
   //params tablas
     $.ajax( { url: $("#res_tables").val(), dataType: "json", 
       success: function(data){    
         wellTableNames= data;
         $("#statusform").html("");
-        cargar_params_tabla();
+    //params campos
+        cargar_params_campos();
         },
-      beforeSend: function(){ $("#statusform").html("<p style='font-weight: 600;' >Cargando datos</p>"); }
+      beforeSend: function(){   },
+      error: function(){$('#spinner').removeClass('show');}
       });
 }
+
+
+
 
 
 function init_filter(){
@@ -203,14 +250,24 @@ function init_filter(){
 }
 
 
+
+
+
+
+
+
+
 //A PARTIR DE UNA CAD SQL EXTRAER TOKENS
 function  translate_sql( arg){
    
 //Obtener tokens de los campos seleccionados
 let fields_from_sele=  arg.split("where")[0].replaceAll( new RegExp("(select)|from"),"").trim();
-let eachField= fields_from_sele.split(",");
+let eachField= fields_from_sele.split(",");//separar 
 eachField.forEach( function(fiel){
-  let tempo=fiel.split(".");
+  //Separar del alias
+  
+  let sin_alias= fiel.split( /(as)|\s+/)[0]; 
+  let tempo=sin_alias.split(".");
   let tabla= tempo[0];  let campo=  tempo[1];
   $("#"+tabla+"-"+campo).prop("checked", true);
 });
@@ -231,15 +288,15 @@ eachField.forEach( function(fiel){
       let tablaxcampo=operandos[0].trim();
       let campo__= tablaxcampo.split(".")[1];//Nombre de campo
       let tablax= tablaxcampo.split(".")[0];//OBTENER TABLA ASOCIADA
-      try{
+      try{                                  //operador rela   valor         operador logico
         condition_creator( tablax,  campo__, operandos[1], operandos[2].trim(),  ope_logicos[indice]  );
       }catch(err){
         condition_creator( tablax,  campo__, operandos[1], operandos[2].trim() );
       }
-     
- 
     });
-    
+    //DEPURAR
+    if( document.querySelector("#CONDICIONES tbody").children.length == 1);
+    document.querySelector("#CONDICIONES tbody").children[0].children[4].children[0].value="";
 
 }
 
@@ -263,18 +320,36 @@ control_input(  ev);//Controlar tipo de dato
 } 
 
 
-
+//****GENERACION  DE CAMPOS DE CLAUSULA SELECT PARA SQL */
 function generar_selects_fields(){
   let fie= [];
   Array.prototype.forEach.call( $("input[type=checkbox]"),  function(s){
     if( s.checked ){
+      //
       let tablefield= s.id.split("-");
-       fie.push( tablefield[0]+"."+tablefield[1]);
+      //Nombre de campo y alias
+      let alias= $("#"+tablefield[0]+"-"+tablefield[1]+" ~label").text();
+      let nombreCampoCalificado= tablefield[0]+"."+tablefield[1]+" as '"+alias+"'";
+       fie.push(  nombreCampoCalificado);
        }
     } );
-    if( fie.length == 0) return " * ";
+    if( fie.length == 0) return " * ";//Si no se han seleccionado CAMPOS
     else return fie.join(",") ;
 }
+
+/**OBTENER TABLAS QUE DEBEN SER RELACIONADAS */
+function get_tables_for_relation(){
+  let tablas= [];
+  Array.prototype.forEach.call( $("input[type=checkbox]"),  function(s){
+        if( s.checked ){
+              let tablefield= s.id.split("-");
+              let tabla= tablefield[0];
+              if( ! tablas.includes( tabla))   tablas.push( tabla );
+          }
+    } );
+    return tablas;
+}
+
 /**GENERAR NUEVA SENTENCIA */
 function generar_sentencia_sql(){
   let tableNames= [];  //Identificar tablas existentes en el filtro
@@ -282,22 +357,31 @@ function generar_sentencia_sql(){
   let selects= generar_selects_fields();
   let sql=" select "+selects+" from ";
 
+/*****FORMACION DE CLAUSULA WHERE */
   Array.prototype.forEach.call( document.querySelector("#CONDICIONES tbody").children,  function( row){
    
     let tabla_= row.children[0].children[0].value;//Nombre de tabla
     if( ! tableNames.includes( tabla_ )){  tableNames.push( tabla_ );  }
 
         let campo= row.children[1].children[0].value;//campo de tabla
-        let operel=row.children[2].children[0].value;//Operador relacional
-        let valor= row.children[3].children[0].value;//valor en comparacion
+        let operel=row.children[2].children[0].value;// Operador relacional
+        let valor= row.children[3].children[0].value;// valor en comparacion
         let opelog=row.children[4].children[0].value;//Operador logico
-        wheres=   wheres+" "+ tabla_+"."+campo+operel+valor+" "+opelog+" ";
+
+        let metadata_campo=allcampos[tabla_].filter( function( datafield){ return datafield.back==campo})[0];
+        //Prepara el valor dependiendo de su Tipo
+        //Cadena    Fecha   Boolean
+        if( metadata_campo.tipo=="C" || metadata_campo.tipo=="F" || metadata_campo.tipo=="B")
+        valor= "'"+valor+"'";
+        wheres=   wheres+" "+ tabla_+"."+campo+operel+valor+" "+opelog+" ";//Sentencia Where
   }); 
+  /*********************** */
 
   //DEFINIR RELACIONES ENTRE TABLAS
   let tablas_ya_relacio=[];
   let relaciones= [];
-  tableNames.forEach( function(ar){
+  let tablas_a_Relacionar= get_tables_for_relation(); //tableNames
+  tablas_a_Relacionar.forEach( function(ar){
     if( !tablas_ya_relacio.includes(ar) ){
       let TABLA_PRINCI= ar;
       if(Object.keys( relations).includes(ar)){
@@ -314,10 +398,12 @@ function generar_sentencia_sql(){
   });/**fIN RELACIONAMIENTO */
    
   //Concatenar tables
-let tbls= tableNames.reduce( function(prev, curr){
+let tbls= tablas_a_Relacionar.reduce( function(prev, curr){//tableNames
   return prev+","+curr;
 });
-sql+=   tbls+" where  "+wheres+ relaciones; 
+//Si existen relaciones
+let relacion__= relaciones.length>0 ? " && "+ relaciones.join(" && ")  :  ""; 
+sql+=   tbls+" where "+wheres+ relacion__;
 return sql;
 }
 
@@ -365,21 +451,22 @@ function crear_input_campo( tabla, campo, defaul){ //tabla campo valor
 let select_tag= function( arreglo, pordefecto){
   let html= "<select  class='form-control form-control-sm'  >"
   arreglo.forEach( function( keyvalue){
-    let clave=Object.keys(  keyvalue )[0];
-    let checkeable= pordefecto == clave ? "selected" : "";
-    html= html+"<option  "+checkeable+" value='"+clave+"'>"+keyvalue[clave]+"</option>";
+    let checkeable= pordefecto == keyvalue.IDNRO ? "selected" : "";
+    html= html+"<option  "+checkeable+" value='"+keyvalue.IDNRO+"'>"+keyvalue.DESCR+"</option>";
   });
   html= html+"</select>";  return html;
-};
+};/******** */
 
   let metadata_campo=allcampos[tabla].filter( function( datafield){ return datafield.back==campo})[0];
-  console.log( metadata_campo);
+  console.log( "metadata", metadata_campo, tabla, campo);
  switch( metadata_campo.tipo){
    case 'N': return "<input value='"+defaul+"' type='text' maxlength='"+metadata_campo.longitud+"' oninput='solo_numero(event)' class='form-control form-control-sm'  >";break;
    case 'C': return  "<input value='"+defaul+"' type='text' maxlength='"+metadata_campo.longitud+"'  class='form-control form-control-sm'  >";break
    case 'F': return "<input value='"+defaul+"' type='date'   class='form-control form-control-sm'  >";break
    case 'B': return select_tag( [{'N':'NO'},{'S':'SI'}], 'N'  );break
-   case 'L': return select_tag( [{'N':'NO'},{'S':'SI'}], 'N'  );break
+   case 'L':  
+   cargar_data_res( metadata_campo.fuente);//Descargar recurso
+   return select_tag(  data_resources[metadata_campo.fuente],   defaul );break
 
  }
  
@@ -412,7 +499,8 @@ function crear_select_ope_logico( defaul){
 
 function  condition_creator( tabla, campo, operel, valor, opelog){
   let id_=  document.querySelector("#CONDICIONES tbody").children.length;
-   
+  let metadata_campo=allcampos[tabla ].filter( function( datafield){ return datafield.back==campo})[0];
+  if( metadata_campo != undefined)
   $("#CONDICIONES tbody").append("<tr id='"+id_+"'><td>"+crear_select_tabla(tabla)+"</td><td>"+crear_select_campo(tabla,campo)+"</td><td>"+crear_select_ope_rela(operel)+"</td><td>"+crear_input_campo(tabla,campo,valor)+"</td><td>"+crear_select_ope_logico(opelog)+"</td></tr>");
 }
 
@@ -545,4 +633,14 @@ function control_input(e){
   else      condition_creator();
 }*/
  
+
+
+window.onload= function(){ 
+  cargar_params_tablas();
+  $('#spinner').addClass('show');
+ 
+};
+
+
+
 </script>

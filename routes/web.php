@@ -120,7 +120,7 @@ Route::get('editaux/{tabl}/{idnro}',   'AuxiController@editar');
 Route::get('delaux/{tabl}/{idnro}',   'AuxiController@borrar');
 Route::post('editaux',   'AuxiController@editar');
 Route::get('lauxiliar/{tabl}',   'AuxiController@list');
-
+Route::get('res-aux/{tabl}',   'AuxiController@get');
 
 /**  PARAMETROS** */
 Route::get('params',   'ParamController@index');
@@ -135,15 +135,15 @@ Route::get('dodema/{id}',   'ParamController@borrar');
 
 /***FILTROS */
 Route::get('filtros',   'FilterController@index');
-Route::get('nfiltro',   'FilterController@agregar');
-Route::post('nfiltro',   'FilterController@agregar');
-Route::get('efiltro/{id}',   'FilterController@editar');
-Route::post('efiltro',   'FilterController@editar');
+Route::get('nfiltro',   'FilterController@cargar');
+Route::post('nfiltro',   'FilterController@cargar');
+Route::get('efiltro/{tipo}/{id}',   'FilterController@cargar');
+Route::post('efiltro/{tipo}',   'FilterController@cargar');
 Route::get('dfiltro/{id}',   'FilterController@borrar');
 Route::get('filtro/{id}/{tipo}',   'FilterController@reporte');
 Route::get('filtro/{id}/{tipo}',   'FilterController@reporte');
-Route::get('res-filtro/{tipo}',   'FilterController@get_parametros'); 
-
+Route::get('res-filtro/{tipo}',   'FilterController@get_parametros'); //Recursos de datos para crear filtros
+Route::get('rel-filtro',   'FilterController@relaciones_filtro'); //Datos de relaciones para crear filtros
 
 
 /***USUARIOS */
@@ -219,7 +219,7 @@ Route::get('del-msg/{id}',   'MessengerController@borrar');
 Route::get('list-msg/{TIPO}',   'MessengerController@listar'); 
 
 
-Route::get('test',   'FilterController@get_parametros');
+Route::get('test',   'FilterController@relaciones_filtro');
 
 
 

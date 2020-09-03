@@ -37,16 +37,14 @@ public function index( $tabl="demandan"){
 
 
 
-/**OBTENER REGISTROS A PARTIR DEL NOMBRE DE LA TABLA */
+/**OBTENER REGISTROS A PARTIR DEL NOMBRE DE LA TABLA ****/
  public function get( $tabla ){
         //pROPORCIONAR RUTAS A LOS RECURSOS 
         $registro= array();
-        
         if( $tabla =="odemanda")
-        $registro=  DB::table($tabla)->pluck("NOMBRES", "IDNRO");
+        $registro=  DB::table($tabla)->select( "IDNRO", "NOMBRES as DESCR")->get();
         else
-        $registro=  DB::table($tabla)->pluck("DESCR", "IDNRO");
-
+        $registro=  DB::table($tabla)->select( "IDNRO", "DESCR")->get();
         echo json_encode(  $registro);
  }
    

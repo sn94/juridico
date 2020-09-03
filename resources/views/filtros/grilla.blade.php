@@ -28,7 +28,7 @@ if( $detect->isMobile() == false){
       <tbody>
         <?php  foreach( $lista as $it) :?>
         <tr id="{{$it->NRO}}"> 
-          <td><a onclick="editar(event)" href="<?=url("efiltro/".$it->NRO)?>" style="color:black;"><i class="mr-2 ml-2 fa fa-pencil {{$icons_size}}" aria-hidden="true"></i></a></td>
+          <td><a onclick="editar(event)" href="<?=url("efiltro/M/".$it->NRO)?>" style="color:black;"><i class="mr-2 ml-2 fa fa-pencil {{$icons_size}}" aria-hidden="true"></i></a></td>
           <td><a onclick="borrar(event)" href="<?=url("dfiltro/".$it->NRO)?>" style="color:black;" ><i class="mr-2 ml-2 fa fa-trash {{$icons_size}}" aria-hidden="true"></i></a></td>
           <td> 
            <!--MANDAR A IMPRIMIR -->
