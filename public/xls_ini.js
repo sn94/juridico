@@ -1,9 +1,13 @@
+//const { head } = require("lodash");
+
 function jsonToArray(arg) {
     try {
         let ob = JSON.parse(arg);
         let newob = ob.map(function(row) { return Object.values(row); });
+
         //agregar cabeceras
         let headers = Object.keys(ob[0]);
+
         newob.unshift(headers);
         return newob;
     } catch (er) {
@@ -52,6 +56,9 @@ function createWorkBook(datos, whois) {
 }
 
 
+function callToXlsGen_with_data(titulo, data) {
+    createWorkBook(data, titulo);
+}
 
 function callToXlsGen(ev, titulo, showMsg) {
     if (showMsg == undefined) showMsg = function() {; }

@@ -1,4 +1,7 @@
  
+ <?php 
+ use App\Helpers\Helper;
+ ?>
  
   <form  id="formExtrajudi"   method="post" action="<?= url("arreglo_extra")?>" onsubmit="enviarExtrajudi(event)">
 
@@ -33,21 +36,21 @@
 <div class="col-12 col-md-3">
 <div class="form-group">
           <label for="ctactecatas">Tipo de arreglo extrajudicial:</label>
-          <input name="TIPO"   value="{{ isset($ficha5)? $ficha5->TIPO : '' }}" type="text"  class="form-control form-control-sm"> 
+          <input maxlength="20" name="TIPO"   value="{{ isset($ficha5)? $ficha5->TIPO : '' }}" type="text"  class="form-control form-control-sm"> 
 </div>
 </div>
 
 <div class="col-12 col-md-3">
 <div class="form-group">
           <label for="ctactecatas">Importe total del arreglo:</label>
-          <input oninput="solo_numero(event)" value="{{isset($ficha5)? $ficha5->IMPORTE_T : '' }}"   name="IMPORTE_T"  type="text"   class="form-control form-control-sm"> 
+          <input maxlength="10" oninput="formatear(event)" value="{{isset($ficha5)? $ficha5->IMPORTE_T : '' }}"   name="IMPORTE_T"  type="text"   class="form-control form-control-sm number-format"> 
 </div>
 </div>
 
 <div class="col-12 col-md-3">
 <div class="form-group">
           <label for="ctactecatas">Cantidad de cuotas:</label>
-          <input oninput="solo_numero(event)" value="{{ isset($ficha5)? $ficha5->CANT_CUOTAS : '' }}"  name="CANT_CUOTAS" type="text"   class="form-control form-control-sm"> 
+          <input maxlength="3" oninput="solo_numero(event)" value="{{ isset($ficha5)? $ficha5->CANT_CUOTAS : '' }}"  name="CANT_CUOTAS" type="text"   class="form-control form-control-sm"> 
 </div>
 </div>
 
@@ -67,9 +70,9 @@
   foreach( $ficha5->arreglo_extra_cuotas as $it):
 
   echo "
-  <tr><td><input value='{$ficha5->IDNRO}' type='hidden' name='DETALLE[ARREGLO][]'>$indi</td>
+  <tr><td style='text-align: center;'><input value='{$ficha5->IDNRO}' type='hidden' name='DETALLE[ARREGLO][]'>$indi</td>
   <td><input class='form-control form-control-sm' value='{$it->VENCIMIENTO}' name='DETALLE[VENCIMIENTO][]' type='date' /></td>
-  <td><input name='DETALLE[IMPORTE][]' type='text' value='{$it->IMPORTE}' class='form-control form-control-sm'  readonly value='{$it->IMPORTE}'> </td>
+  <td><input style='text-align:right;' name='DETALLE[IMPORTE][]' type='text' value='". Helper::number_f($it->IMPORTE)."' class='form-control form-control-sm number-format'  readonly value='{$it->IMPORTE}'> </td>
   <td><input class='form-control form-control-sm' value='{$it->FECHA_PAGO}' type='date' name='DETALLE[FECHA_PAGO][]' /></td></tr>";
   $indi++;
 
@@ -99,30 +102,54 @@
     $("#arreglojudi tbody").empty();
     let importe=$("#formExtrajudi input[name=IMPORTE_T]").val();
     let cant_c= $("#formExtrajudi input[name=CANT_CUOTAS]").val();
-
-importe= numeroSinFormato( importe);
-cant_c= numeroSinFormato( cant_c);
+    importe= numeroSinFormato( importe);
+    cant_c= numeroSinFormato( cant_c);
 
     let importe_cuota= parseInt( importe) /parseInt( cant_c);
     importe_cuota=  Math.round( importe_cuota);
+    importe_cuota= numero_con_puntuacion(importe_cuota);
     let idnro= $("#formExtrajudi input[name=IDNRO]").val();
     //Agregar filas
     for( let i=0; i< parseInt(cant_c) ; i++){
       
+      let input_id_cuota="<input value='"+idnro+"' type='hidden' name='DETALLE[ARREGLO][]'>";
+      let input_fec_venci="<input class='form-control form-control-sm' name='DETALLE[VENCIMIENTO][]' type='date' />";
+      let input_importe="<input   style='text-align:right;'  name='DETALLE[IMPORTE][]' type='text'  class='form-control form-control-sm number-format'  readonly value='"+importe_cuota+"'>";
+      let input_fec_pago="<input class='form-control form-control-sm' type='date' name='DETALLE[FECHA_PAGO][]' />";
+
       $("#arreglojudi tbody")
-      .append("<tr><td><input value='"+idnro+"' type='hidden' name='DETALLE[ARREGLO][]'>"+(i+1)+"</td><td><input class='form-control form-control-sm' name='DETALLE[VENCIMIENTO][]' type='date' /></td><td><input name='DETALLE[IMPORTE][]' type='text'  class='form-control form-control-sm'  readonly value='"+importe_cuota+"'> </td><td><input class='form-control form-control-sm' type='date' name='DETALLE[FECHA_PAGO][]' /></td></tr>");
+      .append("<tr><td style='text-align: center;'>"+input_id_cuota+" "+(i+1)+"</td><td>"+input_fec_venci+"</td><td>"+input_importe+"</td><td>"+input_fec_pago+"</td></tr>");
     }
     
   }
 
 
+function limpiarNumericos(){
+  $("#formExtrajudi .number-format").each( function( indice, obj){    quitarSeparador( obj); } );
+}
+
+function rec_formato_numerico_extraju(){ 
+  $("#formExtrajudi .number-format").each( function( indice, obj){    numero_con_puntuacion( obj); } );
+}
 
 
-  
+function campos_vacios_extrajudi(){
+  if( ( $("#formExtrajudi input[name=IMPORTE_T]").val()=="" || $("#formExtrajudi input[name=IMPORTE_T]").val()=="0") 
+  && ($("#formExtrajudi input[name=CANT_CUOTAS]").val()=="" ||  $("#formExtrajudi input[name=CANT_CUOTAS]").val()=="0"  )  )
+ { alert("COMPLETE LOS CAMPOS POR FAVOR"); return true;}
+ else{
+   if( document.querySelector("#arreglojudi tbody").children.length<=0  )
+   {  alert("GENERE LAS CUOTAS"); return true;}
+   else{
+     return false;
+   }
+ }
+}
 function enviarExtrajudi( ev){ //ENVIO DE FORM OBSERVACION
  
  ev.preventDefault();  
- 
+ if( campos_vacios_extrajudi() ) return;
+limpiarNumericos();
        $.ajax(
        {
          url:  ev.target.action,
@@ -142,6 +169,7 @@ function enviarExtrajudi( ev){ //ENVIO DE FORM OBSERVACION
                $("#extrajudicial-panel").html( "" ); //mensaje 
                $("#juri-msg").text( "GUARDADO!");
                 $(".toast").toast("show"); 
+                rec_formato_numerico_extraju();
              }
             
          },

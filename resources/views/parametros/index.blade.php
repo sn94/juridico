@@ -20,7 +20,8 @@
 function ajaxCall( ev, divname){//Objeto event   DIV tag selector to display   success handler
 ev.preventDefault(); 
 //vALIDAR CHECK
-$("input[name=SHOW_COUNTERS]").val( $("input[type=checkbox]").prop("checked") ?"S":"N"  );
+$("input[name=SHOW_COUNTERS]").val( $("#SHOW_COUNTERS").prop("checked") ?"S":"N"  );
+$("input[name=DEPOSITO_CTA_JUDICI]").val( $("#DEPOSITO_CTA_JUDICI").prop("checked") ?"S":"N"  );
  $.ajax(
      {
        url:  ev.target.action,

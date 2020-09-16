@@ -337,11 +337,11 @@ if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar
                     <div class="col-12 col-sm-5 col-md-5"> <label >Con depósito:</label><br>  </div>
                     <div class="col-12 col-sm-7 col-md-7">
                          <div class="form-check form-check-inline">
-                         <input {{isset($dato->CON_DEPOSITO)? (  $dato->CON_DEPOSITO =="S"?"checked":"") : ''}} onchange="cambiar(event)"  class="form-check-input" type="radio" name="CON_DEPOSITO" id="inlineRadio1" value="S">
+                         <input {{isset($ficha->CON_DEPOSITO)? (  $ficha->CON_DEPOSITO =="S"?"checked":"") : ''}} onchange="cambiar(event)"  class="form-check-input" type="radio" name="CON_DEPOSITO" id="inlineRadio1" value="S">
                          <label class="form-check-label" for="inlineRadio1">SI</label>
                          </div>
                          <div class="form-check form-check-inline">
-                         <input {{isset($dato->CON_DEPOSITO)? (  $dato->CON_DEPOSITO =="N"?"checked":""): ''}}  onchange="cambiar(event)" class="form-check-input" type="radio" name="CON_DEPOSITO" id="inlineRadio2" value="N">
+                         <input {{isset($ficha->CON_DEPOSITO)? (  $ficha->CON_DEPOSITO =="N"?"checked":""): ''}}  onchange="cambiar(event)" class="form-check-input" type="radio" name="CON_DEPOSITO" id="inlineRadio2" value="N">
                          <label class="form-check-label" for="inlineRadio2">NO</label>
                          </div>
                     </div>
@@ -359,11 +359,11 @@ if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar
                <div class="col-12 col-sm-7 col-md-6"> <label >Con arreglo extrajud.:</label>  </div>
                <div class="col-12 col-sm-5 col-md-6">
                     <div class="form-check form-check-inline">
-                    <input {{isset($dato->ARR_EXTRAJUDI)? (  $dato->ARR_EXTRAJUDI =="S"?"checked":"") : ''}} onchange="cambiar(event)"  class="form-check-input" type="radio" name="ARR_EXTRAJUDI" id="inlineRadio1" value="S">
+                    <input {{isset($ficha->ARR_EXTRAJUDI)? (  $ficha->ARR_EXTRAJUDI =="S"?"checked":"") : ''}} onchange="cambiar(event)"  class="form-check-input" type="radio" name="ARR_EXTRAJUDI" id="inlineRadio1" value="S">
                     <label class="form-check-label" for="inlineRadio1">SI</label>
                     </div>
                     <div class="form-check form-check-inline">
-                    <input {{isset($dato->ARR_EXTRAJUDI)? (  $dato->ARR_EXTRAJUDI =="N"?"checked":""): ''}}  onchange="cambiar(event)" class="form-check-input" type="radio" name="ARR_EXTRAJUDI" id="inlineRadio2" value="N">
+                    <input {{isset($ficha->ARR_EXTRAJUDI)? (  $ficha->ARR_EXTRAJUDI =="N"?"checked":""): ''}}  onchange="cambiar(event)" class="form-check-input" type="radio" name="ARR_EXTRAJUDI" id="inlineRadio2" value="N">
                     <label class="form-check-label" for="inlineRadio2">NO</label>
                     </div>
                 </div>

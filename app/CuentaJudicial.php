@@ -12,7 +12,7 @@ class CuentaJudicial extends Model
      *
      * @var string
      */
-    protected $table= "cta_judicial";
+    protected $table= "cuenta_judicial";
 
     protected $primaryKey = 'IDNRO';
 
@@ -21,5 +21,9 @@ class CuentaJudicial extends Model
     public $timestamps = false;
 
  
+    
+    public function movcuentajudicial(){
+        return $this->hasMany("App\MovCuentaJudicial", "CTA_JUDICIAL", "IDNRO");
+    }
 
 }

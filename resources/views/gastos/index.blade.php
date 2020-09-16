@@ -13,7 +13,7 @@ use App\Mobile_Detect;
 $dete= new Mobile_Detect();
 $iconsize=  $dete->isMobile() ? "": "fa-lg";
 
-echo link_to('gasto', $title = "AGREGAR", $attributes = [ "class"=>"btn btn-sm btn-success" ,  "data-toggle"=>"modal", "data-target"=>"#showform", "onclick"=> "mostrar_form(event)"], $secure = null);
+echo link_to('gasto', $title = "AGREGAR", $attributes = [ "class"=>"btn btn-sm btn-success mb-1" ,  "data-toggle"=>"modal", "data-target"=>"#showform", "onclick"=> "mostrar_form(event)", "style"=>"background-color: #fdc673;color: #1a0c00;"], $secure = null);
  
 @endphp
  
@@ -21,10 +21,28 @@ echo link_to('gasto', $title = "AGREGAR", $attributes = [ "class"=>"btn btn-sm b
   <!--MANDAR A IMPRIMIR -->
 <a  href="<?= url("rep-gastos")?>" data-toggle="modal" data-target="#show_opc_rep" onclick="mostrar_informe(event)" style="color:black;" > <i class="mr-2 ml-2 fa fa-print {{$iconsize}}" aria-hidden="true"></i></a>
 
+{!! Form::select('', $CODGASTO, null, [ 'id'=>'CODGASTO','class'=>'form-control form-control-sm', 'onchange'=>'filtrarPorCodigo(event)']  ) !!} 
 
 
 <form id="gastos-search" action="<?=url("grillgastos")?>" method="post"  onsubmit="actualizar_grill_parametros(event)">
-  <!--Parametros de fecha --> 
+@csrf  
+
+<!--Filtro: ES GASTO POR DEMANDA U OTROS --> 
+<div class="form-check form-check-inline">
+  <input checked class="form-check-input" type="radio" name="modo" id="inlineRadio1" value="T">
+  <label class="form-check-label" for="inlineRadio1">TODO</label>
+</div>
+<div class="form-check form-check-inline">
+  <input class="form-check-input" type="radio" name="modo" id="inlineRadio2" value="D">
+  <label class="form-check-label" for="inlineRadio2">POR DEMANDAS</label>
+</div>
+<div class="form-check form-check-inline">
+  <input class="form-check-input" type="radio" name="modo" id="inlineRadio3" value="V">
+  <label class="form-check-label" for="inlineRadio3">POR VARIOS</label>
+</div>
+
+
+<!--Parametros de fecha --> 
 <div class="row">
 <div class="col-2 col-sm-1 col-md-2  col-lg-1">
 <span style="font-size: 10pt; font-weight: 600;">Desde:</span> 
@@ -41,24 +59,26 @@ echo link_to('gasto', $title = "AGREGAR", $attributes = [ "class"=>"btn btn-sm b
  <input class="form-control form-control-sm"  type="date" id="Hasta" name="Hasta">
   </div>
   <div class="col-6 col-sm-2 col-md-3 col-lg-1 d-flex">
- <button type="submit" class="btn btn-sm btn-info">BUSCAR</button>
+ <button style="background-color: #fdc673;color: #1a0c00;" type="submit" class="btn btn-sm btn-info mt-1">BUSCAR</button>
   </div>
 </div>
 </form>
 
-<div id="grilla">
-@include("gastos.grilla")
+
+<div id="grilla"  >
+ @include("gastos.grilla")
 </div>
 
 
+<!-- modal -->
 <div id="showform" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-sm">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content" id="viewform">
       
     </div>
   </div>
 </div>
-
+<!-- modal -->
 
  
 <!-- MODAL TIPO DE INFORME -->
@@ -67,7 +87,7 @@ echo link_to('gasto', $title = "AGREGAR", $attributes = [ "class"=>"btn btn-sm b
     <div class="modal-content" >
     <a  id="info-xls" onclick="callToXlsGen(event, '{{$TITULO}}')" class="btn btn-sm btn-info" href="#" ><i class="fa fa-file-excel-o fa-2x" aria-hidden="true"></i> <h3>EXCEL</h3></a>
    
-    <a  id="info-pdf"  class="btn btn-sm btn-info" href="#"><i class="fa fa-file-pdf-o fa-2x" aria-hidden="true"></i><h3>PDF</h3></a>
+    <a  id="info-pdf"  onclick="download_pdf(event)" class="btn btn-sm btn-info" href="#"><i class="fa fa-file-pdf-o fa-2x" aria-hidden="true"></i><h3>PDF</h3></a>
     <a  id="info-print" class="btn btn-sm btn-info" href="#"><i class="fa fa-print fa-2x" aria-hidden="true"></i><h3>Printer</h3></a>
     </div>
   </div>
@@ -79,14 +99,23 @@ echo link_to('gasto', $title = "AGREGAR", $attributes = [ "class"=>"btn btn-sm b
 <script>
 
 
+function filtrarPorCodigo(ev){
+ let cod= ev.currentTarget.value;
+ $.ajax({
+    url: "<?=url("filtrar-gastos-codigo")?>/"+cod,
+    beforeSend: function(){  $("#grilla").html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" )},
+    success: function(resu){ $("#grilla").html( resu)  ; },
+    error: function(){$("#grilla").html( "<h6>Error al recuperar datos</h6>")  ;}
+  });
+}
+
 /**REPORTE */ 
 
 function mostrar_informe(ev){
     ev.preventDefault();
-    let pdf= ev.target.action+"/pdf";
-    let xls= ev.target.action+"/xls";
-   // ajaxCall(, "#grilla", function(resu){ $("#grilla").html( resu)  ; } );
-   
+    let pdf= ev.currentTarget.href+"/pdf";
+    let xls= ev.currentTarget.href+"/xls";
+  
      $("#info-xls").attr("href", xls );
      $("#info-pdf").attr("href", pdf  ); 
   }
@@ -124,6 +153,7 @@ function numero_con_puntuacion( obj ) {
 
 
 function mostrar_form(ev){
+  ev.preventDefault();
 let divname= "#viewform";
   $.ajax(
        {
@@ -186,13 +216,16 @@ function actualizar_grill(){
     beforeSend: function(){  $("#grilla").html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" )},
     success: function(resu){ $("#grilla").html( resu)  ; },
     error: function(){$("#grilla").html( "<h6>Error al recuperar datos</h6>")  ;}
-  })
+  });
 }
 
 
 function actualizar_grill_parametros(e){ 
   e.preventDefault(); 
+  //if( $("#Desde").val()  != "" && $("#Hasta").val()  != "")
   ajaxCall(e, "#grilla", function(resu){ $("#grilla").html( resu)  ; } );
+  //else
+  //alert("Proporcione las fechas")
 }
 
 
@@ -221,13 +254,17 @@ function ajaxCall( e, divnam, succes){
 function guardar( ev ){//Objeto event   DIV tag selector to display   success handler
 ev.preventDefault();
 if( $("#gastosform input[name=IMPORTE]").val()==""){ alert("INGRESE EL IMPORTE!"); return;}
+//El gastos es por demanda ?
+if( !($("#GastDema").prop("checked"))  &&  !($("#OtrosGast").prop("checked"))  ){ 
+  alert("INDIQUE EL TIPO DE GASTO"); return;
+}
 //quitar formato
 $("#gastosform .number-format").each( function( indice, obj){    quitarSeparador( obj); } );
 
 
  ajaxCall( ev, "#mensaje", function(res){
             $( "#mensaje").html(JSON.parse(res).ok ); 
-    
+            $("#showform" ).modal("hide")
             actualizar_grill();
             //recuperar formato
           $("#gastosform .number-format").each( function( indice, obj){    numero_con_puntuacion( obj); } );
@@ -236,19 +273,55 @@ $("#gastosform .number-format").each( function( indice, obj){    quitarSeparador
 }/*****end ajax call* */
 
   
-function setDefaultDate(){
-        //fechas por defecto
-        if( $("input[type=date]").val() == "" )
-        {
-            let FeCha= new Date();
-            let mes= (FeCha.getMonth()+1) <10 ?  "0".concat(FeCha.getMonth()+1) :  (FeCha.getMonth()+1);
-            console.log( FeCha.getFullYear()+"-"+mes+"-"+FeCha.getDate());
-            $("input[type=date]").val( FeCha.getFullYear()+"-"+mes+"-"+FeCha.getDate());
-        }
-    }
+ 
+function cargar_grilla(){
+  $.ajax( {url: "<?= url("gastos")?>",
+    beforeSend: function(){
+           $( "#grilla").html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
+         }, 
+           success: function(res){
+            $( "#grilla").html(res);
+           },
+           error: function(){
+            $( "#grilla").html("ERROR AL RECUPERAR GASTOS");
+           }
+          });
 
-    window.onload= function(){
-      setDefaultDate();
-    }
+}
+
+function ordena_grilla(col,  sentido){
+  $.ajax( {url: "<?= url("gast-orden")?>/"+col+"/"+sentido,
+    beforeSend: function(){
+           $( "#grilla").html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
+         }, 
+           success: function(res){
+            $( "#grilla").html(res);
+           },
+           error: function(){
+            $( "#grilla").html("ERROR AL RECUPERAR GASTOS");
+           }
+          });
+
+}
+
+   
+
+
+   
+function download_pdf( e){
+  e.preventDefault();
+  let formu=document.getElementById("gastos-search");
+  let action_old=  formu.action;
+  formu.target="_blank";
+  formu.action= $("#info-pdf").attr("href");
+  formu.submit();
+  //al estado inicial
+  formu.action=  action_old;
+  formu.removeAttribute("target");
+  //let divname="#status";
+   
+}
+
+
 </script>
 

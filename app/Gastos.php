@@ -16,11 +16,16 @@ class Gastos extends Model
 
     protected $primaryKey = 'IDNRO';
 
-    protected $fillable= [  'CODIGO','FECHA','NUMERO','DETALLE1','DETALLE2' , 'IMPORTE'];
+    protected $fillable= [  'CODIGO','FECHA','NUMERO','DETALLE1','DETALLE2' , 'IMPORTE', 'ID_DEMA'];
 
-    public $timestamps = false;
+    public $timestamps = true;
 
  
  
+
+    public function codigo_gasto()
+    {
+        return $this->belongsTo('App\Codigo_gasto', 'IDNRO', 'CODIGO');
+    }
 
 }

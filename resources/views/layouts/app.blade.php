@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\URL;
     <title>Sistema de Control de Juicios</title>
     <link rel="icon" href="./favicon.ico">
     <link href="<?= url("app.css") ?>" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+   
     <!--Estilo print -->
     <link href="<?= url("print/print.min.css") ?>" rel="stylesheet">
 
@@ -29,7 +31,7 @@ use Illuminate\Support\Facades\URL;
         }
 
 <?php
-
+use App\Http\Controllers\MessengerController;
 use App\Mobile_Detect;
 $adapta=new Mobile_Detect();
 if( $adapta->isMobile()): ?>
@@ -128,11 +130,11 @@ endif;
                     <li class="sidebar-nav-group">
                         <a href="#opcinformes" class="sidebar-nav-link" data-toggle="collapse"><i class="icon-pencil"></i> INFORMES</a>
                         <ul id="opcinformes" class="collapse" data-parent="#sidebar-nav"> 
-                        
+                        <li><a href="<?=url("filtros")?>" class="sidebar-nav-link">Filtros</a></li> 
                             <li><a href="/depcta" class="sidebar-nav-link">Dep&oacute;sitos capital</a></li>
                             <li><a href="/extcta" class="sidebar-nav-link">Dep&oacute;sitos Liquidaci&oacute;n</a></li>
-                            <li><a href="./pages/forms/tabbed-form.html" class="sidebar-nav-link">Cobro extrajudicial</a></li>
-                            <li><a href="<?=url("filtros")?>" class="sidebar-nav-link">Filtros</a></li> 
+                            <li><a href="{{url('informes-arregloextrajudicial')}}" class="sidebar-nav-link">Cobro extrajudicial</a></li>
+                           
                         </ul>
                     </li>
                     <li class="sidebar-nav-group">
@@ -145,8 +147,7 @@ endif;
                     <li class="sidebar-nav-group"><a href="#layout" class="sidebar-nav-link" data-toggle="collapse"><i class="icon-layers"></i> GASTOS</a>
                         <ul id="layout" class="collapse" data-parent="#sidebar-nav">
                             <li><a href="<?=  url("gastos") ?>" class="sidebar-nav-link">Cargar</a></li>
-                            <li><a href="./pages/layout/sidebar.html" class="sidebar-nav-link">Plan de cta.</a></li>
-                            <li><a href="./pages/layout/spinner.html" class="sidebar-nav-link">Gastos por demanda</a></li> 
+                            <li><a href="<?=  url("plan-de-cuentas") ?>" class="sidebar-nav-link">Plan de cta.</a></li> 
                         </ul>
                     </li>
                     @if( session("tipo") == "S")
@@ -167,34 +168,40 @@ endif;
                 <nav class="navbar navbar-expand navbar-light bg-white"><button type="button" class="btn btn-sidebar" data-toggle="sidebar"><i class="fa fa-bars"></i></button>
                     <div class="navbar-brand">EST. JUR&Iacute;DICO &middot;  </div>
                     <ul class="navbar-nav ml-auto">
-                        <li class="nav-item dropdown"><a href="#" class="nav-link dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="badge badge-pill badge-primary">3</span> <i class="fa fa-bell-o"></i></a>
+                        <li class="nav-item dropdown"><a href="#" class="nav-link dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="badge badge-pill  {{ MessengerController::numeroMensajesSinLeer() > 0 ? 'badge-danger' :'badge-primary'}}"> 
+                        {{MessengerController::numeroMensajesSinLeer()}}</span> 
+                        <i class="fa fa-bell-o"></i></a>
+
                             <div class="dropdown-menu dropdown-menu-right"><a href="{{url('messenger')}}" class="dropdown-item"><small class="dropdown-item-title"> Nuevo mensaje</small><br>
+                    
                                    
                                 </a>
-                                <div class="dropdown-divider"></div><a href="<?= url("list-msg/".session("id")."/R")?>" class="dropdown-item dropdown-link">Recibidos</a>
-
-                                <div class="dropdown-divider"></div><a href="./pages/content/notification.html" class="dropdown-item"><small class="text-secondary">Lorem ipsum (yesterday)</small><br>
-                                    <div>Lorem ipsum dolor sit amet...</div>
-                                </a>
-                                <div class="dropdown-divider"></div><a href="./pages/content/notification.html" class="dropdown-item"><small class="text-secondary">Lorem ipsum (12/25/2017)</small><br>
-                                    <div>Lorem ipsum dolor sit amet...</div>
-                                </a>
-
-                                <div class="dropdown-divider"></div><a href="<?= url("list-msg/".session("id")."/E") ?>" class="dropdown-item dropdown-link">Enviados</a>
+                                <div class="dropdown-divider"></div><a href="<?= url("list-msg/R")?>" class="dropdown-item dropdown-link">Recibidos&nbsp; <span class="badge badge-pill badge-primary ">{{MessengerController::numeroMensajesSinLeer()}}</span></a>
+                                @if( MessengerController::mensajesRecibidosSinLeer() <= 0 )
                                
-                                <div class="dropdown-divider"></div><a href="./pages/content/notification.html" class="dropdown-item"><small class="text-secondary">Lorem ipsum (yesterday)</small><br>
-                                    <div>Lorem ipsum dolor sit amet...</div>
+                                <div class="dropdown-divider"></div><a href="./pages/content/notification.html" class="dropdown-item"><small class="text-secondary">0 MENSAJES NUEVOS</small><br>
+                                    <div>..</div>
                                 </a>
-                                <div class="dropdown-divider"></div><a href="./pages/content/notification.html" class="dropdown-item"><small class="text-secondary">Lorem ipsum (12/25/2017)</small><br>
-                                    <div>Lorem ipsum dolor sit amet...</div>
+                                @endif
+
+                                <div class="dropdown-divider"></div><a href="<?= url("list-msg/E") ?>" class="dropdown-item dropdown-link">Enviados&nbsp;<span class="badge badge-pill badge-primary ">{{MessengerController::numeroEnviados()}}</span>  </a>
+                                @if(  MessengerController::mensajesEnviados() <= 0 )
+                                 
+                                <div class="dropdown-divider"></div><a href="./pages/content/notification.html" class="dropdown-item"><small class="text-secondary">0 MENSAJES NUEVOS</small><br>
+                                    <div>..</div>
                                 </a>
+                                @endif
+
+                                 
+                                 
 
                             </div>
                         </li>
                     </ul>
                 </nav>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
+                <nav aria-label="breadcrumb"  >
+                    <ol class="breadcrumb" style="background-color: {{ isset($breadcrumbcolor)  ?  $breadcrumbcolor : '#dee2e6;' }}">
                     @yield('breadcrumb')
                        
                     </ol>
@@ -229,9 +236,25 @@ endif;
     <!-- librerias para generar archivos excel -->
     <script src="<?=url("xls.js")?>"></script>
     <!-- inicializacion de las librerias anteriores.-->
-    <script src="<?=url("xls_ini.js")?>"></script>
+    <script src="<?=url("xls_ini.js")?>?v={{rand()}}"></script>
     <!--lib para imprimir -->
     <script src="<?=url("print/print.min.js")?>"></script>
+    
+    <script>
+        $("input[type=date]").each(  function(index, elemento){
+
+
+            $(elemento).css("color", "white");
+            $(elemento).bind("change", function(){
+                if( this.value ==""  ||  this.value == undefined){
+                    console.log( this.value );
+                    $(  this  ).css("color", "white");
+                    return;
+                }
+                $(  this  ).css("color", "black");
+            })
+        });
+    </script>
 </body>
 
 </html>

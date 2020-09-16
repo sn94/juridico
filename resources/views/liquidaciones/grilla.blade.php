@@ -25,7 +25,7 @@ $icons_size= $detect->isMobile() ? "": " fa-lg";
           </a> 
           </td>
               <td class="text-right"><p class="p-0 m-0">{{Helper::number_f($it->SALDO)}}</p></td>
-              <td  class="text-right"><p class="p-0 m-0">{{ $it->ULT_PAGO }}</p></td>
+              <td  class="text-right"><p class="p-0 m-0">{{ Helper::beautyDate($it->ULT_PAGO) }}</p></td>
               <td  class="text-right"><p class="p-0 m-0">{{Helper::number_f($it->TOTAL) }}</p></td>
             </tr>
 

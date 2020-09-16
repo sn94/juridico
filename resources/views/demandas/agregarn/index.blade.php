@@ -255,9 +255,14 @@ obj.value= w;
 //Recibe: Un campo de tipo numerico
 //Efecto: Da formato de puntos al valor del campo
    function numero_con_puntuacion( obj ) {
-    let val_Act= obj.value;  
+    
+    let val_Act= typeof obj == "object" ? obj.value : obj;  
     let enpuntos= new Intl.NumberFormat("de-DE").format( val_Act);
-		$(obj).val(  enpuntos);
+    if( typeof obj == "object"){
+      $(obj).val(  enpuntos);
+      }else{
+return enpuntos;
+      }
    }
 
 

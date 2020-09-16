@@ -6,6 +6,7 @@ use App\Arreglo_extra_cuotas;
 use App\Arreglo_extrajudicial;
 use App\Banc_mov;
 use App\Bancos;
+use App\Demanda;
 use App\Http\Controllers\Controller;
 use Exception; 
 use Illuminate\Http\Request;
@@ -35,8 +36,8 @@ class ArregloExtrajudiController extends Controller
                 function( $key){
                    return $key != "DETALLE";
                },  ARRAY_FILTER_USE_KEY);
- 
-                $arr=  Arreglo_extrajudicial::find(  $request->input("IDNRO") ); //new Arreglo_extrajudicial();
+               $IDNRO= $request->input("IDNRO");
+                $arr=  Arreglo_extrajudicial::find(  $IDNRO ); //new Arreglo_extrajudicial();
                 $arr->fill( $cabecera );
                $arr->save();
                 //Registrar cuotas
@@ -50,6 +51,10 @@ class ArregloExtrajudiController extends Controller
                     'IMPORTE'=>$detalle['IMPORTE'][$c] , 'FECHA_PAGO'=>  $detalle['FECHA_PAGO'][$c])   );
                     $cuo->save();  
                 } 
+                //Actualizar campo Bandera en Demanda ARR_EXTRAJUDI 
+                    $demanda= Demanda::find( $IDNRO);
+                    $demanda->ARR_EXTRAJUDI= "S"; $demanda->save();
+            
                 DB::commit();
                 echo json_encode( array("ok"=> "CUENTA GUARDADA." )  );
             }catch( \Exception $e){

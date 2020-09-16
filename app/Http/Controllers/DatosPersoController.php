@@ -36,11 +36,11 @@ class DatosPersoController extends Controller
           $consulta= "";
           if(  $argumento != ""){
             $consulta= DB::table("demandado") 
-            ->selectRaw(" demandado.CI,demandado.TITULAR,demandado.DOMICILIO, demandado.TELEFONO, (select count(demandas2.IDNRO) from demandas2 where demandas2.CI= demandado.CI) as nro")
+            ->selectRaw(" demandado.IDNRO,demandado.CI,demandado.TITULAR,demandado.DOMICILIO, demandado.TELEFONO, (select count(demandas2.IDNRO) from demandas2 where demandas2.CI= demandado.CI) as nro")
             ->whereRaw(" demandado.CI LIKE '%$argumento%' or  TITULAR LIKE '%$argumento%'  ")  ;
           }else{
             $consulta= DB::table("demandado") 
-            ->selectRaw( " demandado.CI,demandado.TITULAR,demandado.DOMICILIO, demandado.TELEFONO, (select count(demandas2.IDNRO) from demandas2 where demandas2.CI= demandado.CI) as nro");
+            ->selectRaw( "demandado.IDNRO, demandado.CI,demandado.TITULAR,demandado.DOMICILIO, demandado.TELEFONO, (select count(demandas2.IDNRO) from demandas2 where demandas2.CI= demandado.CI) as nro");
           }
          $dmds=  $consulta->paginate(20);
         $sqlq= $consulta->toSql(); 
@@ -127,13 +127,14 @@ class DatosPersoController extends Controller
   
 
 
-public function borrar($ci){ 
-   $r_D= Demanda::where("CI", $ci)->first();
-    if( is_null( $r_D) ){//Se puede borrar
+public function borrar($ci){ //En realidad se recibiria el IDNRO
+   $demandado= Demandados::find( $ci);
+   $demanda= Demanda::where("CI", $demandado->CI)->first();
+   if( is_null($demanda)){  //Se puede borrar
       Demandados::where("CI", $ci)->first()->delete();
       echo json_encode( array( 'ci'=> $ci) );
     }else{
-      echo json_encode( array( 'error'=> "Los datos de CI° $ci no pueden borrarse. Existen datos judiciales ") );
+      echo json_encode( array( 'error'=> "Los datos de esta persona no pueden borrarse. Existen datos judiciales ") );
     } 
 }/** end  */
 

@@ -47,12 +47,17 @@ class PDF extends TCPDF{
          $this->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
     }
 
- 
     public function generar(){
+        // ---------------------------------------------------------
+      // Close and output PDF document
+      // This method has several options, check the source code documentation for more information.
+      $this->Output(  $this->nombrePdf  , 'D');
+  }
+    public function generar_v2(){
           // ---------------------------------------------------------
         // Close and output PDF document
         // This method has several options, check the source code documentation for more information.
-        $this->Output(  $this->nombrePdf  , 'D');
+        return $this->Output(  $this->nombrePdf  , 'D');
     }
     /************************************************** */
     public function setMetaData(){

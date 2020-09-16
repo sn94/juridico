@@ -2,7 +2,7 @@
 
 @section('breadcrumb')
 <li class="breadcrumb-item" aria-current="page">CTA.BANCO</li> 
-<li class="breadcrumb-item active" aria-current="page">MOVIMIENTOS</li> 
+<li class="breadcrumb-item" aria-current="page">MOVIMIENTOS</li> 
 @endsection
 
 @section('content')

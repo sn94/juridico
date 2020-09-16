@@ -146,7 +146,9 @@ $ruta= $OPERACION =="A" ? url("nfiltro") : url("efiltro/M");
         <th class="pb-0">  CAMPO  </th>
         <th class="pb-0">RELACIÓN</th>
         <th class="pb-0"> VALOR</th>
-        <th class="pb-0">LÓGICO</th>  </thead>
+        <th class="pb-0">LÓGICO</th>
+      <th></th>
+      </thead>
       <tbody>  </tbody>
 </table>
 
@@ -266,10 +268,11 @@ let eachField= fields_from_sele.split(",");//separar
 eachField.forEach( function(fiel){
   //Separar del alias
   
-  let sin_alias= fiel.split( /(as)|\s+/)[0]; 
+  let sin_alias= fiel.split( /\s+(as)\s+|\s+/)[0]; 
   let tempo=sin_alias.split(".");
   let tabla= tempo[0];  let campo=  tempo[1];
-  $("#"+tabla+"-"+campo).prop("checked", true);
+  let selectorCheck= "#"+tabla+"-"+campo;
+  $( selectorCheck ).prop("checked", true);
 });
  
 
@@ -280,23 +283,37 @@ eachField.forEach( function(fiel){
   let ls_condi=  propo1.filter( function( ar){ 
     let tempo= ar.trim();
     return  (tempo != "")  && (tempo!="&&")  && (tempo !="||");  }  );
+    
     //CREAR LOS CAMPOS DE CARGA
     $("#CONDICIONES tbody").empty();
-    ls_condi.forEach( function(condi, indice){
-
-      let operandos= condi.split(/(<>)|(>\w)|(>=)|(<=)|(<)|(=)/).filter(function(ar){ return ar!= undefined; });
+    ls_condi.forEach( function(condi, indice){ 
+      //Ojo con cond.Mayor a
+      let operandos= condi.split(/(<>)|(>)|(>=)|(<=)|(<)|(=)/).filter(function(ar){ return ar!= undefined; });
+ 
       let tablaxcampo=operandos[0].trim();
       let campo__= tablaxcampo.split(".")[1];//Nombre de campo
       let tablax= tablaxcampo.split(".")[0];//OBTENER TABLA ASOCIADA
-      try{                                  //operador rela   valor         operador logico
-        condition_creator( tablax,  campo__, operandos[1], operandos[2].trim(),  ope_logicos[indice]  );
-      }catch(err){
-        condition_creator( tablax,  campo__, operandos[1], operandos[2].trim() );
-      }
+      let operador_rel=operandos[1];
+      let valor_operando= operandos[2].trim();
+       
+      //Descartar tablas y campos de uso interno
+      let no_descartar= allcampos[tablax].filter( function(ar){   return campo__ ==  ar.back; }).length;
+      if( no_descartar > 0){
+        try{                                  //operador rela   valor         operador logico
+        console.log("ok", tablax,  campo__, operador_rel, valor_operando,  ope_logicos[indice] );
+       
+          condition_creator( tablax,  campo__, operador_rel, valor_operando,  ope_logicos[indice]  );
+        }catch(err){ console.log("err", valor_operando);
+          condition_creator( tablax,  campo__, operador_rel, valor_operando );
+        }
+      }//No descartar
+     
     });
     //DEPURAR
-    if( document.querySelector("#CONDICIONES tbody").children.length == 1);
-    document.querySelector("#CONDICIONES tbody").children[0].children[4].children[0].value="";
+    let nrofilas=document.querySelector("#CONDICIONES tbody").children.length;
+    if( nrofilas >= 1)
+
+    document.querySelector("#CONDICIONES tbody").children[nrofilas-1].children[4].children[0].value="";
 
 }
 
@@ -366,6 +383,7 @@ function generar_sentencia_sql(){
         let campo= row.children[1].children[0].value;//campo de tabla
         let operel=row.children[2].children[0].value;// Operador relacional
         let valor= row.children[3].children[0].value;// valor en comparacion
+        console.log("A CONSIDERAR", valor);
         let opelog=row.children[4].children[0].value;//Operador logico
 
         let metadata_campo=allcampos[tabla_].filter( function( datafield){ return datafield.back==campo})[0];
@@ -373,7 +391,9 @@ function generar_sentencia_sql(){
         //Cadena    Fecha   Boolean
         if( metadata_campo.tipo=="C" || metadata_campo.tipo=="F" || metadata_campo.tipo=="B")
         valor= "'"+valor+"'";
+         
         wheres=   wheres+" "+ tabla_+"."+campo+operel+valor+" "+opelog+" ";//Sentencia Where
+        console.log( wheres);
   }); 
   /*********************** */
 
@@ -458,7 +478,7 @@ let select_tag= function( arreglo, pordefecto){
 };/******** */
 
   let metadata_campo=allcampos[tabla].filter( function( datafield){ return datafield.back==campo})[0];
-  console.log( "metadata", metadata_campo, tabla, campo);
+   
  switch( metadata_campo.tipo){
    case 'N': return "<input value='"+defaul+"' type='text' maxlength='"+metadata_campo.longitud+"' oninput='solo_numero(event)' class='form-control form-control-sm'  >";break;
    case 'C': return  "<input value='"+defaul+"' type='text' maxlength='"+metadata_campo.longitud+"'  class='form-control form-control-sm'  >";break
@@ -498,11 +518,28 @@ function crear_select_ope_logico( defaul){
 
 
 function  condition_creator( tabla, campo, operel, valor, opelog){
+   
   let id_=  document.querySelector("#CONDICIONES tbody").children.length;
+  let defaultTableName=  tabla == undefined ? Object.keys(wellTableNames)[0] : tabla;
+
+  let defaultFieldName=  tabla == undefined ? allcampos[defaultTableName][0].back : campo;
+
+  tabla= defaultTableName; campo= defaultFieldName;
+  console.log("a asentar", tabla, campo);
   let metadata_campo=allcampos[tabla ].filter( function( datafield){ return datafield.back==campo})[0];
-  if( metadata_campo != undefined)
-  $("#CONDICIONES tbody").append("<tr id='"+id_+"'><td>"+crear_select_tabla(tabla)+"</td><td>"+crear_select_campo(tabla,campo)+"</td><td>"+crear_select_ope_rela(operel)+"</td><td>"+crear_input_campo(tabla,campo,valor)+"</td><td>"+crear_select_ope_logico(opelog)+"</td></tr>");
-}
+  if( metadata_campo != undefined){
+   if( metadata_campo.tipo=="C" ||  metadata_campo.tipo=="F") valor= valor.replaceAll("'","");
+
+   let del_option="<td><a href='#' onclick='deleteme(event)'><i class='mt-1 mr-2 ml-2 fa fa-trash fa-lg' aria-hidden='true'></i></a></td>";
+    let nrofilas= document.querySelector("#CONDICIONES tbody").children.length;
+    if( nrofilas == 0)
+   $("#CONDICIONES tbody").
+  append("<tr id='"+id_+"'><td>"+crear_select_tabla(tabla)+"</td><td>"+crear_select_campo(tabla,campo)+"</td><td>"+crear_select_ope_rela(operel)+"</td><td>"+crear_input_campo(tabla,campo,valor)+"</td><td>"+crear_select_ope_logico(opelog)+"</td><td><td></tr>");
+else
+$("#CONDICIONES tbody").
+  append("<tr id='"+id_+"'><td>"+crear_select_tabla(tabla)+"</td><td>"+crear_select_campo(tabla,campo)+"</td><td>"+crear_select_ope_rela(operel)+"</td><td>"+crear_input_campo(tabla,campo,valor)+"</td><td>"+crear_select_ope_logico(opelog)+"</td>"+del_option+"</tr>");
+  }/*** */
+ }
 
 
 /**VERIFICAR SI EXISTE FILA EN TABLA */
@@ -606,6 +643,12 @@ $("input[name=FILTRO]").val(generar_sentencia_sql());
 
 
 /***VALIDACION*** */
+
+function deleteme(ev){
+  ev.preventDefault();
+let tr= ev.currentTarget.parentNode.parentNode;
+tr.remove();
+}
 
 function solo_numero(ev){
    if(ev.data == undefined ) return;

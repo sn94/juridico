@@ -23,5 +23,5 @@ class Messenger extends Authenticatable
     ];
 
     public $timestamps = true;
-
+ 
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Mobile_Detect;
+use App\Helpers\Helper;
 
 $detect= new Mobile_Detect();
 if( $detect->isMobile() == false){
@@ -31,8 +32,8 @@ if( $detect->isMobile() == false){
           <td><a  onclick="editar_user(event)" href="<?=url("edit-user/".$it->IDNRO)?>" ><i class="fa fa-pencil" aria-hidden="true"></i></a></td>
           <td>{{$it->nick}}</td>
            <td>{{  $it->tipo=="S" ? "SUPERVISOR":  ($it->tipo=="O" ?"OPERADOR": "USUARIO" )  }}</td>  
-           <td>{{$it->created_at}}</td>  
-           <td>{{$it->updated_at}}</td>  
+           <td>{{ Helper::beautyDate( $it->created_at)}}</td>  
+           <td>{{  Helper::beautyDate($it->updated_at) }}</td>  
           </tr>
         <?php endforeach; ?>
       </tbody>

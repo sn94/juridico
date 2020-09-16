@@ -2,13 +2,13 @@
 
 @section('breadcrumb')
 <li class="breadcrumb-item" aria-current="page">BANCOS</li> 
-<li class="breadcrumb-item active" aria-current="page">INICIO</li> 
+<li class="breadcrumb-item" aria-current="page">INICIO</li> 
 @endsection
 
 @section('content')
 
  
-<a onclick="mostrar_form(event)" data-toggle="modal" data-target="#showform"  href="<?=url("nbank")?>"  class="btn btn-sm btn-success">NUEVA CTA.</a>
+<a style="background-color: #a3c5fc;color:#01001c;" onclick="mostrar_form(event)" data-toggle="modal" data-target="#showform"  href="<?=url("nbank")?>"  class="btn btn-sm btn-success">NUEVA CTA.</a>
 
 <div id="grilla">
 @include("bancos.grilla")
@@ -155,9 +155,11 @@ ev.preventDefault();
 if ( ! noempty_fields( )) return;
  
  ajaxCall( ev, "#mensaje", function(res){
-            $( "#mensaje").html(JSON.parse(res).ok ); 
-           // $('#showform').modal('hide')
-            actualizar_grill();
+          let respuesta= JSON.parse(res);
+          if ("ok" in respuesta)
+           { $( "#mensaje").html( respuesta.ok );  actualizar_grill(); }
+         else{ $( "#mensaje").html( ""); alert( respuesta.error);}
+            
          });
 }/*****end ajax call* */
 

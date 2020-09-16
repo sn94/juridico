@@ -5,8 +5,7 @@
 use App\Helpers\Helper;
 use App\Mobile_Detect;
 
-$dete= new Mobile_Detect();
-$iconsize=  $dete->isMobile() ? "": "fa-lg";
+ 
 ?>
 
 <style>
@@ -26,18 +25,18 @@ $iconsize=  $dete->isMobile() ? "": "fa-lg";
         <tbody>
           <!--CADA CTA TENDRA ALGUN DEPOSITO, EXTRACCION O EXTRACCION POR PROYECTO-->
           <?php  foreach( $movi as $it):?>
-            <tr id="{{$it->IDNRO}}">
-              <td ><p class="pt-1 mr-1 ml-1 mb-0 text-center"><a   href="<?=url("vbank")."/$it->IDNRO"?>"><i class="fa fa-eye {{$iconsize}}" aria-hidden="true"></i></a></p></td>
-              <td><p class="pt-1 mr-1 ml-1 mb-0 text-center"><a onclick="mostrar_form(event)" data-toggle="modal" data-target="#showform"   href="<?= url("ebank/".$it->IDNRO) ?>"><i class="fa fa-pencil {{$iconsize}}" aria-hidden="true"></i></a></p></td>
-              <td><p class="pt-1 mr-1 ml-1 mb-0 text-center"><a   onclick="borrar(event)" href="<?= url("dbank/".$it->IDNRO) ?>"><i class="fa fa-trash {{$iconsize}}" aria-hidden="true"></i></a></p></td>
+            <tr  >
+              <td ><p class="pt-1 mr-1 ml-1 mb-0 text-center"><a   href="<?=url("vbank")."/$it->IDNRO"?>"><i class="fa fa-eye fa-lg" aria-hidden="true"></i></a></p></td>
+              <td><p class="pt-1 mr-1 ml-1 mb-0 text-center"><a onclick="mostrar_form(event)" data-toggle="modal" data-target="#showform"   href="<?= url("ebank/".$it->IDNRO) ?>"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></a></p></td>
+              <td><p class="pt-1 mr-1 ml-1 mb-0 text-center"><a   onclick="borrar(event)" href="<?= url("dbank/".$it->IDNRO) ?>"><i class="fa fa-trash fa-lg" aria-hidden="true"></i></a></p></td>
               <td>
                <!--MANDAR A IMPRIMIR -->
                <p class="pt-1 mr-1 ml-1 mb-0 text-center">
-              <a  href="<?= url("bank")?>" data-toggle="modal" data-target="#show_opc_rep" onclick="mostrar_informe(event)" style="color:black;" > <i class="mr-2 ml-2 fa fa-print {{$iconsize}}" aria-hidden="true"></i>
+              <a  href="<?= url("bank"."/$it->IDNRO")?>" data-toggle="modal" data-target="#show_opc_rep" onclick="mostrar_informe(event)" style="color:black;" > <i class="fa fa-print fa-lg" aria-hidden="true"></i>
               </a></p>
               </td>
-              <td> <p class="pt-1 mr-1 ml-1 mb-0 text-center"><a data-toggle="modal" data-target="#showform"    onclick="mostrar_form(event)" href="<?= url("depobank/".$it->IDNRO) ?>"><i class="fa fa-plus-square {{$iconsize}}" aria-hidden="true"></i></a> </p></td>
-              <td> <p class="pt-1 mr-1 ml-1 mb-0 text-center"><a data-toggle="modal" data-target="#showform"    onclick="mostrar_form(event)" href="<?= url("extrbank/".$it->IDNRO) ?>"><i class="fa fa-minus-square {{$iconsize}}" aria-hidden="true"></i></a> </p></td>
+              <td> <p class="pt-1 mr-1 ml-1 mb-0 text-center"><a data-toggle="modal" data-target="#showform"    onclick="mostrar_form(event)" href="<?= url("depobank/".$it->IDNRO) ?>"><i class="fa fa-plus-square fa-lg" aria-hidden="true"></i></a> </p></td>
+              <td> <p class="pt-1 mr-1 ml-1 mb-0 text-center"><a data-toggle="modal" data-target="#showform"    onclick="mostrar_form(event)" href="<?= url("extrbank/".$it->IDNRO) ?>"><i class="fa fa-minus-square fa-lg" aria-hidden="true"></i></a> </p></td>
               <td class="text-right"><p class="pt-1 mr-1 ml-1 mb-0">{{$it->BANCO}}</p></td>
               <td  class="text-right"><p class="pt-1 mr-1 ml-1 mb-0">{{ $it->CUENTA }}</p></td>
               <td  class="text-right"><p class="pt-1 mr-1 ml-1 mb-0">{{$it->TIPO_CTA}}</p></td>

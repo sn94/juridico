@@ -46,7 +46,7 @@ echo Form::hidden('REMITENTE', session("id") );
   <div class="col-12 ">
     <div class="form-group">
     <label >ASUNTO:</label>
-    <input   maxlength="20" value="{{isset($DATO)?  $DATO->ASUNTO  : '' }}"   name="ASUNTO"  type="text"  class="form-control form-control-sm">
+    <input   maxlength="50" value="{{isset($DATO)?  $DATO->ASUNTO  : '' }}"   name="ASUNTO"  type="text"  class="form-control form-control-sm">
     </div>
   </div>
   <div class="col-12 ">

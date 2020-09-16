@@ -26,11 +26,20 @@ class MessengerController extends Controller
 
     
 
-public function index(){
+public function index($tipo="R"){
  
-        $params= Messenger::get();
+    $ls= NULL;
+    $id= session("id");
+
+    $tipo_usu= $tipo=="E" ? "DESTINATARIO" : "REMITENTE";
+    $tipo_usu2= "mensajes.".( $tipo=="E" ? "REMITENTE" : "DESTINATARIO");
+    $ls=Messenger::addSelect([ "nick" => User::select('nick')
+    ->whereColumn('IDNRO', "mensajes.$tipo_usu")  ])
+    ->where( $tipo_usu2 ,   $id )
+    ->get();
+
         $url_listado=url("list-msg/R");
-        return view('messenger.index',  ["lista"=> $params , "url_listado"=>$url_listado ] );
+        return view('messenger.index',  ["lista"=> $ls , "url_listado"=>$url_listado, "tipo"=>"R" ] );
 } 
 
 
@@ -67,27 +76,72 @@ public function borrar( $id){
 
 }
 
+
+public function ver( $id ){
+    $datos=  Messenger::find( $id )  ;
+    $remi= $datos->REMITENTE;
+    $remi_nick= User::find( $remi)->nick;
+    $datos->LEIDO= "S";
+    $datos->save();
+    return view("messenger.view", ['dato'=> $datos, 'remitente'=>$remi_nick ]);
+     
+}
+
+
+
 public function listar( Request $request, $tipo="E"){
-    
+  //  DB::enableQueryLog();
+    //$log = DB::getQueryLog();
     $ls= NULL;
     $id= session("id");
-    //enviados
-    if( $tipo == "E")
-    $ls= Messenger::where("REMITENTE", $id)->get();
-    if( $tipo == "R")
-    $ls= Messenger::where("DESTINATARIO", $id)->get();
+
+    $tipo_usu= $tipo=="E" ? "DESTINATARIO" : "REMITENTE";
+    $tipo_usu2= "mensajes.".( $tipo=="E" ? "REMITENTE" : "DESTINATARIO");
+    $ls=Messenger::addSelect([ "nick" => User::select('nick')
+    ->whereColumn('IDNRO', "mensajes.$tipo_usu")  ])
+    ->where( $tipo_usu2 ,   $id )
+    ->get();
+     
     if( $request->ajax())
-    return view('messenger.grilla' , ["lista"=>  $ls]);
+    return view('messenger.grilla' , ["lista"=>  $ls, 'tipo'=>$tipo, ]);
     else {
-        $url_listado=url("list-msg/".session("id")."/R");
-        return view('messenger.index' , ["lista"=>  $ls, "url_listado"=>$url_listado ]);
+        $url_listado=url("list-msg/R");
+        return view('messenger.index' , ["lista"=>  $ls, "url_listado"=>$url_listado, 'tipo'=>$tipo ]);
     }
 }
 
 
-
-public static function mensajesRecibidos(){
-   return  ! is_null(Messenger::where("DESTINATARIO",  session("id") )->get() );
+//hay mensajes recibidos sin leer
+public static function mensajesRecibidosSinLeer(){
+   return  ! is_null(Messenger::where("DESTINATARIO",  session("id") )->where("LEIDO", "N")->get() );
 }
+
+//Hay mensajes enviados
+ public static function mensajesEnviados(){
+    return  ! is_null(Messenger::where("REMITENTE",  session("id") )->get() );
+ }
+ 
+
+/***NUMERO de Mensajes sin leer */
+ public static function numeroMensajesSinLeer(){
+    return  Messenger::where("DESTINATARIO",  session("id") )->where("LEIDO", "N")->count() ;
+ }
+
+ /**NUMERO DE ENVIADOS */
+ public static function numeroEnviados(){
+    return  Messenger::where("REMITENTE",  session("id") )->count() ;
+ }
+ /**OBTENER LOS 3 PRIMEROS MENSAJES SIN LEER */
+public static function getMensajesRecibidosSinLeer(){
+    return  Messenger::where("DESTINATARIO",  session("id") )->where("LEIDO", "N")->take(3)->get() ;
+ }
+
+
+
+ 
+ public static function getMensajesEnviados(){
+     return  Messenger::where("REMITENTE",  session("id") )->take(3)->get() ;
+  }
+ 
 
 }

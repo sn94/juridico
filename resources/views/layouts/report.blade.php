@@ -13,7 +13,7 @@
 <script type="text/javascript">
   function mostrar_informe(ev){
     ev.preventDefault();
-    let report_path= ev.currentTarget.href;
+    let report_path= ev.currentTarget.href; 
     let id= (ev.currentTarget.parentNode.parentNode.id) ==undefined ? "" :  (ev.currentTarget.parentNode.parentNode.id) ;// TR ID 
      let xlsr= id == "" ?  report_path+"/xls" : report_path+"/"+id+"/xls";
      let pdfr= id == "" ?  report_path+"/pdf" : report_path+"/"+id+"/pdf";

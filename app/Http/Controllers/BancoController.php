@@ -25,7 +25,7 @@ class BancoController extends Controller
        // if ( $request->ajax() )
       
        $dato= Bancos::get();
-       return view("bancos.index", ["movi"=>  $dato] );
+       return view("bancos.index", ["movi"=>  $dato, "breadcrumbcolor"=>"#a3c5fc;"] );
        
     }
 
@@ -33,10 +33,17 @@ class BancoController extends Controller
 
     public function agregar(Request $request){
         if( sizeof(  $request->all() )  > 0){
-            $banco=new Bancos();
-            $banco->fill( $request->input() );
-            $banco->save();
-            echo json_encode( array("ok"=> "CUENTA GUARDADA." )  );
+            //Verificar si ya existe el numero de cuenta
+            $posibleCoincidencia= Bancos::where("CUENTA",  $request->input("CUENTA")  )->first();
+            if( !is_null($posibleCoincidencia)){
+                echo json_encode( array("error"=> "ESTE NUMERO DE CUENTA YA EXISTE." )  );
+            }else{
+                $banco=new Bancos();
+                $banco->fill( $request->input() );
+                $banco->save();
+                echo json_encode( array("ok"=> "CUENTA GUARDADA." )  );
+            }
+           
         }else{
             return view("bancos.form", ['OPERACION'=>"A", 'RUTA'=>url("nbank")]);
         }
@@ -170,7 +177,7 @@ class BancoController extends Controller
         $MOVS = $dato->banc_mov;
         return view("bancos.movimientos",
          [ 'IDNRO'=>$IDNRO,'TITULAR'=>$Titular,'BANCO'=>$Bco,'CUENTA'=>$Cta,'LINK'=>url("lmovibank")."/$id",
-         "dato"=> $MOVS]);        
+         "dato"=> $MOVS,  "breadcrumbcolor"=>"#a3c5fc;" ]);        
     }
 
 
@@ -193,6 +200,20 @@ public function reporte( $idnro, $tipo="xls"){
          
         $html= <<<EOF
         <style>
+            .fecha{
+                width:80px;
+            }
+            .debito,.credito{
+                text-align: right;
+                width: 80px;
+            }
+            .comprobante{
+                width:90px;
+            }
+            .detalle{
+                width:250px;
+                text-align:left;
+            }
             tr.cabecera{
                 font-size: 7pt;
                 background-color: #c2fcca;
@@ -204,7 +225,7 @@ public function reporte( $idnro, $tipo="xls"){
             }
             tr.cuerpo{
                 color: #363636;
-                font-size: 9px;
+                font-size: 8px;
                 font-weight: bold;
             }
             tr.cuerpo td{
@@ -213,7 +234,7 @@ public function reporte( $idnro, $tipo="xls"){
             tr.pie td{ 
                 color: #0f0f0f;
                 font-weight: bold;
-                font-size: 11px;
+                font-size: 9px;
                 border-bottom: 1px solid #606060;
             }
             .saldo-ok{
@@ -222,14 +243,12 @@ public function reporte( $idnro, $tipo="xls"){
             .saldo-rojo{
                 color: #b80c07;
             }
-            .numero{
-                text-align: right;
-            }
+            
         </style>
         <h6>BANCO: {$Bank->BANCO},CUENTA N°: {$Bank->CUENTA}</h6>
         <table class="tabla">
         <thead>
-        <tr class="cabecera"><th>FECHA</th><th>COMPROBANTE</th><th>DETALLE DE TRANS.</th><th>DÉBITO</th><th>CRÉDITO</th></tr>
+        <tr class="cabecera"><th class="fecha">FECHA</th><th class="comprobante">COMPROBANTE</th><th class="detalle">DETALLE DE TRANS.</th><th class="debito">DÉBITO</th><th class="credito">CRÉDITO</th></tr>
         </thead>
         <tbody>
         EOF; 
@@ -240,8 +259,8 @@ public function reporte( $idnro, $tipo="xls"){
             //con formato
             $f_debito= Helper::number_f( $debito );
             $f_credito= Helper::number_f( $credito );
-            
-            $html.= "<tr class=\"cuerpo\"> <td>{$mo->FECHA}</td><td>{$mo->NUMERO}</td><td>{$mo->CONCEPTO}</td><td class=\"numero\">$f_debito</td><td class=\"numero\">$f_credito</td></tr> ";
+            $concepto= trim($mo->CONCEPTO);
+            $html.= "<tr class=\"cuerpo\"> <td class=\"fecha\">{$mo->FECHA}</td><td class=\"comprobante\">{$mo->NUMERO}</td><td class=\"detalle\">$concepto</td><td class=\"debito\">$f_debito</td><td class=\"credito\">$f_credito</td></tr> ";
         endforeach; 
         //Sumas y saldo
         $deb= $Movi->where("TIPO_MOV","E")->sum("IMPORTE");
@@ -255,11 +274,11 @@ public function reporte( $idnro, $tipo="xls"){
         $tr_saldo='saldo-ok';
         if( $saldo < 0)  $tr_saldo="saldo-rojo"; 
         $html.= <<<EOF
-        <tr class="pie"><td></td><td></td><td>SUMAS</td><td class="numero">$f_deb</td><td class="numero">$f_cred</td></tr>
-        <tr><td></td><td></td><td></td><td class="numero">SALDO</td><td  class="$tr_saldo numero">$f_saldo</td></tr>
+        <tr class="pie"><td class="fecha"></td><td class="comprobante"></td><td class="detalle">SUMAS</td><td class="debito">$f_deb</td><td class="credito">$f_cred</td></tr>
+        <tr class="pie"><td class="fecha"></td><td class="comprobante"></td><td class="detalle"></td><td class="debito">SALDO</td><td  class="$tr_saldo credito">$f_saldo</td></tr>
         </tbody></table>
         EOF;
-         
+        // echo $html;
         $tituloDocumento= "EXTRACTO-".date("d")."-".date("m")."-".date("yy")."-".rand();
         $pdf = new PDF(); 
         $pdf->prepararPdf("$tituloDocumento.pdf", $tituloDocumento, ""); 

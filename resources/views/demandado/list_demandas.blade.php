@@ -53,9 +53,9 @@ use App\Helpers\Helper;
             <td >  <?= $item->DEMANDANTE?> </td>
             <td><?= $item->COD_EMP?></td>  
             <td > <?= $item->O_DEMANDA?></a> </td>
-             <td>{{$item->PRESENTADO}}</td>
+             <td>   {{ Helper::beautyDate(  $item->PRESENTADO)  }} </td>
              <td>{{$item->SD_FINIQUI}}</td>
-             <td>{{$item->FEC_FINIQU}}</td>
+             <td>{{ Helper::beautyDate($item->FEC_FINIQU) }}</td>
              <td class="text-right">{{Helper::number_f($saldos[$x]["saldo_capital"])}}</td>
              <td class="text-right" >{{Helper::number_f($saldos[$x]["saldo_liquida"])}}</td>
                 </tr>

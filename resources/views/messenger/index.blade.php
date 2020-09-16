@@ -22,7 +22,7 @@ Nuevo</a>
 <!--MODAL FORMULARIO -->
 <div id="showform" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-sm">
-    <div class="modal-content" id="viewform">
+    <div class="modal-content p-0" id="viewform">
       
     </div>
   </div>
@@ -91,6 +91,25 @@ ev.preventDefault();
 
 
 
+
+function leer(ev){
+
+ev.preventDefault();
+let leermsg=ev.currentTarget.href;
+let checkbox= ev.currentTarget.parentNode.parentNode.children[4].children[0];
+ 
+let divname= "#viewform";
+$.ajax(
+       {
+         url: leermsg,  
+         beforeSend: function(){
+           $( divname).html(  "<div style='z-index:8000;' class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
+         },
+         success: function(r){    $( divname).html(r); checkbox.checked="checked";  },
+         error: function(){  $( divname).html( "");   }
+       }
+     );
+}
 function borrar(ev){
     ev.preventDefault();
 if( !confirm("SEGURO QUE DESEA BORRARLO?") ) return;

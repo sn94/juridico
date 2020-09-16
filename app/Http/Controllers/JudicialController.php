@@ -7,6 +7,7 @@ use App\Demanda;
 use App\Demandados;
 use App\Http\Controllers\Controller;
 use App\Liquidacion;
+use App\MovCuentaJudicial;
 use App\Notificacion;
 use Exception;
 use Illuminate\Support\Facades\DB; 
@@ -24,13 +25,22 @@ class JudicialController extends Controller
 
 
     public function index( $iddeman){
-        $demandaob=Demanda::find( $iddeman);
-        //Datos pers
-        $ci= $demandaob->CI;
-        $nombre=  Demandados::where("CI", $ci)->first()->TITULAR; 
+
+        $DEMANDA=Demanda::find( $iddeman);
+
+        $ctajudiOb= CuentaJudicial::where("ID_DEMA", $iddeman)->first();
+        $CTA_JUDICIAL_ID= null;
+        $movis= null;
+
+        if(  !is_null($ctajudiOb) )
+       { $CTA_JUDICIAL_ID=   $ctajudiOb->IDNRO;
         //grilla de movimiento
-        $movis=CuentaJudicial::where("CTA_JUDICI", $demandaob->CTA_BANCO)
-       ->get();
+        $movis=CuentaJudicial::find( $CTA_JUDICIAL_ID)->movcuentajudicial;}
+
+         //Datos pers
+         $ci= $DEMANDA->CI;
+         $nombre=  Demandados::where("CI", $ci)->first()->TITULAR; 
+
         return view('cta_judicial.index',
          ["ci"=>$ci, "nombre"=> $nombre, "id_demanda"=> $iddeman,   "movi"=> $movis]); 
     }
@@ -39,28 +49,32 @@ class JudicialController extends Controller
    public function listar($iddeman){
         //grilla de movimiento
         $ob=Demanda::find( $iddeman);
-        $movis=CuentaJudicial::where("CTA_JUDICI", $ob->CTA_BANCO )->get();
+        $movis=CuentaJudicial::where("CTA_JUDICI", $ob->CTA_BANCO )->first()->movcuentajudicial;
         return view('cta_judicial.grilla', ["movi"=>$movis] );
    }
 
     public function nuevo(Request $request, $iddeman=0){
 
         if( ! strcasecmp(  $request->method() , "post"))  {
-               //Quitar el campo _token
-               $Params=  $request->input(); 
-               //Devuelve todo elemento de Params que no este presente en el segundo argumento
-               $Newparams= array_udiff_assoc(  $Params,  array("_token"=> $Params["_token"] ),function($ar1, $ar2){
-                   if( $ar1 == $ar2) return 0;    else 1; 
-                } ); 
-
-           $cta= new CuentaJudicial();
-           $cta->fill(  $Newparams);
-
+            //Quitar el campo _token
+            $Params=  $request->input();  
+            //Tipo de movimiento por Capital o por liquidacion
+            $ID_CTA_JUDI=  $Params['CTA_JUDICIAL'] ;
+            $objetoCtaJudi= CuentaJudicial::find( $ID_CTA_JUDI );
+            $ID_DEMANDA= $objetoCtaJudi->ID_DEMA;
+            $saldo_capital_now= $this->saldo_C_y_L(  $ID_DEMANDA )['saldo_capital'];
+            if( $saldo_capital_now <= 0)//sI SALDO CAPITAL ES MENOR O IGUAL A CERO, EL TIPO DE EXTRACCION SERA
+            $Params['TIPO_CTA']="L";    //POR LIQUIDACION
+            /**************** */
+           $cta= new MovCuentaJudicial();
+           $cta->fill(  $Params);
            DB::beginTransaction();
            try {
-            $cta->save(); 
-             DB::commit();
-             return view("cta_judicial.mensaje_success");
+                $cta->save(); 
+                DB::commit();
+                //Volver a listado de movimientos de cuenta judicial
+                echo json_encode( [ "go" => url("ctajudicial/$ID_DEMANDA") ]);
+               // return view("cta_judicial.mensaje_success");
            } catch (\Exception $e) {
                DB::rollback();
                echo json_encode( array( 'error'=> "Hubo un error al guardar uno de los datos<br>$e") );
@@ -68,38 +82,50 @@ class JudicialController extends Controller
         }
         else{
             $demandaob=Demanda::find( $iddeman);
-            //Datos pers
-            $ci= $demandaob->CI;
-            $nombre=  Demandados::where("CI", $ci)->first()->TITULAR; 
-            return view('cta_judicial.cargar', ["id_demanda"=>$iddeman, "CI"=>$ci, "TITULAR"=> $nombre, "dato"=> $demandaob, "OPERACION"=>"A"]); 
+            //Verificar si ya existe cuenta judicial para la Demanda
+            $cuenta_j= CuentaJudicial::where("ID_DEMA", $iddeman)->first();
+            
+                if( is_null( $cuenta_j) ){
+                    //Si no existe crear
+                $cuenta_j= new CuentaJudicial();
+                $cuenta_j->ID_DEMA= $iddeman;
+                $cuenta_j->BANCO= $demandaob->BANCO;
+                $cuenta_j->save();
+                } 
+             //Parametros
+             $CTA_JUDICIAL= $cuenta_j->IDNRO;
+             $BANCO= $cuenta_j->BANCO;
+             $CTA_BANCO= $cuenta_j->CTA_JUDICI;
+ 
+             //Datos pers Filtrar
+             $CI= Demanda::find( $cuenta_j->ID_DEMA )->CI;
+             $TITULAR= Demandados::where("CI", $CI)->first()->TITULAR; 
+             /******** */
+          
+            //Activar o no opcion deposito
+            $flag_deposito_opc= ParamController::get_param("DEPOSITO_CTA_JUDICI")=="S" ? "" : "disabled";
+            //Mostrar vista
+            return view('cta_judicial.cargar', 
+            ["CTA_JUDICIAL"=> $CTA_JUDICIAL, 'BANCO'=>$BANCO,'CTA_BANCO'=>$CTA_BANCO,
+            "CI"=>$CI, "TITULAR"=> $TITULAR,    'id_demanda'=> $cuenta_j->ID_DEMA,
+            'flag_deposito_opc'=> $flag_deposito_opc ,  "OPERACION"=>"A"]); 
         } 
     }
 
 
 
     
-    public function editar(Request $request, $idnro=0){
+    public function editar(Request $request, $idnro=0){//ID DE MOVIMIENTO
 
         if( ! strcasecmp(  $request->method() , "post"))  {
                //Quitar el campo _token
-               $Params=  $request->input(); 
-               //Devuelve todo elemento de Params que no este presente en el segundo argumento
-               $Newparams= array_udiff_assoc(  $Params,  array("_token"=> $Params["_token"] ),function($ar1, $ar2){
-                   if( $ar1 == $ar2) return 0;    else 1; 
-                } ); 
+            $Params=  $request->input();  
 
-           $cta= CuentaJudicial::find( $idnro);
-           $cta->fill(  $Newparams);
+           $cta= MovCuentaJudicial::find( $idnro);
+           $cta->fill(  $Params);
            DB::beginTransaction();
            try {
-            $cta->save();
-          /*
-            if($cta->TIPO_MOVI == "D")
-            {$obj_D=Demanda::find( $iddeman); $obj_D->SALDO=  intval($cta->SALDO)+intval($cta->IMPORTE);}
-            */
-         /*   if($cta->TIPO_MOVI == "E")
-            {$obj_D=Demanda::find( $iddeman); $obj_D->SALDO=  intval($cta->SALDO)-intval($cta->IMPORTE);}
-         */
+            $cta->save(); 
              DB::commit();
              return view("cta_judicial.mensaje_success2", ["mensaje"=> "Movimiento actualizado"]);
            } catch (\Exception $e) {
@@ -108,13 +134,24 @@ class JudicialController extends Controller
            }  
         }
         else{
-            $ctaob=CuentaJudicial::find( $idnro);
+            $movimiento= MovCuentaJudicial::find( $idnro);
+            //Parametros
+            $CTA_JUDICIAL= $movimiento->CTA_JUDICIAL;
+
+            $OBJETO_CTA_JUD= CuentaJudicial::find( $CTA_JUDICIAL);//-------------
+            $BANCO= $OBJETO_CTA_JUD->BANCO;
+            $CTA_BANCO= $OBJETO_CTA_JUD->CTA_JUDICI;
+
             //Datos pers Filtrar
-            $demandaObj= Demanda::where("CTA_BANCO", $ctaob->CTA_JUDICI)->first();
-            $ci= $demandaObj->CI;
-            $nombre= Demandados::where("CI", $ci)->first()->TITULAR; 
-            $ctaob->CI= $ci;  $ctaob->TITULAR= $nombre; 
-            return view('cta_judicial.cargar', ["id_demanda"=> $demandaObj->IDNRO,  "CI"=>$ci, "TITULAR"=> $nombre, "dato"=> $ctaob, "OPERACION"=>"M"]); 
+            $CI= Demanda::find( $OBJETO_CTA_JUD->ID_DEMA )->CI;
+            $TITULAR= Demandados::where("CI", $CI)->first()->TITULAR; 
+            /******** */
+              //Activar o no opcion deposito
+            $flag_deposito_opc= ParamController::get_param("DEPOSITO_CTA_JUDICI")=="S" ? "" : "disabled";
+            return view('cta_judicial.cargar',
+             ["CTA_JUDICIAL"=> $CTA_JUDICIAL, 'BANCO'=>$BANCO,'CTA_BANCO'=>$CTA_BANCO,
+              "CI"=>$CI, "TITULAR"=> $TITULAR,  'id_demanda'=> $OBJETO_CTA_JUD->ID_DEMA, "dato"=> $movimiento, 
+             'flag_deposito_opc'=> $flag_deposito_opc, "OPERACION"=>"M"]); 
         }
 
       
@@ -122,18 +159,32 @@ class JudicialController extends Controller
 
 
 
-    public function view( $idnro){
-        $dat=CuentaJudicial::find(  $idnro);
-        $demandaObj= Demanda::where("CTA_BANCO", $dat->CTA_JUDICI)->first();
-        $ci= $demandaObj->CI;
-        $nombre= Demandados::where("CI", $ci)->first()->TITULAR; 
-        $dat->CI= $ci;  $dat->TITULAR= $nombre; 
-        return view("cta_judicial.cargar", [ "dato"=> $dat, "OPERACION"=>"V", "id_demanda"=> $demandaObj->IDNRO] );
+    public function view( $idnro){//id de mov
+        //Parametros
+        $dato=  MovCuentaJudicial::find($idnro);
+        $CTA_JUDICIAL= $dato->CTA_JUDICIAL;
+
+        $OBJETO_CTA_JUD= CuentaJudicial::find( $CTA_JUDICIAL);//-------------
+        $BANCO= $OBJETO_CTA_JUD->BANCO;
+        $CTA_BANCO= $OBJETO_CTA_JUD->CTA_JUDICI;
+
+        //Datos pers Filtrar
+        $CI= Demanda::find( $OBJETO_CTA_JUD->ID_DEMA )->CI;
+        $TITULAR= Demandados::where("CI", $CI)->first()->TITULAR; 
+        /******** */
+
+            //Activar o no opcion deposito
+        $flag_deposito_opc= ParamController::get_param("DEPOSITO_CTA_JUDICI")=="S" ? "" : "disabled";
+
+        return view("cta_judicial.cargar",
+         ["CTA_JUDICIAL"=> $CTA_JUDICIAL, 'BANCO'=>$BANCO,'CTA_BANCO'=>$CTA_BANCO,
+         "CI"=>$CI, "TITULAR"=> $TITULAR, 'id_demanda'=> $OBJETO_CTA_JUD->ID_DEMA, "dato"=> $dato, "OPERACION"=>"V",  
+         'flag_deposito_opc'=> $flag_deposito_opc] );
     }
 
 
     public function delete( $idnro){
-        $dat=CuentaJudicial::find(  $idnro);
+        $dat=MovCuentaJudicial::find(  $idnro);
         $dat->delete();
         echo json_encode( array("idnro"=>  $idnro) );
       //  return view("cta_judicial.mensaje_success2", ["mensaje"=> "Movimiento borrado"]); 
@@ -204,26 +255,32 @@ public function saldo_C_y_L(  $iddeman, $tipo="array" ){
       $demanda_reg=Demanda::find( $iddeman);  //Buscar demanda por su ID
       $MontoDemanda=  intval($demanda_reg->DEMANDA);//Monto de la demanda
       //Consultar registro
-      $liquidacion_reg=Liquidacion::where( "CTA_BANCO",  $demanda_reg->CTA_BANCO);
+      $liquidacion_reg=Notificacion::find( $iddeman);
       $total_liquidaciones= 0;
-      if( $liquidacion_reg )
-      $total_liquidaciones=  intval(  $liquidacion_reg->sum("LIQUIDACIO") );
+      if( !is_null($liquidacion_reg) )
+      $total_liquidaciones=  intval(  $liquidacion_reg->IMPORT_LIQUI );
 
       //EXTRACCIONES
       $Extracciones_capital=0;
       $Extracciones_liquida=0;
-
-    $cta_judi_reg=CuentaJudicial::where( "CTA_JUDICI", $demanda_reg->CTA_BANCO)->get();//Instancia de cta judicial de la demanda
-    //Extracciones de capital    
-    foreach( $cta_judi_reg as $it):
-            if(  $it->TIPO_MOVI == "E"  &&  $it->TIPO_CTA == "C") //Si es extraccion CAPITAL
-            $Extracciones_capital+=  intval(  $it->IMPORTE);
-    endforeach;
-      //Extracciones de liquidacion    
-      foreach( $cta_judi_reg as $it):
-        if(  $it->TIPO_MOVI == "E"  &&  $it->TIPO_CTA == "L") //Si es extraccion CAPITAL
-        $Extracciones_liquida+=  intval(  $it->IMPORTE);
+  //dd( CuentaJudicial::where( "ID_DEMA", $demanda_reg->IDNRO)->first());
+    $cta_judi_reg=CuentaJudicial::where( "ID_DEMA", $iddeman)->first();
+    if( !is_null($cta_judi_reg)){
+        $MOVIS= $cta_judi_reg->movcuentajudicial;//Instancia de cta judicial de la demanda
+        if(  ! is_null($MOVIS)):
+        //Extracciones de capital    
+        foreach( $MOVIS as $it):
+                if(  $it->TIPO_MOVI == "E"  &&  $it->TIPO_CTA == "C") //Si es extraccion CAPITAL
+                $Extracciones_capital+=  intval(  $it->IMPORTE);
         endforeach;
+          //Extracciones de liquidacion    
+          foreach( $MOVIS as $it):
+            if(  $it->TIPO_MOVI == "E"  &&  $it->TIPO_CTA == "L") //Si es extraccion CAPITAL
+            $Extracciones_liquida+=  intval(  $it->IMPORTE);
+            endforeach;
+        endif;
+    }
+    
   //Calculo de saldos
     //SALDO CAPITAL
     $saldo_capital= $MontoDemanda -  $Extracciones_capital;
@@ -244,14 +301,14 @@ $id_deman_list= Demanda::select('IDNRO')->get();
 //Totalizar demandas
 $total_demandas= Demanda::sum("DEMANDA");  
 //Totalizar extracciones de capital
-$total_extr_capital= CuentaJudicial::where("TIPO_CTA", "C")->where("TIPO_MOVI","E")->sum("IMPORTE");
+$total_extr_capital= MovCuentaJudicial::where("TIPO_CTA", "C")->where("TIPO_MOVI","E")->sum("IMPORTE");
 //Saldo capital
-$saldo_C= $total_extr_capital -  $total_demandas;
+$saldo_C=  $total_demandas - $total_extr_capital;
 
 //Totalizar liquidaciones
 $total_liquidaciones=  Notificacion::sum("IMPORT_LIQUI");
 //tOTALIZAR extracciones de liquidacion
-$total_extr_liquida= CuentaJudicial::where("TIPO_CTA", "L")->where("TIPO_MOVI","E")->sum("IMPORTE");
+$total_extr_liquida= MovCuentaJudicial::where("TIPO_CTA", "L")->where("TIPO_MOVI","E")->sum("IMPORTE");
  //sALDO liquidacion
  $saldo_L=  $total_liquidaciones - $total_extr_liquida;
 

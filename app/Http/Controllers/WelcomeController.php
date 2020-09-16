@@ -10,8 +10,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;  
 use App\Demandados;
 use App\Liquidacion;
+use App\Notificacion;
 use App\Observacion;
 use App\Parametros;
+use PHPUnit\Framework\Error\Notice;
 
 class WelcomeController extends Controller
 {
@@ -39,7 +41,7 @@ class WelcomeController extends Controller
             $saldo_l= $judi["saldo_liquida"];
             $demandados= Demandados::count();//numero de demandados
             $demandas_nro=  Demanda::count();//numero de juiciso
-            $liquidacion= Liquidacion::sum("LIQUIDACIO");
+            $liquidacion= Notificacion::sum("IMPORT_LIQUI");
             // "saldo_judi"=> intval($judi['saldo_judi']) < 0 ? "0": $judi['saldo_judi'] ,//Saldos
             return view('welcome',  [
             "demanda"=>$demanda, //Demandas 

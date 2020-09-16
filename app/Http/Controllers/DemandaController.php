@@ -83,16 +83,36 @@ class DemandaController extends Controller
  
        $persona= Demandados::where("ci", $ci)->first();//persona
        $saldos= $this->adjuntarSaldosDemanda($ci);
-
         return view("demandado.list_demandas", 
         ['lista'=>   $lista,   'ci'=>$ci, 'nombre'=> $persona->TITULAR, "saldos"=> $saldos ] );
-     
-     
-
-     
-   
  }
 
+
+ public function demandas_by_id($ID){
+  
+    $lista= null;
+ 
+       $persona= Demandados::find( $ID);//persona
+      
+       $ci= $persona->CI;
+        
+       //nO HAY CEDULA
+        if( strlen( trim($ci)) == 0){
+            return  view("demandado.sin_cedula" ); 
+        }else{
+            $lista=  DB::table("demandas2")
+            ->join("notificaciones", "notificaciones.IDNRO", "=", "demandas2.IDNRO")
+            ->select("demandas2.*", "notificaciones.PRESENTADO", "notificaciones.SD_FINIQUI", "notificaciones.FEC_FINIQU")
+            ->where("demandas2.CI", $ci)
+            ->orderBy("demandas2.IDNRO")
+            ->get();
+            $saldos= $this->adjuntarSaldosDemanda($ci);
+            return view("demandado.list_demandas", 
+            ['lista'=>   $lista,   'ci'=>$ci, 'nombre'=> $persona->TITULAR, "saldos"=> $saldos ] );
+        }
+
+      
+ }
 /**
  * FICHA DE DEMANDA SEGUN COD_EMP
  */
@@ -207,7 +227,7 @@ class DemandaController extends Controller
                $obarre->save();
            }
         
-
+ 
         if( ! strcasecmp(  $request->method() , "post"))  {
             
             //Quitar el campo _token
@@ -264,7 +284,7 @@ class DemandaController extends Controller
          $pars= array_merge( $this->formar_parametros() , array( 'OPERACION'=>"A"  ) );
          $propios= array(  'ci'=>  $ci ,'id_demanda'=>$iddeman, 
          'ficha0'=>$obDataPerso, 'ficha'=> $obdema, 'ficha2'=>$obnoti, 'ficha3'=>$obobs,
-         'ficha4'=> $arreglo,  'nombre'=> $nom , 'OPERACION'=>"V");
+         'ficha4'=> $arreglo, 'ficha5'=> $arreglo, 'nombre'=> $nom , 'OPERACION'=>"V");
          return view('demandas.agregarn.index',  array_merge( $pars, $propios ) ); //ver V   
          
      }

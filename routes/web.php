@@ -44,6 +44,7 @@ Route::get( "demandas-editar/{iddeman}", 'DemandaController@editar_demandan');//
 Route::post( "demandas-editar", 'DemandaController@editar_demandan');//editar demanda
 Route::get( "demandas-borrar/{iddeman}", 'DemandaController@borrar');//Borrar demanda
 Route::get("demandas-by-ci/{ci}", 'DemandaController@demandas_by_ci');//lista  de demandas por CEDULA
+Route::get("demandas-by-id/{idnro}", 'DemandaController@demandas_by_id');//lista  de demandas a traves de IDNRO
 Route::get("ficha-demanda/{idnro}", "DemandaController@ver_demandan");//ficha de demandas
 
 
@@ -133,8 +134,23 @@ Route::get('eodema/{id}',   'ParamController@editarOdemanda');
 Route::post('eodema',   'ParamController@editarOdemanda');
 Route::get('dodema/{id}',   'ParamController@borrar');
 
+
+/**MODULO INFORMES***** */
+/********informes arreglos extrajudiciales*************** */
+Route::get('informes-arre-extra',   'InformesController@informes_arr_extr');
+Route::get('informes-arre-extra/{html}',   'InformesController@informes_arr_extr');
+Route::post('informes-arre-extra',   'InformesController@informes_arr_extr');
+Route::post('informes-arre-extra/{html}',   'InformesController@informes_arr_extr');
+//version resumida
+Route::get('informes-arregloextrajudicial',   'InformesController@informes_arreglos_resumen');
+Route::get('informes-arregloextrajudicial/{html}',   'InformesController@informes_arreglos_resumen');
+Route::post('informes-arregloextrajudicial',   'InformesController@informes_arreglos_resumen');
+Route::post('informes-arregloextrajudicial/{html}',   'InformesController@informes_arreglos_resumen');
+ 
+
 /***FILTROS */
 Route::get('filtros',   'FilterController@index');
+Route::get('filtro-nombre/{id}',   'FilterController@get_name');
 Route::get('nfiltro',   'FilterController@cargar');
 Route::post('nfiltro',   'FilterController@cargar');
 Route::get('efiltro/{tipo}/{id}',   'FilterController@cargar');
@@ -144,7 +160,9 @@ Route::get('filtro/{id}/{tipo}',   'FilterController@reporte');
 Route::get('filtro/{id}/{tipo}',   'FilterController@reporte');
 Route::get('res-filtro/{tipo}',   'FilterController@get_parametros'); //Recursos de datos para crear filtros
 Route::get('rel-filtro',   'FilterController@relaciones_filtro'); //Datos de relaciones para crear filtros
-
+Route::get('filtro-aviso-rec/{id}',   'FilterController@aviso_recorte_cols');
+Route::get('filtro-orden/{col}/{sentido}',   'FilterController@filtro_orden');
+/*************************** */
 
 /***USUARIOS */
 Route::get('users',   'UserController@index');
@@ -205,9 +223,20 @@ Route::get('dgasto/{id}',   'GastosController@borrar'); //vista completa con gri
 Route::get('grillgastos',   'GastosController@listar'); //solo grilla
 Route::post('grillgastos',   'GastosController@listar'); //solo grilla
 Route::get('rep-gastos/{tipo}',   'GastosController@reporte'); //solo grilla
+Route::post('rep-gastos/{tipo}',   'GastosController@reporte'); //solo grilla
+Route::get('filtrar-gastos-codigo/{codigo}',   'GastosController@filtrarPorCodigo'); //solo grilla
+Route::get('gast-orden/{col}/{sentido}',   'GastosController@ordenar'); //solo grilla
+Route::get('demandas_n_gasto/{ci}',   'GastosController@demandas'); //busqueda de demandas por CEDULA
 
-
-
+/**************PLAN DE CUENTAS DE GASTOS */
+Route::get('plan-de-cuentas',   'PlanCtaGastoController@index'); 
+Route::get('plan-cuenta',   'PlanCtaGastoController@cargar'); 
+Route::post('plan-cuenta',   'PlanCtaGastoController@cargar'); 
+Route::get('plan-cuenta/{tipo}/{id}',   'PlanCtaGastoController@cargar'); 
+Route::post('plan-cuenta/{tipo}',   'PlanCtaGastoController@cargar'); 
+Route::get('del-plan-cuenta/{id}',   'PlanCtaGastoController@borrar'); 
+Route::get('plan-cuenta-list',   'PlanCtaGastoController@listar'); 
+Route::get('plan-cuentas-rep/{tipo}',   'PlanCtaGastoController@reporte'); //Informes
 
 //Mensajes
 /********************** */
@@ -219,7 +248,7 @@ Route::get('del-msg/{id}',   'MessengerController@borrar');
 Route::get('list-msg/{TIPO}',   'MessengerController@listar'); 
 
 
-Route::get('test',   'FilterController@relaciones_filtro');
+Route::get('test',   'FilterController@test');
 
 
 

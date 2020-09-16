@@ -16,7 +16,7 @@ class Parametros extends Model
     protected $primaryKey = 'IDNRO';
 
     protected $fillable= [  'INTERES','MORA','IVA','SEGURO','REDONDEO','HONORARIOS','PUNITORIO',
-    'GASTOSADMIN','DIASVTO','FACTURA','RECIBO','FECMIN','FECMAX', 'EMAIL', 'SHOW_COUNTERS'];
+    'GASTOSADMIN','DIASVTO','FACTURA','RECIBO','FECMIN','FECMAX', 'EMAIL', 'SHOW_COUNTERS', 'DEPOSITO_CTA_JUDICI'];
 
 
     

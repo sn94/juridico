@@ -20,6 +20,9 @@ if( $OPERACION == "M"){ $ruta= url("ecuentajudi/$dato->IDNRO");}
 
 
 
+<div class="toast" role="alert" aria-live="polite" aria-atomic="true" data-delay="1000">
+        <div role="alert" aria-live="assertive" aria-atomic="true" id="dema-msg">GUARDADO</div>
+</div>
 
 <div id="myform">
 <form  id="ctajudimov" onsubmit="guardarMovJud(event)" method="post" action="<?= $ruta ?>">
@@ -60,7 +63,7 @@ $("#chequenro").addClass("visible");
  /**VALIDACIONES */
   //Borrar cualquier ocurrencias de puntos o comas en una cadena
   function formatear(ev){
-    console.log( ev.target.selectionStart, ev);
+     
     if( ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57){ 
       ev.target.value= 
       ev.target.value.substr( 0, ev.target.selectionStart-1) + 
@@ -107,11 +110,14 @@ $.ajax(
      if($("#ctajudimov input[name=IMPORTE]").val() == "")
      alert("INGRESA EL IMPORTE");
      else{
-        if( confirm("CONTINUAR?")){
+ 
             ajaxCall( ev, "#myform", function(res){
-                $("#myform").html( res);
+                let respuesta= JSON.parse( res);
+                if( "go" in respuesta)
+                window.location= respuesta.go;
+                else  alert(respuesta.error);
             });
-        }
+        
      }
       
  }
@@ -137,7 +143,20 @@ $("#ctajudimov input[name=FECHA]").val(  d);
     Array.prototype.forEach.call( context, function(ar){ar.disabled=!hab;   });
   }
 
- 
+   
+function setDefaultDate(){
+        //fechas por defecto
+      
+        if( $("input[type=date]").val() == "" )
+        {
+            let FeCha= new Date();
+            let mes= (FeCha.getMonth()+1) <10 ?  "0".concat(FeCha.getMonth()+1) :  (FeCha.getMonth()+1);
+           let dia= FeCha.getDate() < 10 ?"0".concat( FeCha.getDate()) : FeCha.getDate();
+            $("input[type=date]").val( FeCha.getFullYear()+"-"+mes+"-"+  dia);
+           
+        }
+    }
+
 
   if( document.getElementById("OPERACION")== "V"){
       habilitarCampos("ctajudimov", false);
@@ -145,5 +164,8 @@ $("#ctajudimov input[name=FECHA]").val(  d);
   
  
 
+window.onload= function(){
+  setDefaultDate();
+}
 </script>
 

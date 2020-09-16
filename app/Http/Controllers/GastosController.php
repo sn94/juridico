@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Arreglo_extrajudicial;
 use App\Banc_mov;
 use App\Bancos;
+use App\Codigo_gasto;
+use App\CodigoGasto;
+use App\Demanda;
+use App\Demandados;
 use App\Gastos;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
@@ -22,15 +26,51 @@ class GastosController extends Controller
         date_default_timezone_set("America/Asuncion");
     }
   
-    public function index(){
-       // if ( $request->ajax() )
-      
-       $dato= Gastos::paginate(20);
-       return view("gastos.index", ["movi"=>  $dato, "TITULO"=>"GASTOS"] );
+    public function index( Request $request){
+     
+       $dato= Gastos::addSelect(['CODIGO' => Codigo_gasto::select('CODIGO')
+       ->whereColumn('IDNRO', 'gastos.CODIGO') 
+   ])->paginate(20); 
+       
+
+   if ( $request->ajax() )
+       {
+            if($dato->count() )
+             return view("gastos.grilla", ["movi"=>  $dato ] );
+             else
+             echo "<h6>SIN REGISTROS</h6>";
+        }
+    else
+        return view("gastos.index",
+        ["movi"=>  $dato, "TITULO"=>"GASTOS", "url_agregar"=> url("gasto"), 
+        "CODGASTO"=> DB::table("cod_gasto")->pluck( 'DESCRIPCION', 'IDNRO'),
+            "breadcrumbcolor"=>"#fdc673 !important;"] );
        
     }
 
 
+
+    public function ordenar( Request $request, $columna, $sentido){
+           
+        $orden= $sentido== "A" ?"ASC" : "DESC";
+       $dato= Gastos::addSelect(['CODIGO' => Codigo_gasto::select('CODIGO')
+       ->whereColumn('IDNRO', 'gastos.CODIGO') 
+   ])->orderBy($columna, $orden )->paginate(20); 
+
+
+   if( $request->ajax()){
+        if($dato->count() )
+        return view("gastos.grilla", ["movi"=>  $dato ] );
+        else
+        echo "<h6>SIN REGISTROS</h6>";
+   }else{
+        return view("gastos.index",
+        ["movi"=>  $dato, "TITULO"=>"GASTOS", "url_agregar"=> url("gasto"), 
+        "CODGASTO"=> DB::table("cod_gasto")->pluck( 'DESCRIPCION', 'IDNRO'),
+            "breadcrumbcolor"=>"#fdc673 !important;"] );
+   }
+       
+    }
 
     public function cargar(Request $request, $ope= "A", $id=""){
         
@@ -49,10 +89,24 @@ class GastosController extends Controller
             $cod_gastos=DB::table("cod_gasto")->pluck( 'DESCRIPCION', 'IDNRO');
             $ruta=   $ope == "A" ? url("gasto")  :  url("gasto/M");
             if( $ope == "A")    
-            return view("gastos.form",   ['OPERACION'=> $ope,   'RUTA'=> $ruta,   'CODGASTO' => $cod_gastos  ]);
+            return view("gastos.form",  
+             ['OPERACION'=> $ope,   'RUTA'=> $ruta,   'CODGASTO' => $cod_gastos ,"breadcrumbcolor"=>"#fdc673 !important;" ]);
             if( $ope == "M") {
-                $banco= Gastos::find( $id);
-                return view("gastos.form",   ['OPERACION'=> $ope,   'RUTA'=> $ruta,   'CODGASTO' => $cod_gastos ,'dato'=>$banco ]);
+                $el_gasto= Gastos::find( $id);
+                //El gasto fue por demanda u otros
+                if( is_null( $el_gasto->ID_DEMA ) )
+                return view("gastos.form", 
+                  ['OPERACION'=> $ope,   'RUTA'=> $ruta,   'CODGASTO' => $cod_gastos ,
+                  'dato'=>$el_gasto, "breadcrumbcolor"=>"#fdc673 !important;" ]);
+                  else
+                  {
+                      $detalles_dema= DB::table("demandas2")->select("demandas2.CI","COD_EMP","DEMANDA","TITULAR")->join("demandado", "demandado.CI","=","demandas2.CI")
+                      ->where("demandas2.IDNRO",   $el_gasto->ID_DEMA )
+                      ->first(); 
+                      return view("gastos.form", 
+                        ['OPERACION'=> $ope,   'RUTA'=> $ruta,   'CODGASTO' => $cod_gastos , "demanda"=> $detalles_dema,
+                        'dato'=>$el_gasto, "breadcrumbcolor"=>"#fdc673 !important;" ]);
+                    }
             }
         }
     }
@@ -67,19 +121,60 @@ class GastosController extends Controller
 
 
  
-  
+  public function filtrarPorCodigo( Request $request, $codigo){
+    $dato= Gastos::addSelect(['CODIGO' => Codigo_gasto::select('CODIGO')
+    ->whereColumn('IDNRO', 'gastos.CODIGO') 
+])->where("CODIGO", $codigo)->paginate(20); 
+if( $request->ajax())
+{
+    return view("gastos.grilla", ["movi"=>  $dato] );
+}else{
+    return view("gastos.index",
+["movi"=>  $dato, "TITULO"=>"GASTOS", "url_agregar"=> url("gasto"),
+ "breadcrumbcolor"=>"#fdc673 !important;"] );
+}
+  }
 
+  private function listar_datos_segun_param($request){
+    
+    $dato= null;
+    if( ! strcasecmp(  $request->method() , "post"))  {
+
+        //Filtro por mo
+        $modo= $request->input("modo");
+        // Filtro de fecha
+        $desde= $request->input("Desde");
+        $hasta= $request->input("Hasta"); 
+
+        $query=Gastos::addSelect(['CODIGO' => Codigo_gasto::select('CODIGO')
+        ->whereColumn('IDNRO', 'gastos.CODIGO') 
+    ]);
+        if( $desde != ""  && $hasta!= "") $query->where("FECHA", ">=", $desde)->where("FECHA", "<=", $hasta);
+        if( $modo == "D")  $query->where("ID_DEMA","<>","NULL" );
+        if( $modo == "V")  $query->whereNull('ID_DEMA');
+        $dato= $query->paginate(20); 
+         
+    }
+    else{  
+        //$dato= Gastos::paginate(20);  
+        $dato=  Gastos::addSelect(['CODIGO' => Codigo_gasto::select('CODIGO')
+        ->whereColumn('IDNRO', 'gastos.CODIGO') 
+    ])->paginate(20); 
+  }
+    return $dato;
+  }
 
     public function listar( Request $request){  
-        $dato= null;
-        if( ! strcasecmp(  $request->method() , "post"))  {
-            $desde= $request->input("Desde");
-            $hasta= $request->input("Hasta"); 
-            $dato=Gastos::where("FECHA", ">=", $desde)->where("FECHA", "<=", $hasta)->paginate(20);    
-          
-        }
-        else{  $dato= Gastos::paginate(20);    }
-        return view("gastos.grilla", ["movi"=>  $dato] );
+        $dato= $this->listar_datos_segun_param( $request);
+        if( $request->ajax())
+        {
+            return view("gastos.grilla", ["movi"=>  $dato] );}
+        else
+        {
+            return view("gastos.index",
+        ["movi"=>  $dato, "TITULO"=>"GASTOS", "url_agregar"=> url("gasto"),
+        "CODGASTO"=> DB::table("cod_gasto")->pluck( 'DESCRIPCION', 'IDNRO'),
+         "breadcrumbcolor"=>"#fdc673 !important;"] );}
 
     }
 
@@ -91,10 +186,10 @@ class GastosController extends Controller
 //tcpdf
 //para clases css referenciarlas mediante comillas dobles
  
-public function reporte(  $tipo="xls"){ 
-
-    $Movi= Gastos::get(); 
-    
+public function reporte(Request $request,  $tipo="xls"){ 
+    set_time_limit(0);
+    ini_set('memory_limit', '-1');
+    $Movi=  $this->listar_datos_segun_param( $request);
     if( $tipo == "xls"){
         echo json_encode(   $Movi );  
     }else{
@@ -103,47 +198,55 @@ public function reporte(  $tipo="xls"){
          
         $html= <<<EOF
         <style>
+            .fecha{
+                width:70px;
+            }
+            .comprobante{
+                width: 110px;
+            }
+            .detalle{
+                width: 150px;
+            }
+            .importe{
+                width:100px;
+                text-align: right;
+            }
             tr.cabecera{
                 font-size: 7pt;
                 background-color: #c2fcca;
                 font-weight: bold;
             }
-            table.tabla{ 
-                border-top: 1px solid #606060;
-                border-bottom: 1px solid #606060;
-            }
+            
             tr.cuerpo{
                 color: #363636;
                 font-size: 9px;
                 font-weight: bold;
             }
-            tr.cuerpo td{
-                border-bottom: 1px solid #606060;
-            }
+            
             tr.pie td{ 
                 color: #0f0f0f;
                 font-weight: bold;
-                font-size: 11px;
-                border-bottom: 1px solid #606060;
-            }
-            .numero{
-                text-align: right;
+                font-size: 11px; 
             }
         </style>
         <h6>GASTOS</h6>
         <table class="tabla">
         <thead>
-        <tr class="cabecera"><th>FECHA</th><th>COMPROBANTE</th><th>DETALLES</th><th>IMPORTE</th></tr>
+        <tr class="cabecera"><th>CODIGO</th><th class="fecha">FECHA</th><th class="comprobante">COMPROBANTE</th><th class="detalle">DETALLES</th><th class="importe">IMPORTE</th></tr>
         </thead>
         <tbody>
         EOF; 
+       /********/
        
+       /********** */ 
         foreach( $Movi as $mo): 
             //con formato
             $f_MONTO= Helper::number_f( $mo->IMPORTE ); 
-            
-            $html.= "<tr class=\"cuerpo\"> <td>{$mo->FECHA}</td><td>{$mo->NUMERO}</td><td>{$mo->DETALLE1}<br>{$mo->DETALLE2}</td><td  class=\"numero\">{$f_MONTO}</td></tr> ";
+            $gooddate= Helper::beautyDate($mo->FECHA);
+            $html.= "<tr class=\"cuerpo\"> <td>{$mo->CODIGO}</td><td class=\"fecha\">{$gooddate}</td><td class=\"comprobante\">{$mo->NUMERO}</td><td class=\"detalle\">{$mo->DETALLE1}<br>{$mo->DETALLE2}</td><td  class=\"importe\">{$f_MONTO}</td></tr> ";
         endforeach;  
+
+
         $total= $Movi->sum("IMPORTE"); 
         //con formato
         $f_total= Helper::number_f( $total); 
@@ -167,10 +270,18 @@ public function reporte(  $tipo="xls"){
 
 
 
-
+public function demandas($CI){
+    $titular= Demandados::where("CI", $CI)->first();
+    if( is_null( $titular)){
+        return view("gastos.demanda_chooser", ['error'=> "NO SE REGISTRA ESE NUMERO DE CEDULA" ]);
+    }else{
+        $dato_titular=  $titular->TITULAR;
+        $demanda=Demanda::select( 'IDNRO', 'COD_EMP', 'DEMANDA', 'BANCO', 'CTA_BANCO')->where("CI",$CI)->get();
+        return view("gastos.demanda_chooser", ['demandas'=> $demanda, 'TITULAR'=> $dato_titular ]);
+    }
+ 
+}
 //CODIGO DE COMPATIBILIDAD
-
-
 public function  importar_registros(){
 
 
@@ -200,6 +311,23 @@ public function  importar_registros(){
 }
 
 
+
+
+public function asignarCodigoGasto(){
+   
+    set_time_limit(0);
+    ini_set('memory_limit', '-1');
+    $reg=Gastos::get();
+    foreach( $reg as $item){
+        $desc= $item->CODIGO;
+        $idnro=Codigo_gasto::where("CODIGO", $desc)->first();
+        if( !is_null($idnro) ){
+            $id_=$idnro->IDNRO;
+            $item->CODIGO= $id_; 
+            $item->save();
+        }
+    }
+}
 
 
 }

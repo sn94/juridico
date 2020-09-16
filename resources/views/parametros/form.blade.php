@@ -110,13 +110,26 @@ use App\Helpers\Helper;
     <label >Mostrar datos en pantalla principal:</label>
     <label class="switch switch-to-primary">
   <span class="mr-1">No</span>
-  <input {{isset($DATO)? ($DATO->SHOW_COUNTERS=="S" ? 'checked': '') : '' }}    value="S" type="checkbox"/>
+  <input id="SHOW_COUNTERS" {{isset($DATO)? ($DATO->SHOW_COUNTERS=="S" ? 'checked': '') : '' }}    value="S" type="checkbox"/>
   <span class="switch-slider"></span>
   <span class="ml-1">Si</span>
 </label> 
  </div>
   </div>
 
+  <!--PARAMETRO ESTADO DEPOSITO CTA JUDICIAL -->
+  <div class="col-12 col-sm-5 col-md-5 col-lg-5">
+    <input type="hidden" name="DEPOSITO_CTA_JUDICI">
+  <div class="form-group">
+    <label >ACTIVAR OPC. DEPÓSITO EN CTA.JUDICIAL:</label>
+    <label class="switch switch-to-primary">
+  <span class="mr-1">No</span>
+  <input id="DEPOSITO_CTA_JUDICI" {{isset($DATO)? ($DATO->DEPOSITO_CTA_JUDICI=="S" ? 'checked': '') : '' }}    value="S" type="checkbox"/>
+  <span class="switch-slider"></span>
+  <span class="ml-1">Si</span>
+</label> 
+ </div>
+  </div>
 
 
   <div  class="col-12 col-sm-3 col-md-3 col-lg-3 d-flex align-items-center">
