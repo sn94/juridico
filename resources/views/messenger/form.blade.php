@@ -53,7 +53,7 @@ echo Form::hidden('REMITENTE', session("id") );
     <div class="form-group">
     <label >MENSAJE:</label>
     @php
-    echo Form::textarea('MENSAJE', '', ['class'=> 'form-control form-control-sm','rows'=>5, 'maxlength'=>"500"]);
+    echo Form::textarea('MENSAJE', '', [ 'id'=>'editor', 'class'=> 'form-control form-control-sm','rows'=>5, 'maxlength'=>"500"]);
     @endphp   
     </div>
   </div>
@@ -67,3 +67,4 @@ echo Form::hidden('REMITENTE', session("id") );
 
 </form>
   
+ 

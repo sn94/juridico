@@ -94,12 +94,12 @@ class GastosController extends Controller
             if( $ope == "M") {
                 $el_gasto= Gastos::find( $id);
                 //El gasto fue por demanda u otros
-                if( is_null( $el_gasto->ID_DEMA ) )
+                if( is_null( $el_gasto->ID_DEMA ) )  //POR VARIOS
                 return view("gastos.form", 
                   ['OPERACION'=> $ope,   'RUTA'=> $ruta,   'CODGASTO' => $cod_gastos ,
                   'dato'=>$el_gasto, "breadcrumbcolor"=>"#fdc673 !important;" ]);
                   else
-                  {
+                { //POR DEMANDA
                       $detalles_dema= DB::table("demandas2")->select("demandas2.CI","COD_EMP","DEMANDA","TITULAR")->join("demandado", "demandado.CI","=","demandas2.CI")
                       ->where("demandas2.IDNRO",   $el_gasto->ID_DEMA )
                       ->first(); 
@@ -146,9 +146,14 @@ if( $request->ajax())
         $desde= $request->input("Desde");
         $hasta= $request->input("Hasta"); 
 
-        $query=Gastos::addSelect(['CODIGO' => Codigo_gasto::select('CODIGO')
+        $query=Gastos::
+        addSelect(['COD_GASTO' => Codigo_gasto::select('CODIGO')
         ->whereColumn('IDNRO', 'gastos.CODIGO') 
-    ]);
+        ])
+        -> addSelect(['COD_EMP' => Demanda::select('COD_EMP')
+        ->whereColumn('IDNRO', 'gastos.ID_DEMA') 
+        ]);
+         
         if( $desde != ""  && $hasta!= "") $query->where("FECHA", ">=", $desde)->where("FECHA", "<=", $hasta);
         if( $modo == "D")  $query->where("ID_DEMA","<>","NULL" );
         if( $modo == "V")  $query->whereNull('ID_DEMA');
@@ -198,14 +203,18 @@ public function reporte(Request $request,  $tipo="xls"){
          
         $html= <<<EOF
         <style>
+            .codigo{
+                width: 65px;
+            }
             .fecha{
                 width:70px;
+                text-align: left;
             }
             .comprobante{
                 width: 110px;
             }
             .detalle{
-                width: 150px;
+                width: 200px;
             }
             .importe{
                 width:100px;
@@ -232,7 +241,7 @@ public function reporte(Request $request,  $tipo="xls"){
         <h6>GASTOS</h6>
         <table class="tabla">
         <thead>
-        <tr class="cabecera"><th>CODIGO</th><th class="fecha">FECHA</th><th class="comprobante">COMPROBANTE</th><th class="detalle">DETALLES</th><th class="importe">IMPORTE</th></tr>
+        <tr class="cabecera"><th class="codigo">CODIGO</th><th class="fecha">FECHA</th><th class="comprobante">COMPROBANTE</th><th class="detalle">DETALLES</th><th class="importe">IMPORTE</th></tr>
         </thead>
         <tbody>
         EOF; 
@@ -243,7 +252,7 @@ public function reporte(Request $request,  $tipo="xls"){
             //con formato
             $f_MONTO= Helper::number_f( $mo->IMPORTE ); 
             $gooddate= Helper::beautyDate($mo->FECHA);
-            $html.= "<tr class=\"cuerpo\"> <td>{$mo->CODIGO}</td><td class=\"fecha\">{$gooddate}</td><td class=\"comprobante\">{$mo->NUMERO}</td><td class=\"detalle\">{$mo->DETALLE1}<br>{$mo->DETALLE2}</td><td  class=\"importe\">{$f_MONTO}</td></tr> ";
+            $html.= "<tr class=\"cuerpo\"> <td class=\"codigo\">{$mo->CODIGO}</td><td class=\"fecha\">{$gooddate}</td><td class=\"comprobante\">{$mo->NUMERO}</td><td class=\"detalle\">{$mo->DETALLE1}<br>{$mo->DETALLE2}</td><td  class=\"importe\">{$f_MONTO}</td></tr> ";
         endforeach;  
 
 
@@ -252,10 +261,11 @@ public function reporte(Request $request,  $tipo="xls"){
         $f_total= Helper::number_f( $total); 
     
         $html.= <<<EOF
-        <tr class="pie"><td></td><td></td><td>TOTAL</td><td class="numero">$f_total</td></tr> 
+        <tr class="pie"><td  class="codigo"></td><td class="fecha"></td><td class="comprobante">TOTAL</td><td class="detalle"></td><td class="importe">$f_total</td></tr> 
         </tbody></table>
         EOF;
          
+        //echo $html;
         $tituloDocumento= "GASTOS-".date("d")."-".date("m")."-".date("yy")."-".rand();
         $pdf = new PDF(); 
         $pdf->prepararPdf("$tituloDocumento.pdf", $tituloDocumento, ""); 

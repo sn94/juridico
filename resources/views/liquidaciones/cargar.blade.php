@@ -40,14 +40,14 @@ use App\Helpers\Helper;
 <script type="text/javascript"> 
  
   function quitarSeparador( ele){ 
-    return ele.replaceAll("[.]", ""); 
+    return ele.replaceAll(/\./g , "");
     }
   function quitarSeparadorInt( ele){ 
     if(ele.val()=="") return 0;
-    else return parseInt( ele.val().replaceAll("[.]", "") ); 
+    else return parseInt( ele.val().replaceAll(/\./g , "") ); 
     }
     function quitarSeparadorPlus( ele){ 
-      let nw= ele.val().replaceAll("[.]", "");
+      let nw= ele.val().replaceAll(/\./g , "");;
       ele.val(  nw  );  }
 
   /** Solo entrada numerica */

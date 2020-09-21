@@ -46,23 +46,29 @@ NUEVO GASTO
 
 
 <div id="panel-demanda" class="row m-2 p-1 {{isset($demanda) ? '' : 'd-none'}}" style="border: 1px solid #fee6c5;">
-    <div class="col-12 col-md-2">
+    <div class="col-12 col-md-1">
     <label for="">CEDULA:</label>
     </div>
-    <div class="col-10 col-md-2">
-    {!! Form::text('', isset($demanda)? $demanda->CI: "", ['id'=>'CI', 'class'=>'form-control form-control-sm']  ) !!}
-    </div>
- 
+    <div class="col-12 col-md-3">
 
-    <div class="col-12 col-md-2">
+    <div class="input-group mb-3">
+    <div class="input-group-prepend">
+      <span class="input-group-text" id="basic-addon1"> <a  href="<?= url("demandas_n_gasto")?>"  onclick="mostrarBuscador(event)" style="color:black;" > <i class="mr-2 ml-2 fa fa-search fa-lg" aria-hidden="true"></i></a>
+    </span>
+    </div>
+      <input id="CI" type="text" class="form-control form-control-sm" value="{{isset($demanda)? $demanda->CI: ''}}">
+    </div>
+
+</div> 
+    
+
+    <div class="col-12 col-md-1 mr-1">
     <label for="">TITULAR:</label>
     </div>
-    <div class="col-12 col-md-4">
-    {!! Form::text('', isset($demanda)? $demanda->TITULAR: "", ['id'=>'TITULAR', 'class'=>'form-control form-control-sm', 'readonly'=>'true']  ) !!}
+    <div class="col-12 col-md-5">
+    {!! Form::text('', isset($demanda)? $demanda->TITULAR: "", [ 'style'=>'background-color: #c1c1c1 !important;', 'id'=>'TITULAR', 'class'=>'form-control form-control-sm', 'readonly'=>'true']  ) !!}
     </div>
-    <div class="col-12 col-md-2">
-    <a  href="<?= url("demandas_n_gasto")?>"  onclick="mostrarBuscador(event)" style="color:black;" > <i class="mr-2 ml-2 fa fa-search fa-lg" aria-hidden="true"></i></a>
-    </div>
+    
     <div class="col-12">
         <p id="datos-extra">{{ isset($demanda)? ($demanda->COD_EMP." ". Helper::number_f($demanda->DEMANDA) ): "" }}</p>
     </div>

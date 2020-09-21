@@ -39,6 +39,7 @@ class WelcomeController extends Controller
             $judi= $judiob->saldos_C_y_L();
             $saldo_c= $judi["saldo_capital"];
             $saldo_l= $judi["saldo_liquida"];
+            
             $demandados= Demandados::count();//numero de demandados
             $demandas_nro=  Demanda::count();//numero de juiciso
             $liquidacion= Notificacion::sum("IMPORT_LIQUI");

@@ -9,7 +9,7 @@
 
  
 <a style="background-color: #a3c5fc;color:#01001c;" onclick="mostrar_form(event)" data-toggle="modal" data-target="#showform"  href="<?=url("nbank")?>"  class="btn btn-sm btn-success">NUEVA CTA.</a>
-
+<div id="viewstatus"></div>
 <div id="grilla">
 @include("bancos.grilla")
 
@@ -51,7 +51,7 @@ function solo_numero(ev){
 	} 
 
   function quitarSeparador( ele){ 
-return ele.replaceAll("[.]", "");
+return ele.replaceAll(/\./g , "");
 }
 
 
@@ -87,7 +87,7 @@ function jsonReceiveHandler( data, divname){// string JSON to convert     div Ht
 function borrar(ev){
     ev.preventDefault();
 if( !confirm("SEGURO QUE DESEA BORRARLO?") ) return;
-let divname= "#viewform";
+let divname= "#viewstatus";
   $.ajax(
        {
          url:  ev.currentTarget.href, 
@@ -157,7 +157,7 @@ if ( ! noempty_fields( )) return;
  ajaxCall( ev, "#mensaje", function(res){
           let respuesta= JSON.parse(res);
           if ("ok" in respuesta)
-           { $( "#mensaje").html( respuesta.ok );  actualizar_grill(); }
+           { $( "#mensaje").html( respuesta.ok );  $("#showform").modal("hide"); actualizar_grill(); }
          else{ $( "#mensaje").html( ""); alert( respuesta.error);}
             
          });

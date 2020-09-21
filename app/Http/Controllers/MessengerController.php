@@ -100,6 +100,7 @@ public function listar( Request $request, $tipo="E"){
     $ls=Messenger::addSelect([ "nick" => User::select('nick')
     ->whereColumn('IDNRO', "mensajes.$tipo_usu")  ])
     ->where( $tipo_usu2 ,   $id )
+    ->orderBy("created_at")
     ->get();
      
     if( $request->ajax())

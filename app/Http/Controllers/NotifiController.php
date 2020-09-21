@@ -152,7 +152,7 @@ public function editar( Request $request, $iddeman=0){
     }
     private function es_notifi_vencida( $fech){
         /****DIAS PARA EL VENCIMIENTO */
-        $dias_vtos= DB::table("diasvto")->get("dias")->first();; 
+        $dias_vtos= DB::table("parametros")->get("DIASVTO")->first();; 
         $diavto= $dias_vtos->dias;//dias para el vencimiento
         $vencido_datos= array("vencido"=>false);
          /**VERIFICACION FECHA VALIDA */
@@ -180,12 +180,17 @@ public function editar( Request $request, $iddeman=0){
     Procesar demandas con notificaciones vencidas
     */
     public function procesar_notifi_venc(){
-        $demandas= DB::table("demandas") 
-        ->where('arreglo_ex', '')
-        ->where('embargo_n', '0')
-        ->where('sd_finiqui', '0')
+        //Filtrar 
+        $SEGUIMIENTO= DB::table("notificaciones") 
+        ->where(  function($query) {
+            $query->where('ARREGLO_EX', 'N')
+                  ->orWhere('ARREGLO_EX', "");
+        }  )                        //Sin arreglo extrajudicial
+        ->where('EMBARGO_N', '0')
+        ->where('SD_FINIQUI', '0')
         ->get(); 
-        foreach ($demandas as $it)
+
+        foreach ($SEGUIMIENTO as $it)
         {
             $fechaHoy= date("d/m/Y");
             $obs_notifi="";
@@ -226,8 +231,8 @@ public function editar( Request $request, $iddeman=0){
                 "SALDO"=> $it->SALDO,"EMBARGO_NR"=> $it->EMBARGO_NR,"FEC_EMBARG"=> $it->FEC_EMBARG,
                 "INSTITUCIO"=> $it->INSTITUCIO,"INST_TIPO"=> $it->INST_TIPO,"FECHA"=> $fechaHoy,"OBS"=> $obs_notifi
             );
-            $est=DB::table("vtos")->insert( $Datos);
-            var_dump($est);
+            //$est=DB::table("vtos")->insert( $Datos);
+            //var_dump($est);
         }//END FOREACH
        
     }
@@ -236,7 +241,7 @@ public function editar( Request $request, $iddeman=0){
  */
     public function notificaciones_venc(){
         $vtos= DB::table("vtos")->get(); 
-        return view('demandas.list_noti_venc', ['lista' => $vtos ]); 
+        return view('notificaciones.list_noti_venc', ['lista' => $vtos ]); 
     }
 
 

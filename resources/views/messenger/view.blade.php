@@ -7,8 +7,13 @@
   <div class="card-body" style="background-color: #a5efa0;">
     <h5 class="card-title"> <span  style="font-weight: 600;">Asunto:</span> {{$dato->ASUNTO}}</h5>
     <p class="card-text">
-    {{$dato->MENSAJE}}
+    <textarea  id="editor" cols="30" rows="10"> {{$dato->MENSAJE}} </textarea>
     </p>
   </div>
 </div>
  
+
+<script>
+   CKEDITOR.replace( 'editor' );
+
+</script>

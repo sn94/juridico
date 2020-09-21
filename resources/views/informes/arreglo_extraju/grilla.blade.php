@@ -27,7 +27,7 @@ $iconsize=  $dete->isMobile() ? "": "fa-lg";
             <tr style="font-size: 9pt;">
                 
               <td  class="text-right"><p class="pt-1 mr-1 ml-1 mb-0">
-                <a href="<?=url("ficha-demanda/".$it->IDNRO)?>">  {{ $it->CI }} </a> 
+                <a href="<?=url("ficha-demanda/".$it->IDNRO."/6")?>">  {{ $it->CI }} </a> 
               </p></td>
               <td  class="text-right"><p class="pt-1 mr-1 ml-1 mb-0">{{$it->TITULAR}}</p></td>
               <td class="text-right"><p class="pt-1 mr-1 ml-1 mb-0">{{$it->DEMANDA}}</p></td>

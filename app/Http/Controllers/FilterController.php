@@ -7,6 +7,7 @@ use App\Demanda;
 use App\Filtros;
 use App\Http\Controllers\Controller;
 use App\MovCuentaJudicial;
+use App\Notificacion;
 use App\ODemanda;
 use Exception;
 use Illuminate\Http\Request;
@@ -235,19 +236,8 @@ public function aviso_recorte_cols( $id_consulta){
 
 private function filtro_inteligente_th($clave){
     $html="";
-    if( $clave=="TITULAR")
-    $html.="<th class=\"titular\">$clave</th>"; 
-    else{
-        if( $clave=="IDNRO")
-        $html.="<th class=\"idnro\">$clave</th>"; 
-       else{
-        if( $clave=="CI")
-        $html.="<th class=\"ci\">$clave</th>"; 
-        else
-        $html.="<th>$clave</th>"; 
-       }
-    }
-    
+    $cssclass= strtolower( $clave);
+    $html.="<th class=\"$cssclass\">$clave</th>";    
     return $html;
 }
 
@@ -263,17 +253,14 @@ if($clave=="DEMANDANTE"){
     $valor= !is_null( $x )? $x->DESCR: $valor ;
 }
     if( $clave=="TITULAR")
-        $html.="<td class=\"titular\">  $valor</td>";
+       { //cortar a 31 caracteres
+        if( strlen( trim($valor) )  > 31) $valor= substr($valor, 0, 30);
+           $html.="<td class=\"titular\">  $valor</td>";
+        }
     else{
-        
-    if( $clave=="IDNRO")
-    $html.="<td class=\"idnro\">  $valor</td>";
-    else{
-        if( $clave=="CI")
-        $html.="<td class=\"ci\">  $valor</td>";
-        else 
-        $html.="<td> $valor</td>";
-    }
+        $cssclass= strtolower($clave);
+        $html.="<td class=\"$cssclass\">  $valor</td>";
+     
     }
    
    return $html;
@@ -316,6 +303,10 @@ public function  reporte( $id_consulta, $tipo="xls"){
          .idnro{
              width: 50px;
          }
+         .o_demanda,.cod_emp{
+             width: 60px;
+         }
+         
          .row{
              font-size: 6pt;
              padding: 0px;
@@ -380,55 +371,8 @@ public function  reporte( $id_consulta, $tipo="xls"){
 }
 
 
-
-
-public function COMPATIBILIDAD_FECHA(){
-    set_time_limit(0);
-    ini_set('memory_limit', '-1');
-    $rows=MovCuentaJudicial::get(); 
-$nu=1;
-    foreach( $rows as $ite){
-        $fecha= $ite->CTA_JUDICI;
-        if( $fecha !="") {
-            $elementos=  preg_split("/[\/-]/", $fecha);
-            try{
-                $nuevo=$elementos[2]."-".$elementos[1]."-".$elementos[0];
-                if( strlen( $elementos[0] ) <4   )
-                {$ite->FECHA= $nuevo;
-                $ite->save();
-                echo "$nu   $fecha  = ".$nuevo."<br>";}
-                
-            }catch(Exception $e){
-                echo $e->getMessage();
-                echo "Error:  $fecha  { $ite->IDNRO}<br>";
-            }
-            $nu++;
-        }
-      
-    }
-}
-
-
-public function test(){
-    set_time_limit(0);
-    ini_set('memory_limit', '-1');
-    $rows=Demanda::get(); 
  
-  
-    foreach( $rows as $ite){
-       $demandante= $ite->CI;
-       $res= DB::table("demandan")->where("DESCR", $demandante)->first();
-       if( !is_null($res) ){
-           $ite->DEMANDANTE= $res->IDNRO;
-           $ite->save();
-       }
-      
-       
-        
-    }
-  
-   
-}
+ 
 
 
 

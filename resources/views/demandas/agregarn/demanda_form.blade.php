@@ -93,7 +93,7 @@ if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar
                <div class="row">
                <div class="col-12 col-sm-4 col-md-4"> <label for="actuaria">Saldo:</label></div>
                <div class="col-12 col-sm-8 col-md-8">
-               <input name="SALDO" oninput="formatear(event)"   type="text"   class="form-control form-control-sm number-format" value="{{Helper::number_f( !isset($ficha)? '' : $ficha->SALDO)}}">
+               <input name="SALDO"  readonly      type="text"   class="form-control form-control-sm number-format" value="{{Helper::number_f( !isset($ficha)? '' : $ficha->SALDO)}}">
                </div>
                </div>
                          
@@ -358,14 +358,7 @@ if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar
           <div class="row">
                <div class="col-12 col-sm-7 col-md-6"> <label >Con arreglo extrajud.:</label>  </div>
                <div class="col-12 col-sm-5 col-md-6">
-                    <div class="form-check form-check-inline">
-                    <input {{isset($ficha->ARR_EXTRAJUDI)? (  $ficha->ARR_EXTRAJUDI =="S"?"checked":"") : ''}} onchange="cambiar(event)"  class="form-check-input" type="radio" name="ARR_EXTRAJUDI" id="inlineRadio1" value="S">
-                    <label class="form-check-label" for="inlineRadio1">SI</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                    <input {{isset($ficha->ARR_EXTRAJUDI)? (  $ficha->ARR_EXTRAJUDI =="N"?"checked":""): ''}}  onchange="cambiar(event)" class="form-check-input" type="radio" name="ARR_EXTRAJUDI" id="inlineRadio2" value="N">
-                    <label class="form-check-label" for="inlineRadio2">NO</label>
-                    </div>
+               {{isset($ficha->ARR_EXTRAJUDI)? (  $ficha->ARR_EXTRAJUDI =="S"?" SI ":" NO ") : '-'}}
                 </div>
           </div>
     </div><!-- end  panel 2 col 2 -->

@@ -45,6 +45,7 @@ Route::post( "demandas-editar", 'DemandaController@editar_demandan');//editar de
 Route::get( "demandas-borrar/{iddeman}", 'DemandaController@borrar');//Borrar demanda
 Route::get("demandas-by-ci/{ci}", 'DemandaController@demandas_by_ci');//lista  de demandas por CEDULA
 Route::get("demandas-by-id/{idnro}", 'DemandaController@demandas_by_id');//lista  de demandas a traves de IDNRO
+Route::get("ficha-demanda/{idnro}/{tab}", "DemandaController@ver_demandan");//ficha de demandas
 Route::get("ficha-demanda/{idnro}", "DemandaController@ver_demandan");//ficha de demandas
 
 
@@ -147,6 +148,12 @@ Route::get('informes-arregloextrajudicial/{html}',   'InformesController@informe
 Route::post('informes-arregloextrajudicial',   'InformesController@informes_arreglos_resumen');
 Route::post('informes-arregloextrajudicial/{html}',   'InformesController@informes_arreglos_resumen');
  
+Route::get('informes-cuentajudicial',   'InformesController@informes_cuenta_judicial');
+Route::get('informes-cuentajudicial/{html}',   'InformesController@informes_cuenta_judicial');
+Route::post('informes-cuentajudicial',   'InformesController@informes_cuenta_judicial');
+Route::post('informes-cuentajudicial/{html}',   'InformesController@informes_cuenta_judicial');
+ 
+
 
 /***FILTROS */
 Route::get('filtros',   'FilterController@index');
@@ -240,7 +247,7 @@ Route::get('plan-cuentas-rep/{tipo}',   'PlanCtaGastoController@reporte'); //Inf
 
 //Mensajes
 /********************** */
-Route::get('messenger',   'MessengerController@index'); 
+Route::get('messenger',   'MessengerController@index');  
 Route::get('nuevo-msg',   'MessengerController@agregar'); 
 Route::post('nuevo-msg',   'MessengerController@agregar'); 
 Route::get('ver-msg/{id}',   'MessengerController@ver'); 
@@ -248,7 +255,7 @@ Route::get('del-msg/{id}',   'MessengerController@borrar');
 Route::get('list-msg/{TIPO}',   'MessengerController@listar'); 
 
 
-Route::get('test',   'FilterController@test');
+Route::get('test',   'ProduccionController@TRATAR_REDUNDANCIA');
 
 
 

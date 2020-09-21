@@ -148,7 +148,7 @@ function numero_con_puntuacion( obj ) {
    }
 
   function quitarSeparador( ele){ 
- ele.value=  ele.value.replaceAll("[.]", "");
+ ele.value=  ele.value.replaceAll(/\./g , "");
 }
 
 
@@ -252,7 +252,9 @@ function ajaxCall( e, divnam, succes){
      );
 }
 function guardar( ev ){//Objeto event   DIV tag selector to display   success handler
+ 
 ev.preventDefault();
+ 
 if( $("#gastosform input[name=IMPORTE]").val()==""){ alert("INGRESE EL IMPORTE!"); return;}
 //El gastos es por demanda ?
 if( !($("#GastDema").prop("checked"))  &&  !($("#OtrosGast").prop("checked"))  ){ 

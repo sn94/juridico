@@ -71,6 +71,12 @@ class JudicialController extends Controller
            DB::beginTransaction();
            try {
                 $cta->save(); 
+                //Si fue extraccion de capital
+                if(  $Params['TIPO_CTA']  == "C"  &&  $Params['TIPO_MOVI']== "E"){
+                    $dema= Demanda::find($ID_DEMANDA);
+                    $dema->SALDO= intval(  $dema->SALDO ) -  intval( $Params['IMPORTE']);
+                    $dema->save();
+                }
                 DB::commit();
                 //Volver a listado de movimientos de cuenta judicial
                 echo json_encode( [ "go" => url("ctajudicial/$ID_DEMANDA") ]);
@@ -122,12 +128,23 @@ class JudicialController extends Controller
             $Params=  $request->input();  
 
            $cta= MovCuentaJudicial::find( $idnro);
-           $cta->fill(  $Params);
+           
            DB::beginTransaction();
            try {
+            $ID_DEMANDA=  CuentaJudicial::where("IDNRO", $cta->CTA_JUDICIAL)->first()->ID_DEMA;
+            //Si fue extraccion de capital
+            if(  $Params['TIPO_CTA']  == "C"  &&  $Params['TIPO_MOVI']== "E"){
+                if(  !is_null($ID_DEMANDA))
+                {$dema= Demanda::find($ID_DEMANDA);
+                $TEMPOSALDO= intval(  $dema->SALDO )  +  $cta->IMPORTE;
+                $dema->SALDO= $TEMPOSALDO -  intval( $Params['IMPORTE']);
+                $dema->save();}
+            }
+            $cta->fill(  $Params);
             $cta->save(); 
              DB::commit();
-             return view("cta_judicial.mensaje_success2", ["mensaje"=> "Movimiento actualizado"]);
+               //Volver a listado de movimientos de cuenta judicial
+               echo json_encode( [ "go" => url("ctajudicial/$ID_DEMANDA") ]); 
            } catch (\Exception $e) {
                DB::rollback();
                echo json_encode( array( 'error'=> "Hubo un error al guardar uno de los datos<br>$e") );
@@ -185,13 +202,30 @@ class JudicialController extends Controller
 
     public function delete( $idnro){
         $dat=MovCuentaJudicial::find(  $idnro);
+
+        DB::beginTransaction();
+        try {
+         //Si fue extraccion de capital
+        if(  $dat->TIPO_CTA  == "C"  &&  $dat->TIPO_MOVI == "E"){
+            $ID_DEMANDA=  CuentaJudicial::where("IDNRO", $dat->CTA_JUDICIAL)->first()->ID_DEMA;
+            if(  !is_null($ID_DEMANDA))
+            {$dema= Demanda::find($ID_DEMANDA);
+            $dema->SALDO= intval(  $dema->SALDO ) +  intval( $dat->IMPORTE  );
+            $dema->save();
+            }
+        }
+        
         $dat->delete();
+        DB::commit();
         echo json_encode( array("idnro"=>  $idnro) );
+        }catch(Exception $ex){
+            DB::rollBack();
+        }
       //  return view("cta_judicial.mensaje_success2", ["mensaje"=> "Movimiento borrado"]); 
     }
 
 
-    public function ver_saldo_all( ){
+ /*   public function ver_saldo_all( ){
         //SALDO JUDICIAL
         //monto de la demanda - extracciones
         $demanda_=Demanda::sum("DEMANDA");
@@ -213,9 +247,9 @@ class JudicialController extends Controller
         $SaldoEnCuenta= $Depositos - $Extracciones; 
 
         return array("saldo_judi"=> $SaldoJudicial, "saldo_en_c"=> $SaldoEnCuenta);
-    }
+    }*/
 
-    public function ver_saldo_array( $iddeman){
+   /* public function ver_saldo_array( $iddeman){
          //****************SALDO JUDICIAL ************
         //monto de la demanda - extracciones
         $demanda_=Demanda::find( $iddeman);  //Buscar demanda por su ID
@@ -227,7 +261,7 @@ class JudicialController extends Controller
             $Extracciones+=  intval(  $it->IMPORTE);
         endforeach;
         $SaldoJudicial-= $Extracciones; // Restar del monto de demanda las extracciones
-        //***********SALDO EN CUENTA********** */
+        //***********SALDO EN CUENTA**********  
         //depositos - extracciones
         $Depositos=0; 
         foreach( $dt as $it):
@@ -236,11 +270,11 @@ class JudicialController extends Controller
         endforeach;
         $SaldoEnCuenta= $Depositos - $Extracciones; //Restar de los depositos acumula. las extracciones ya calculadas
         return array("saldo_judi"=> $SaldoJudicial, "saldo_en_c"=> $SaldoEnCuenta);
-    }
+    }*/
 
-    public function ver_saldo( $iddeman){
+  /*  public function ver_saldo( $iddeman){
         echo json_encode(  $this->ver_saldo_array( $iddeman ));
-    }
+    }*/
 
 
 
@@ -258,7 +292,7 @@ public function saldo_C_y_L(  $iddeman, $tipo="array" ){
       $liquidacion_reg=Notificacion::find( $iddeman);
       $total_liquidaciones= 0;
       if( !is_null($liquidacion_reg) )
-      $total_liquidaciones=  intval(  $liquidacion_reg->IMPORT_LIQUI );
+      $total_liquidaciones=  intval(  $liquidacion_reg->LIQUIDACIO );
 
       //EXTRACCIONES
       $Extracciones_capital=0;
@@ -306,7 +340,7 @@ $total_extr_capital= MovCuentaJudicial::where("TIPO_CTA", "C")->where("TIPO_MOVI
 $saldo_C=  $total_demandas - $total_extr_capital;
 
 //Totalizar liquidaciones
-$total_liquidaciones=  Notificacion::sum("IMPORT_LIQUI");
+$total_liquidaciones=  Notificacion::sum("LIQUIDACIO");
 //tOTALIZAR extracciones de liquidacion
 $total_extr_liquida= MovCuentaJudicial::where("TIPO_CTA", "L")->where("TIPO_MOVI","E")->sum("IMPORTE");
  //sALDO liquidacion
@@ -367,7 +401,24 @@ $total_extr_liquida= MovCuentaJudicial::where("TIPO_CTA", "L")->where("TIPO_MOVI
     }
 
      
+/**SUMAS */
+public static function total_deposito_en_cuenta($id_cta_judi)
+{
+    $dts =  MovCuentaJudicial::where("TIPO_MOVI", "D")->where("CTA_JUDICIAL", $id_cta_judi)->sum("IMPORTE");
+    return $dts;
+}
 
+public static function total_capital_en_cuenta($id_cta_judi)
+{
+    $dts =  MovCuentaJudicial::where("TIPO_MOVI", "E")->where("TIPO_EXT", "C")->where("CTA_JUDICIAL", $id_cta_judi)->sum("IMPORTE");
+    return $dts;
+}
+
+public static function total_liquida_en_cuenta($id_cta_judi)
+{
+    $dts =  MovCuentaJudicial::where("TIPO_MOVI", "E")->where("TIPO_EXT", "L")->where("CTA_JUDICIAL", $id_cta_judi)->sum("IMPORTE");
+    return $dts;
+}
 
 
 }

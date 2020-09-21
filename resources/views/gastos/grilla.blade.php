@@ -61,15 +61,15 @@ $iconsize=  $dete->isMobile() ? "": "fa-lg";
            
               <td  class="text-right"><p class="pt-1 mr-1 ml-1 mb-0"> {{  Helper::fecha_dma($it->FECHA) }} </p></td>
 
-              <td  class="text-right"><p class="pt-1 mr-1 ml-1 mb-0">
+              <td  class="text-left"><p class="pt-1 mr-1 ml-1 mb-0">
                 @if (is_null( $it->ID_DEMA) )
                 VARIOS 
               @else
-              <a style="text-decoration: underline;" href="<?=url("ficha-demanda/".$it->ID_DEMA)?>">DEMANDA</a>
+              <a style="text-decoration: underline;" href="<?=url("ficha-demanda/".$it->ID_DEMA)?>">DEMANDA ( {{$it->COD_EMP}})</a>
               @endif
                 </p></td>
 
-              <td  class="text-right"><p class="pt-1 mr-1 ml-1 mb-0">{{ $it->CODIGO }}</p></td>
+              <td  class="text-right"><p class="pt-1 mr-1 ml-1 mb-0">{{ $it->COD_GASTO }}</p></td>
               <td  class="text-right"><p class="pt-1 mr-1 ml-1 mb-0">{{$it->NUMERO}}</p></td>
               <td class="text-right"><p class="pt-1 mr-1 ml-1 mb-0">{{$it->DETALLE1}}</p></td>
             

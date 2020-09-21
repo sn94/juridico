@@ -46,7 +46,7 @@ use App\Helpers\Helper;
     </div>
     <div class="col-12 col-md-12"> 
         <label >CUENTA:</label>
-        <input maxlength="7"  value="{{isset($dato->CUENTA)? $dato->CUENTA: ''}}" name="CUENTA"  type="text"  class="form-control form-control-sm">
+        <input maxlength="20"  value="{{isset($dato->CUENTA)? $dato->CUENTA: ''}}" name="CUENTA"  type="text"  class="form-control form-control-sm">
      </div>
     <div class="col-12 col-md-12">
         <label >TIPO DE CTA.:</label>

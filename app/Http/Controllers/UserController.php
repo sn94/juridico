@@ -168,8 +168,8 @@ public function sign_in( Request $request){
                    $MailControl= Parametros::first()->EMAIL;
                   
                    Mail::to([ $MailControl]) 
-                    ->queue(   new AuthAlert(  $usr,  ["user-agent"=>$UserAgent, "ip"=>$Ip] ) );
-                   // ->send(  new AuthAlert(  $usr,  $request ) );*/
+                    //->queue(   new AuthAlert(  $usr,  ["user-agent"=>$UserAgent, "ip"=>$Ip] ) );
+                   ->send(  new AuthAlert(  $usr,   ["user-agent"=>$UserAgent, "ip"=>$Ip]  ) );
 
                 return redirect(  url("/") ); 
                 }else{

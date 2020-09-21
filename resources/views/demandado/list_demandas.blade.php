@@ -38,7 +38,7 @@ use App\Helpers\Helper;
           <th class="pb-0 pt-0">ORIGEN</th> 
           <th class="pb-0 pt-0">PRESENTADO</th> 
           <th class="pb-0 pt-0">SD.FINIQ.</th>
-          <th class="pb-0 pt-0">FECHA</th>
+          <th class="pb-0 pt-0">FECHA FINIQ.</th>
           <th class="pb-0 pt-0">SALDO CAPITAL</th>
           <th class="pb-0 pt-0">SALDO LIQUID.</th>
           </tr>

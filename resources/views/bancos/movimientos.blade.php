@@ -67,7 +67,7 @@ function solo_numero(ev){
 	} 
 
   function quitarSeparador( ele){ 
-return ele.replaceAll("[.]", "");
+return ele.replaceAll(/\./g , "");
 }
 
 

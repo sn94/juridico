@@ -22,17 +22,21 @@ if ($detect->isMobile() == false):?>
 <?php endif; ?>
  
 
-  <?php if( $OPERACION=="M" || $OPERACION=="V"): ?>
+@if( $OPERACION=="M" || $OPERACION=="V")
     <a  class="btn btn-info btn-sm" href="<?=url("liquida/".$ficha->IDNRO)?>">LIQUIDACIÓN</a>
     <a  class="btn btn-info btn-sm" href="<?=url("ctajudicial/".$ficha->IDNRO)?>">CTAS.JUDICIALES</a>
-  <?php endif;?>
+@endif
  
-<input type="hidden" id="operacion" value="{{$OPERACION}}">
+
+
+  <!-- OCULTOS --> 
+<input type="hidden" id="operacion" value="{{$OPERACION}}"> 
+ 
 
 <div class="nav-tabs-responsive">
   <ul class="nav nav-tabs mb-4">
   <li class="nav-item">
-      <a href="#persona" class="nav-link active" data-toggle="tab">
+      <a id="pestana-persona" href="#persona" class="nav-link active" data-toggle="tab">
         <i class="icon-lock"></i> Datos personales
       </a>
     </li>
@@ -141,7 +145,7 @@ if ($detect->isMobile() == false):?>
 
     <div id="extrajudicial" class="tab-pane">
       <div class="mb-3">
-        <a href="#extrajudicial-collapse" data-toggle="collapse">
+        <a id="pestana-extrajudicial" href="#extrajudicial-collapse" data-toggle="collapse">
           <i class="icon-credit-card"></i> Arreglo Extrajudicial
         </a>
       </div>
@@ -173,6 +177,32 @@ if ($detect->isMobile() == false):?>
  
 
 
+
+<script>
+
+window.onload= function(){
+  
+   <?php if(  isset($tab)  &&  $tab == 6): ?>
+ 
+  $("#persona").removeClass("active")
+  $("#pestana-persona").removeClass("active")
+  $("#pestana-extrajudicial").addClass("active");
+  $("#extrajudicial").addClass("active");
+  <?php endif; ?>
+
+
+
+   // establecer SALDO CAPITAL   INICIAL
+   if( document.getElementById("operacion").value == "A"  ||  document.getElementById("operacion").value == "A+" ){
+      //capital
+      document.querySelector("#formDeman input[name=SALDO]").value=  document.querySelector("#formDeman input[name=DEMANDA]").value
+  }
+
+
+
+ };
+
+</script>
 
   
 @endsection
@@ -237,7 +267,7 @@ function numeroSinFormato( ele){
 //Recibe un campo numerico con formato de millares
 //Elimina todos los puntos separadores
 function quitarSeparador( obj){ 
-let w=  obj.value.replaceAll("[.]", "");
+let w=  obj.value.replaceAll(/\./g , "");
 obj.value= w;
 }
    
@@ -296,7 +326,10 @@ return enpuntos;
  
  
 
+
  
 
+
+ 
 
     </script>

@@ -21,7 +21,7 @@ Nuevo</a>
 
 <!--MODAL FORMULARIO -->
 <div id="showform" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-sm">
+  <div class="modal-dialog">
     <div class="modal-content p-0" id="viewform">
       
     </div>
@@ -42,7 +42,7 @@ let divname= "#viewform";
          beforeSend: function(){
            $( divname).html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
          },
-         success: function(res){  $(divname).html(  res );
+         success: function(res){  $(divname).html(  res ); CKEDITOR.replace( 'editor' );
          },
          error: function(){
            $( divname).html(  "<h6 style='color:red;'>Problemas de conexión</h6>" ); 
@@ -65,6 +65,8 @@ function actualizar_grill(){
 //inserta, modifica registros de parametros y origen de demanda
 function ajaxCall( ev, divname){//Objeto event   DIV tag selector to display   success handler
 ev.preventDefault();  
+ 
+$("#editor").text( CKEDITOR.instances.editor.getData());
  $.ajax(
      {
        url:  ev.target.action,
@@ -79,7 +81,8 @@ ev.preventDefault();
            if("ok" in r)  
            $( divname).html("<div class='m-1 alert alert-success'><i class='fa fa-check-circle-o fa-lg' aria-hidden='true'></i>"+r.ok+"</div>");
           else   $( divname).html("<div class='alert alert-danger'>"+r.error+"</div>");
-          actualizar_grill();
+          //actualizar_grill();
+          window.location="<?=url("list-msg/E")?>";
        },
        error: function(){
          $( divname).html(  "<h6 style='color:red;'>Problemas de conexión</h6>" ); 

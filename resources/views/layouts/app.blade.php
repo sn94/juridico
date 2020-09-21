@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\URL;
     <!--Estilo print -->
     <link href="<?= url("print/print.min.css") ?>" rel="stylesheet">
 
+    
+
      <style>
         .app .app-body .app-sidebar{
              background: #092804;
@@ -36,16 +38,16 @@ use App\Mobile_Detect;
 $adapta=new Mobile_Detect();
 if( $adapta->isMobile()): ?>
 
-        table, label, select{   font-size: 12px !important;    }
+        table, label, select{   font-size: 12px !important;  font-family:Verdana, Geneva, Tahoma, sans-serif;   }
         table.table td{ padding: 0px !important;}
         input{ font-size: 14px; }
       
 <?php
 else: ?>
-        table{  font-size: 14px !important;      }
-        label, select{ font-size: 12.5px !important;  }
+        table{  font-size: 14px !important;   font-family:Verdana, Geneva, Tahoma, sans-serif;     }
+        label, select{ font-size: 12.5px !important;  font-family:Verdana, Geneva, Tahoma, sans-serif;   }
         table.table td{ padding: 0px !important;}
-        input{ font-size: 12px !important; font-weight: 600;}
+        input{ font-size: 12px !important; font-weight: 600;  font-family:Verdana, Geneva, Tahoma, sans-serif; } 
 <?php
 endif;
 ?>
@@ -61,8 +63,7 @@ endif;
        
 
  
-
-
+      
  
        .name-titular{
         font-size: 14px; text-transform: capitalize; font-weight: bold;
@@ -131,9 +132,8 @@ endif;
                         <a href="#opcinformes" class="sidebar-nav-link" data-toggle="collapse"><i class="icon-pencil"></i> INFORMES</a>
                         <ul id="opcinformes" class="collapse" data-parent="#sidebar-nav"> 
                         <li><a href="<?=url("filtros")?>" class="sidebar-nav-link">Filtros</a></li> 
-                            <li><a href="/depcta" class="sidebar-nav-link">Dep&oacute;sitos capital</a></li>
-                            <li><a href="/extcta" class="sidebar-nav-link">Dep&oacute;sitos Liquidaci&oacute;n</a></li>
-                            <li><a href="{{url('informes-arregloextrajudicial')}}" class="sidebar-nav-link">Cobro extrajudicial</a></li>
+                        <li><a href="{{url('informes-cuentajudicial')}}" class="sidebar-nav-link">Estado Cta. Judicial</a></li>
+                        <li><a href="{{url('informes-arregloextrajudicial')}}" class="sidebar-nav-link">Cobro extrajudicial</a></li>
                            
                         </ul>
                     </li>
@@ -162,7 +162,7 @@ endif;
                     @endif
                    
                 </ul>
-                <div class="sidebar-footer"><a href="./pages/content/chat.html" data-toggle="tooltip" title="Support"><i class="fa fa-comment"></i> </a><a href="./pages/content/settings.html" data-toggle="tooltip" title="Settings"><i class="fa fa-cog"></i> </a><a href="<?=url("signout")?>" data-toggle="tooltip" title="Logout"><i class="fa fa-power-off"></i></a></div>
+                <div class="sidebar-footer"><a href="<?=url("messenger")?>" data-toggle="tooltip" title="Mensajes"><i class="fa fa-comment"></i> </a><a href="./pages/content/settings.html" data-toggle="tooltip" title="Settings"><i class="fa fa-cog"></i> </a><a href="<?=url("signout")?>" data-toggle="tooltip" title="Logout"><i class="fa fa-power-off"></i></a></div>
             </div>
             <div class="app-content">
                 <nav class="navbar navbar-expand navbar-light bg-white"><button type="button" class="btn btn-sidebar" data-toggle="sidebar"><i class="fa fa-bars"></i></button>
@@ -239,12 +239,20 @@ endif;
     <script src="<?=url("xls_ini.js")?>?v={{rand()}}"></script>
     <!--lib para imprimir -->
     <script src="<?=url("print/print.min.js")?>"></script>
+    <!-- - eDITOR WYSIWYG --> 
     
+    <script src="<?=url("ckeditor/ckeditor.js")?>"></script>
+    <script src="<?=url("ckeditor/styles.js")?>"></script>
+ 
+    <script src="<?=url("ckeditor/config.js")?>"></script> 
+   
+
     <script>
         $("input[type=date]").each(  function(index, elemento){
 
-
+            if( $(elemento).val() == "")
             $(elemento).css("color", "white");
+            
             $(elemento).bind("change", function(){
                 if( this.value ==""  ||  this.value == undefined){
                     console.log( this.value );

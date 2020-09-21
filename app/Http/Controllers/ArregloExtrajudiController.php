@@ -8,6 +8,7 @@ use App\Banc_mov;
 use App\Bancos;
 use App\Demanda;
 use App\Http\Controllers\Controller;
+use App\Notificacion;
 use Exception; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -54,6 +55,8 @@ class ArregloExtrajudiController extends Controller
                 //Actualizar campo Bandera en Demanda ARR_EXTRAJUDI 
                     $demanda= Demanda::find( $IDNRO);
                     $demanda->ARR_EXTRAJUDI= "S"; $demanda->save();
+                    $seguimiento= Notificacion::find( $IDNRO);
+                    $seguimiento->ARREGLO_EX=  "S"; $seguimiento->save();
             
                 DB::commit();
                 echo json_encode( array("ok"=> "CUENTA GUARDADA." )  );

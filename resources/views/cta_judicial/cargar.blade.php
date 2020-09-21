@@ -63,7 +63,7 @@ $("#chequenro").addClass("visible");
  /**VALIDACIONES */
   //Borrar cualquier ocurrencias de puntos o comas en una cadena
   function formatear(ev){
-     
+     if(ev.data == undefined  ||  ev.data == null) return;
     if( ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57){ 
       ev.target.value= 
       ev.target.value.substr( 0, ev.target.selectionStart-1) + 
@@ -80,7 +80,7 @@ $("#chequenro").addClass("visible");
 
 /** t GUARDAR DATOS
  */
-function quitarSeparador( ele){  return ele.replaceAll("[.]", ""); }
+function quitarSeparador( ele){  return ele.replaceAll(/\./g , ""); }
 
 
 function ajaxCall( ev, divname, success_f){//Objeto event   DIV tag selector to display   success handler
@@ -114,7 +114,7 @@ $.ajax(
             ajaxCall( ev, "#myform", function(res){
                 let respuesta= JSON.parse( res);
                 if( "go" in respuesta)
-                window.location= respuesta.go;
+                window.location= respuesta.go;//volver a lista de mov judiciales
                 else  alert(respuesta.error);
             });
         

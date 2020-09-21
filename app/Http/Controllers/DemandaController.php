@@ -72,15 +72,25 @@ class DemandaController extends Controller
     }
  return $n_lst; 
  }
+
+
+
+ private function listar_DEMANDAS( $CI){
+    $lista=  DB::table("demandas2")
+    ->join("notificaciones", "notificaciones.IDNRO", "=", "demandas2.IDNRO")
+    ->join("demandan", "demandan.IDNRO", "=", "demandas2.DEMANDANTE", "left")
+    ->join("odemanda", "odemanda.IDNRO", "=", "demandas2.O_DEMANDA", "left")
+    ->select("demandas2.IDNRO","demandas2.COD_EMP", "demandan.DESCR as DEMANDANTE", "odemanda.NOMBRES AS O_DEMANDA", "notificaciones.PRESENTADO", "notificaciones.SD_FINIQUI", "notificaciones.FEC_FINIQU")
+    ->where("demandas2.CI", $CI)
+    ->orderBy("demandas2.IDNRO")
+    ->get();  return  $lista;
+ }
+
+
+
  public function demandas_by_ci($ci){
   
-    $lista= DB::table("demandas2")
-    ->join("notificaciones", "notificaciones.IDNRO", "=", "demandas2.IDNRO")
-    ->select("demandas2.*", "notificaciones.PRESENTADO", "notificaciones.SD_FINIQUI", "notificaciones.FEC_FINIQU")
-    ->where("demandas2.CI", $ci)
-    ->orderBy("demandas2.IDNRO")
-    ->get();
- 
+    $lista= $this->listar_DEMANDAS( $ci);
        $persona= Demandados::where("ci", $ci)->first();//persona
        $saldos= $this->adjuntarSaldosDemanda($ci);
         return view("demandado.list_demandas", 
@@ -100,18 +110,11 @@ class DemandaController extends Controller
         if( strlen( trim($ci)) == 0){
             return  view("demandado.sin_cedula" ); 
         }else{
-            $lista=  DB::table("demandas2")
-            ->join("notificaciones", "notificaciones.IDNRO", "=", "demandas2.IDNRO")
-            ->select("demandas2.*", "notificaciones.PRESENTADO", "notificaciones.SD_FINIQUI", "notificaciones.FEC_FINIQU")
-            ->where("demandas2.CI", $ci)
-            ->orderBy("demandas2.IDNRO")
-            ->get();
+            $lista= $lista= $this->listar_DEMANDAS( $ci);
             $saldos= $this->adjuntarSaldosDemanda($ci);
             return view("demandado.list_demandas", 
             ['lista'=>   $lista,   'ci'=>$ci, 'nombre'=> $persona->TITULAR, "saldos"=> $saldos ] );
-        }
-
-      
+        }   
  }
 /**
  * FICHA DE DEMANDA SEGUN COD_EMP
@@ -247,7 +250,7 @@ class DemandaController extends Controller
             $pars= array_merge( $this->formar_parametros() ,
              array( 'ci'=>  $ci ,'id_demanda'=>$iddeman,'ficha0'=>$obDataPerso, 'ficha'=> $obdema,
               'ficha2'=>$obnoti,  'ficha3'=>$obobs, 'ficha4'=> $obcontraparte,'ficha5'=> $obarre,
-               'nombre'=> $nom , 'OPERACION'=>"M" ) 
+               'nombre'=> $nom , 'OPERACION'=>"M"  ) 
                 );
             return view('demandas.agregarn.index',  $pars); //Modificar M  
             }
@@ -267,7 +270,7 @@ class DemandaController extends Controller
        echo json_encode( array( 'error'=>"ERROR AL GUARDAR" )    ); 
     }
         
-    public function ver_demandan(Request $request, $iddeman=0){//idd id_demanda
+    public function ver_demandan(Request $request, $iddeman=0, $tab=1){//idd id_demanda
         $origen= DB::table("odemanda")->get();
 
         //instancia de demanda 
@@ -280,9 +283,10 @@ class DemandaController extends Controller
          //Arreglo extrajudicial
          $arreglo=Arreglo_extrajudicial::find($iddeman);
          //Devolver
+         
          //Cedula    ID demanda  Nombre  Operacion   
          $pars= array_merge( $this->formar_parametros() , array( 'OPERACION'=>"A"  ) );
-         $propios= array(  'ci'=>  $ci ,'id_demanda'=>$iddeman, 
+         $propios= array(  'ci'=>  $ci ,'id_demanda'=>$iddeman, 'tab'=>$tab,
          'ficha0'=>$obDataPerso, 'ficha'=> $obdema, 'ficha2'=>$obnoti, 'ficha3'=>$obobs,
          'ficha4'=> $arreglo, 'ficha5'=> $arreglo, 'nombre'=> $nom , 'OPERACION'=>"V");
          return view('demandas.agregarn.index',  array_merge( $pars, $propios ) ); //ver V   
