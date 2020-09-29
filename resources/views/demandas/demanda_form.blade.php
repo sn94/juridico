@@ -93,7 +93,7 @@ if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar
                <div class="row">
                <div class="col-12 col-sm-4 col-md-4"> <label for="actuaria">Saldo:</label></div>
                <div class="col-12 col-sm-8 col-md-8">
-               <input name="SALDO"  readonly      type="text"   class="form-control form-control-sm number-format" value="{{Helper::number_f( !isset($ficha)? '' : $ficha->SALDO)}}">
+               <input readonly type="text"   class="form-control form-control-sm number-format" value="{{Helper::number_f( !isset($ficha)? '' : $ficha->SALDO)}}">
                </div>
                </div>
                          
@@ -430,6 +430,7 @@ limpiar_campos_dema();
         },
         success: function( res ){  
            
+           console.log( res);
             if( "error" in res){
               $("#demanda-panel").html( "" ); 
               alert( res.error);

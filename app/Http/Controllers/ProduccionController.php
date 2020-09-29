@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Banc_mov;
 use App\CuentaJudicial;
 use App\Demanda;
 use App\Filtros;
@@ -196,6 +197,29 @@ public function COMPATIBILIDAD_FECHA_LIQUIDA(){
     }/*end foreach */ 
 
 }
+
+
+
+//CAlCULO DE LIQUIDACION
+public function COMPATIBILIDAD_FECHA_BANCO(){
+    //Campos fecha de seguimiento
+    $campos=[  'FECHA'];
+    set_time_limit(0);
+    ini_set('memory_limit', '-1');
+    $rows=Banc_mov::get(); 
+ 
+    foreach( $rows as $ite){
+        foreach( $campos as $campo):
+        $fecha= $ite->{$campo};
+        $nueva_Fecha= $this->tratar_fecha(  $fecha);
+        if( $nueva_Fecha != "" )
+       { $ite->{$campo}= $nueva_Fecha;
+        $ite->save();} 
+        endforeach;
+    } 
+
+}
+
 
 
 public function test(){

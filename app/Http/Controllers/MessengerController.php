@@ -38,8 +38,11 @@ public function index($tipo="R"){
     ->where( $tipo_usu2 ,   $id )
     ->get();
 
-        $url_listado=url("list-msg/R");
-        return view('messenger.index',  ["lista"=> $ls , "url_listado"=>$url_listado, "tipo"=>"R" ] );
+        $url_listado="";
+        if( $tipo=="R") $url_listado=url("list-msg/R");
+        else $url_listado=url("list-msg/E"); 
+        return view('messenger.index',  
+        ["lista"=> $ls , "url_listado"=>$url_listado,"tipo"=>$tipo ] );
 } 
 
 
@@ -77,13 +80,14 @@ public function borrar( $id){
 }
 
 
-public function ver( $id ){
+public function ver( $id ){ 
     $datos=  Messenger::find( $id )  ;
     $remi= $datos->REMITENTE;
     $remi_nick= User::find( $remi)->nick;
-    $datos->LEIDO= "S";
-    $datos->save();
-    return view("messenger.view", ['dato'=> $datos, 'remitente'=>$remi_nick ]);
+    $marcar="N";
+    if( session("id")== $datos->DESTINATARIO) { $marcar="S";$datos->LEIDO= "S"; $datos->save();}
+
+    return view("messenger.view", ['dato'=> $datos, 'remitente'=>$remi_nick , 'marcar'=> $marcar]);
      
 }
 

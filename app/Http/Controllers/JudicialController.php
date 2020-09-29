@@ -287,7 +287,7 @@ class JudicialController extends Controller
 public function saldo_C_y_L(  $iddeman, $tipo="array" ){
       //monto de la demanda - extracciones
       $demanda_reg=Demanda::find( $iddeman);  //Buscar demanda por su ID
-      $MontoDemanda=  intval($demanda_reg->DEMANDA);//Monto de la demanda
+     // $MontoDemanda=  intval($demanda_reg->DEMANDA);//Monto de la demanda
       //Consultar registro
       $liquidacion_reg=Notificacion::find( $iddeman);
       $total_liquidaciones= 0;
@@ -295,10 +295,10 @@ public function saldo_C_y_L(  $iddeman, $tipo="array" ){
       $total_liquidaciones=  intval(  $liquidacion_reg->LIQUIDACIO );
 
       //EXTRACCIONES
-      $Extracciones_capital=0;
+     // $Extracciones_capital=0;
       $Extracciones_liquida=0;
   //dd( CuentaJudicial::where( "ID_DEMA", $demanda_reg->IDNRO)->first());
-    $cta_judi_reg=CuentaJudicial::where( "ID_DEMA", $iddeman)->first();
+   /* $cta_judi_reg=CuentaJudicial::where( "ID_DEMA", $iddeman)->first();
     if( !is_null($cta_judi_reg)){
         $MOVIS= $cta_judi_reg->movcuentajudicial;//Instancia de cta judicial de la demanda
         if(  ! is_null($MOVIS)):
@@ -307,17 +307,20 @@ public function saldo_C_y_L(  $iddeman, $tipo="array" ){
                 if(  $it->TIPO_MOVI == "E"  &&  $it->TIPO_CTA == "C") //Si es extraccion CAPITAL
                 $Extracciones_capital+=  intval(  $it->IMPORTE);
         endforeach;
+
+
           //Extracciones de liquidacion    
           foreach( $MOVIS as $it):
             if(  $it->TIPO_MOVI == "E"  &&  $it->TIPO_CTA == "L") //Si es extraccion CAPITAL
             $Extracciones_liquida+=  intval(  $it->IMPORTE);
             endforeach;
         endif;
-    }
+    }*/
     
   //Calculo de saldos
     //SALDO CAPITAL
-    $saldo_capital= $MontoDemanda -  $Extracciones_capital;
+   // $saldo_capital= $MontoDemanda -  $Extracciones_capital;
+   $saldo_capital= $demanda_reg->SALDO;
     $saldo_liquida= $total_liquidaciones- $Extracciones_liquida;
 
      
@@ -351,6 +354,26 @@ $total_extr_liquida= MovCuentaJudicial::where("TIPO_CTA", "L")->where("TIPO_MOVI
 
 
 
+
+public function saldos_C_y_L_lite(){
+   // $id_deman_list= Demanda::select('IDNRO')->get();
+    //Totalizar demandas
+    //$total_demandas= Demanda::sum("DEMANDA");  
+    //Totalizar extracciones de capital
+    //$total_extr_capital= MovCuentaJudicial::where("TIPO_CTA", "C")->where("TIPO_MOVI","E")->sum("IMPORTE");
+    //Saldo capital
+   // $saldo_C=  $total_demandas - $total_extr_capital;
+    $saldo_C=  Demanda::sum("SALDO");  
+    //Totalizar liquidaciones
+    $total_liquidaciones=  Notificacion::sum("LIQUIDACIO");
+    //tOTALIZAR extracciones de liquidacion
+    $total_extr_liquida= MovCuentaJudicial::where("TIPO_CTA", "L")->where("TIPO_MOVI","E")->sum("IMPORTE");
+     //sALDO liquidacion
+     $saldo_L=  $total_liquidaciones - $total_extr_liquida;
+    
+     return array( "saldo_capital"=> $saldo_C, "saldo_liquida"=> $saldo_L );
+    }
+    
 
 
 

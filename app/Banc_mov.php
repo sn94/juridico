@@ -17,7 +17,7 @@ class Banc_mov extends Model
 
     protected $primaryKey = 'IDNRO';
 
-    protected $fillable= [ 'IDBANCO', 'BANCO','CUENTA','FECHA','NUMERO','CODIGO','IMPORTE','CONCEPTO','PROJECTO','NRO_RECIBO','PROVEEDOR','TIPO_MOV' ];
+    protected $fillable= [ 'IDBANCO', 'FECHA','NUMERO','CODIGO','IMPORTE','CONCEPTO','PROJECTO','NRO_RECIBO','PROVEEDOR','TIPO_MOV' ];
 
     public $timestamps = false;
 

@@ -8,6 +8,8 @@
 @section('content')
     
 
+<input type="hidden" id="tipo"  value="{{$tipo}}">
+
 
 <a onclick="mostrar_form(event)"  data-toggle="modal" data-target="#showform" href="{{ url('nuevo-msg')}}" class="btn btn-sm btn-info"><i class="fa fa-envelope-o fa-lg" aria-hidden="true"></i>
 Nuevo</a>
@@ -54,13 +56,14 @@ let divname= "#viewform";
 
 function actualizar_grill(){
   $.ajax({
-    url: "<?= $url_listado ?>",
+    url: "<?= $url_listado?>",
     beforeSend: function(){  $("#grilla").html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" )},
     success: function(resu){ $("#grilla").html( resu)  ; },
     error: function(){$("#grilla").html( "<h6>Error al recuperar datos</h6>")  ;}
   })
 }
 
+ 
 
 //inserta, modifica registros de parametros y origen de demanda
 function ajaxCall( ev, divname){//Objeto event   DIV tag selector to display   success handler
@@ -108,7 +111,12 @@ $.ajax(
          beforeSend: function(){
            $( divname).html(  "<div style='z-index:8000;' class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
          },
-         success: function(r){    $( divname).html(r); checkbox.checked="checked";  },
+         success: function(r){    
+           $( divname).html(r); 
+           //checkbox.checked="checked"; 
+           if( $("#tipo").val() == "R")
+           actualizar_grill();
+            },
          error: function(){  $( divname).html( "");   }
        }
      );

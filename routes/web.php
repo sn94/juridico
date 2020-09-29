@@ -41,14 +41,16 @@ Route::get( "demandas-agregar/{ci}", 'DemandaController@nueva_demandan');//nueva
 Route::get( "demandas-agregar", 'DemandaController@nueva_demandan');//nueva demanda nuevo demandado
 Route::post( "demandas-agregar", 'DemandaController@nueva_demandan');//nueva demanda nuevo demandado procesamiento
 Route::get( "demandas-editar/{iddeman}", 'DemandaController@editar_demandan');//editar demanda
+Route::get( "demandas-editar/{iddeman}/{tab}", 'DemandaController@editar_demandan');//editar demanda
 Route::post( "demandas-editar", 'DemandaController@editar_demandan');//editar demanda
 Route::get( "demandas-borrar/{iddeman}", 'DemandaController@borrar');//Borrar demanda
 Route::get("demandas-by-ci/{ci}", 'DemandaController@demandas_by_ci');//lista  de demandas por CEDULA
 Route::get("demandas-by-id/{idnro}", 'DemandaController@demandas_by_id');//lista  de demandas a traves de IDNRO
 Route::get("ficha-demanda/{idnro}/{tab}", "DemandaController@ver_demandan");//ficha de demandas
 Route::get("ficha-demanda/{idnro}", "DemandaController@ver_demandan");//ficha de demandas
-
-
+Route::get("arregloextr-recibo/{idrecibo}", "ArregloExtrajudiController@mostrarRecibo");//recibo de pago extrajudicial
+Route::post("honorarios", "DemandaController@honorarios");//ficha de demandas
+Route::get("ver-recibos/{idarreglo}", "ArregloExtrajudiController@mostrarRecibos");//ficha de demandas
 
 /***INTERVENCION CONTRAPARTE**** */
 Route::post("contraparte/{idnro}", "DemandaController@contraparte"); 
@@ -72,8 +74,12 @@ Route::get("liquida-by-o/{origen}", 'DemandaController@demandas_p_liquidi_b_o');
  
 Route::post("enotifi", "NotifiController@editar"); //nuevo seguimiento (notificacion)
 Route::get("vnotifi/{iddeman}", "NotifiController@ficha"); //ficha de seguimiento (notificacion) individual
-Route::get("dema-noti-venc", "NotifiController@notificaciones_venc");//lista de demandas con notificaciones vencidas
-Route::get("proce-noti-venc", "NotifiController@procesar_notifi_venc");//procesar demandas con notificaciones vencidas
+Route::get("dema-noti-venc", "NotifiController@notificaciones_venc");//lista de demandas con notificaciones vencidas y no vencidas
+Route::post("dema-noti-venc", "NotifiController@notificaciones_venc");//lista de demandas con notificaciones vencidas y no vencidas
+Route::get("proce-noti-venc", "NotifiController@procesar_notifi_venc");//procesar demandas con notificaciones vencidas y no vencidas
+Route::get("del-noti-venc", "NotifiController@borrar_noti_vencidas");//borrar notificaciones vencidas
+
+//Route::get("create-notifi", "NotifiController@crear_notificaciones");//procesar demandas con notificaciones vencidas
 
 
 /**
@@ -136,24 +142,6 @@ Route::post('eodema',   'ParamController@editarOdemanda');
 Route::get('dodema/{id}',   'ParamController@borrar');
 
 
-/**MODULO INFORMES***** */
-/********informes arreglos extrajudiciales*************** */
-Route::get('informes-arre-extra',   'InformesController@informes_arr_extr');
-Route::get('informes-arre-extra/{html}',   'InformesController@informes_arr_extr');
-Route::post('informes-arre-extra',   'InformesController@informes_arr_extr');
-Route::post('informes-arre-extra/{html}',   'InformesController@informes_arr_extr');
-//version resumida
-Route::get('informes-arregloextrajudicial',   'InformesController@informes_arreglos_resumen');
-Route::get('informes-arregloextrajudicial/{html}',   'InformesController@informes_arreglos_resumen');
-Route::post('informes-arregloextrajudicial',   'InformesController@informes_arreglos_resumen');
-Route::post('informes-arregloextrajudicial/{html}',   'InformesController@informes_arreglos_resumen');
- 
-Route::get('informes-cuentajudicial',   'InformesController@informes_cuenta_judicial');
-Route::get('informes-cuentajudicial/{html}',   'InformesController@informes_cuenta_judicial');
-Route::post('informes-cuentajudicial',   'InformesController@informes_cuenta_judicial');
-Route::post('informes-cuentajudicial/{html}',   'InformesController@informes_cuenta_judicial');
- 
-
 
 /***FILTROS */
 Route::get('filtros',   'FilterController@index');
@@ -163,6 +151,7 @@ Route::post('nfiltro',   'FilterController@cargar');
 Route::get('efiltro/{tipo}/{id}',   'FilterController@cargar');
 Route::post('efiltro/{tipo}',   'FilterController@cargar');
 Route::get('dfiltro/{id}',   'FilterController@borrar');
+Route::get('filtro/{id}/{tipo}/{givehtml}',   'FilterController@reporte');
 Route::get('filtro/{id}/{tipo}',   'FilterController@reporte');
 Route::get('filtro/{id}/{tipo}',   'FilterController@reporte');
 Route::get('res-filtro/{tipo}',   'FilterController@get_parametros'); //Recursos de datos para crear filtros
@@ -194,6 +183,10 @@ Route::get('signout',   'UserController@sign_out');
 
 /**         BANCOS          ** */
 Route::get('bank',   'BancoController@index'); 
+Route::get('bank-informes',   'BancoController@informes'); 
+Route::post('bank-informes',   'BancoController@informes'); 
+Route::get('bank-informes/{tipo}',   'BancoController@informes'); 
+Route::post('bank-informes/{tipo}',   'BancoController@informes'); 
 Route::get('nbank',   'BancoController@agregar'); 
 Route::post('nbank',   'BancoController@agregar'); 
 Route::get('ebank/{id}',   'BancoController@editar'); 
@@ -247,6 +240,7 @@ Route::get('plan-cuentas-rep/{tipo}',   'PlanCtaGastoController@reporte'); //Inf
 
 //Mensajes
 /********************** */
+Route::get('messenger/{tipo}',   'MessengerController@index');  
 Route::get('messenger',   'MessengerController@index');  
 Route::get('nuevo-msg',   'MessengerController@agregar'); 
 Route::post('nuevo-msg',   'MessengerController@agregar'); 
@@ -255,7 +249,29 @@ Route::get('del-msg/{id}',   'MessengerController@borrar');
 Route::get('list-msg/{TIPO}',   'MessengerController@listar'); 
 
 
-Route::get('test',   'ProduccionController@TRATAR_REDUNDANCIA');
+
+
+
+/**MODULO INFORMES***** */
+/********informes arreglos extrajudiciales*************** */
+Route::get('informes-arre-extra',   'InformesController@informes_arr_extr');
+Route::get('informes-arre-extra/{html}',   'InformesController@informes_arr_extr');
+Route::post('informes-arre-extra',   'InformesController@informes_arr_extr');
+Route::post('informes-arre-extra/{html}',   'InformesController@informes_arr_extr');
+//version resumida
+Route::get('informes-arregloextrajudicial',   'InformesController@informes_arreglos_resumen');
+Route::get('informes-arregloextrajudicial/{html}',   'InformesController@informes_arreglos_resumen');
+Route::post('informes-arregloextrajudicial',   'InformesController@informes_arreglos_resumen');
+Route::post('informes-arregloextrajudicial/{html}',   'InformesController@informes_arreglos_resumen');
+ 
+Route::get('informes-cuentajudicial',   'InformesController@informes_cuenta_judicial');
+Route::get('informes-cuentajudicial/{html}',   'InformesController@informes_cuenta_judicial');
+Route::post('informes-cuentajudicial',   'InformesController@informes_cuenta_judicial');
+Route::post('informes-cuentajudicial/{html}',   'InformesController@informes_cuenta_judicial');
+ 
+
+
+Route::get('test',   'ProduccionController@COMPATIBILIDAD_FECHA_BANCO');
 
 
 

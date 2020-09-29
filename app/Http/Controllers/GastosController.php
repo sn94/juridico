@@ -154,7 +154,7 @@ if( $request->ajax())
         ->whereColumn('IDNRO', 'gastos.ID_DEMA') 
         ]);
          
-        if( $desde != ""  && $hasta!= "") $query->where("FECHA", ">=", $desde)->where("FECHA", "<=", $hasta);
+        if( $desde != ""  && $hasta!= "") $query->whereDate("FECHA", ">=", $desde)->whereDate("FECHA", "<=", $hasta);
         if( $modo == "D")  $query->where("ID_DEMA","<>","NULL" );
         if( $modo == "V")  $query->whereNull('ID_DEMA');
         $dato= $query->paginate(20); 

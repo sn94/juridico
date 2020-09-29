@@ -43,7 +43,7 @@
     <a  id="info-xls" onclick="abrir_excel(event)" class="btn btn-sm btn-info" href="#" ><i class="fa fa-file-excel-o fa-2x" aria-hidden="true"></i> <h3>EXCEL</h3></a>
    
     <a  id="info-pdf" onclick="abrir_PDF(event)"  class="btn btn-sm btn-info" href="#"><i class="fa fa-file-pdf-o fa-2x" aria-hidden="true"></i><h3>PDF</h3></a>
-    <a  id="info-print" class="btn btn-sm btn-info" href="#"><i class="fa fa-print fa-2x" aria-hidden="true"></i><h3>Printer</h3></a>
+    <a  id="info-print" onclick="printDocument(event)" class="btn btn-sm btn-info" href="#"><i class="fa fa-print fa-2x" aria-hidden="true"></i><h3>Printer</h3></a>
     </div>
   </div>
 </div>
@@ -166,15 +166,49 @@ function abrir_PDF(ev ){
       }});
 }
 
+
+/**IMPRIMIR */
+
+async function getFiltroData( url_){
+
+let urlBill= url_;
+let respuesta= await fetch( urlBill);
+let html="";
+if( respuesta.ok)  html=  await respuesta.text();
+return html;
+}
+
+
+async function printDocument( ev){
+    ev.preventDefault(); 
+    let url=  ev.currentTarget.href;
+let html= await getFiltroData( url);
+  //print
+let documentTitle="FILTROS";
+var ventana = window.open( "", 'PRINT', 'height=400,width=600,resizable=no');
+ventana.document.write("<style> @page   {  size:  auto;   margin: 0mm;  margin-left:10mm; }</style>");
+ventana.document.write( html);
+ventana.document.close(); 
+  ventana.focus();
+ventana.print();
+ventana.close();
+return true;
+}
+ 
+
+
+
+
 function mostrar_informe(ev){
     ev.preventDefault();
     let report_path= ev.currentTarget.href; 
    
      let xlsr=   report_path+"/xls"  ;
-     let pdfr=  report_path+"/pdf" ;
+     let pdfr=  report_path+"/pdf" ; 
+     let printr= report_path+"/pdf/S";
      $("#info-xls").attr("href", xlsr );
      $("#info-pdf").attr("href", pdfr  );
-    $("#info-print").attr("href", $("#info-print").attr("href")+"/" );
+    $("#info-print").attr("href",printr );
    
        //obtener id de filtro
     let filtros_parts= $("#info-pdf").attr("href").split("/");

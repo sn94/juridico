@@ -13,8 +13,9 @@ use Illuminate\Support\Facades\URL;
     <title>Sistema de Control de Juicios</title>
     <link rel="icon" href="./favicon.ico">
     <link href="<?= url("app.css") ?>" rel="stylesheet">
+    <!--
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
-   
+-->
     <!--Estilo print -->
     <link href="<?= url("print/print.min.css") ?>" rel="stylesheet">
 
@@ -141,7 +142,7 @@ endif;
                     <a href="#banco-menu" class="sidebar-nav-link" data-toggle="collapse" ><i class="icon-note"></i> BANCOS</a>
                         <ul id="banco-menu" class="collapse" data-parent="#sidebar-nav">
                         <li><a href="<?=url("bank")?>" class="sidebar-nav-link">Cta.de Banco</a></li> 
-                        <li><a href="./pages/input-controls/input-grosup.html" class="sidebar-nav-link">Informes</a></li>
+                        <li><a href="<?=url("bank-informes")?>" class="sidebar-nav-link">Informes</a></li>
                         </ul>
                     </li>
                     <li class="sidebar-nav-group"><a href="#layout" class="sidebar-nav-link" data-toggle="collapse"><i class="icon-layers"></i> GASTOS</a>
@@ -160,9 +161,17 @@ endif;
                         </ul>
                     </li>
                     @endif
-                   
+                    <li class="sidebar-nav-group"><a href="#notifi" class="sidebar-nav-link" data-toggle="collapse"><i class="icon-notebook"></i> NOTIFICACIONES</a>
+                        <ul id="notifi" class="collapse" data-parent="#sidebar-nav">
+                            <li><a href="<?= url("dema-noti-venc")?>" class="sidebar-nav-link">LISTAR</a></li>
+                            <li><a onclick="procesarNotificaciones(event)" href="#" class="sidebar-nav-link">PROCESAR</a></li> 
+
+                        </ul>
+                    </li>
                 </ul>
-                <div class="sidebar-footer"><a href="<?=url("messenger")?>" data-toggle="tooltip" title="Mensajes"><i class="fa fa-comment"></i> </a><a href="./pages/content/settings.html" data-toggle="tooltip" title="Settings"><i class="fa fa-cog"></i> </a><a href="<?=url("signout")?>" data-toggle="tooltip" title="Logout"><i class="fa fa-power-off"></i></a></div>
+                <div class="sidebar-footer"><a href="<?=url("messenger")?>" data-toggle="tooltip" title="Mensajes"><i class="fa fa-comment"></i> </a>
+                
+                <a href="<?=url("signout")?>" data-toggle="tooltip" title="Logout"><i class="fa fa-power-off"></i></a></div>
             </div>
             <div class="app-content">
                 <nav class="navbar navbar-expand navbar-light bg-white"><button type="button" class="btn btn-sidebar" data-toggle="sidebar"><i class="fa fa-bars"></i></button>
@@ -213,7 +222,7 @@ endif;
 
                 <!-- inicio CONTENT-->
 
-                <div class="container-fluid">
+                <div class="container-fluid" id="juridicosys-content">
                     
                     @yield('content')
                          
@@ -239,6 +248,7 @@ endif;
     <script src="<?=url("xls_ini.js")?>?v={{rand()}}"></script>
     <!--lib para imprimir -->
     <script src="<?=url("print/print.min.js")?>"></script>
+    <script src="<?=url("print/init.js")?>"></script>
     <!-- - eDITOR WYSIWYG --> 
     
     <script src="<?=url("ckeditor/ckeditor.js")?>"></script>
@@ -248,6 +258,25 @@ endif;
    
 
     <script>
+
+function procesarNotificaciones(ev){
+ev.preventDefault();
+let divname="#juridicosys-content";
+$.ajax(
+     {
+       url:  "<?=url("proce-noti-venc")?>",
+       method: "get", 
+       beforeSend: function(){ $( divname).html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div><h3>PROCESANDO NOTIFICACIONES..</h3>" ); 
+       },
+       success: function(res){ 
+           $(divname).html( res);
+         //   window.location="<?=url("dema-noti-venc")?>";  
+            },
+       error: function(){  $( divname).html(  "<h6 style='color:red;'>Problemas de conexión</h6>" );   }
+     }
+   );
+}
+
         $("input[type=date]").each(  function(index, elemento){
 
             if( $(elemento).val() == "")

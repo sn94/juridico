@@ -36,7 +36,7 @@ class WelcomeController extends Controller
             $demanda= Demanda::sum("DEMANDA");  //Total monto demandas
             //Obtencion de saldos
             $judiob= new JudicialController();
-            $judi= $judiob->saldos_C_y_L();
+            $judi= $judiob->saldos_C_y_L_lite();
             $saldo_c= $judi["saldo_capital"];
             $saldo_l= $judi["saldo_liquida"];
             

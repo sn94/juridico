@@ -31,7 +31,7 @@ if ($detect->isMobile() == false):?>
 
   <!-- OCULTOS --> 
 <input type="hidden" id="operacion" value="{{$OPERACION}}"> 
- 
+<input type="hidden" id="tab"  value="{{isset($tab)? $tab: 1}}">
 
 <div class="nav-tabs-responsive">
   <ul class="nav nav-tabs mb-4">
@@ -41,35 +41,35 @@ if ($detect->isMobile() == false):?>
       </a>
     </li>
     <li class="nav-item">
-      <a href="#demanda" class="nav-link" data-toggle="tab">
+      <a id="pestana-demanda"  href="#demanda" class="nav-link" data-toggle="tab">
         <i class="icon-lock"></i> Demanda
       </a>
     </li>
     <li class="nav-item">
-      <a href="#seguimiento" class="nav-link" data-toggle="tab">
+      <a id="pestana-seguimiento" href="#seguimiento" class="nav-link" data-toggle="tab">
         <i class="icon-user"></i> Seguimiento
       </a>
     </li>
     <li class="nav-item">
-      <a href="#observacion" class="nav-link" data-toggle="tab">
+      <a id="pestana-observacion" href="#observacion" class="nav-link" data-toggle="tab">
         <i class="icon-credit-card"></i> Observacion
       </a>
     </li>
 
     <li class="nav-item">
-      <a href="#contraparte" class="nav-link" data-toggle="tab">
+      <a  id="pestana-contraparte" href="#contraparte" class="nav-link" data-toggle="tab">
         <i class="icon-credit-card"></i> Interv. contraparte
       </a>
     </li>
 
     <li class="nav-item">
-      <a href="#extrajudicial" class="nav-link" data-toggle="tab">
+      <a id="pestana-extrajudicial"  href="#extrajudicial" class="nav-link" data-toggle="tab">
         <i class="icon-credit-card"></i> Arreglo Extrajud.
       </a>
     </li>
     
     <li class="nav-item">
-      <a href="#honorarios" class="nav-link" data-toggle="tab">
+      <a id="pestana-honorarios" href="#honorarios" class="nav-link" data-toggle="tab">
         <i class="icon-credit-card"></i> Honorarios
       </a>
     </li>
@@ -84,7 +84,7 @@ if ($detect->isMobile() == false):?>
       </div>
       <div id="persona-collapse" class="collapse" data-parent="#formOrder">
      
-      @include("demandas.agregarn.demandado_form", [ 'OPERACION'=>$OPERACION])
+      @include("demandas.demandado_form", [ 'OPERACION'=>$OPERACION])
 
       </div>
     </div>
@@ -98,9 +98,9 @@ if ($detect->isMobile() == false):?>
       <div id="demanda-collapse" class="collapse show" data-parent="#formOrder">
       
       <?php  if( isset($ci) ):?>
-        @include("demandas.agregarn.demanda_form",  [ 'ci'=>$ci, 'OPERACION'=>$OPERACION])
+        @include("demandas.demanda_form",  [ 'ci'=>$ci, 'OPERACION'=>$OPERACION])
       <?php else:?>
-        @include("demandas.agregarn.demanda_form",  [  'OPERACION'=>$OPERACION])
+        @include("demandas.demanda_form",  [  'OPERACION'=>$OPERACION])
       <?php endif;?>
      
        
@@ -114,7 +114,7 @@ if ($detect->isMobile() == false):?>
       </div>
       <div id="seguimiento-collapse" class="collapse" data-parent="#formOrder">
          
-      @include("demandas.agregarn.notifi_form")
+      @include("demandas.notifi_form")
       </div>
     </div>
     <div id="observacion" class="tab-pane">
@@ -125,7 +125,7 @@ if ($detect->isMobile() == false):?>
       </div>
       <div id="observacion-collapse" class="collapse" data-parent="#formOrder">
      
-      @include("demandas.agregarn.observa_form")
+      @include("demandas.observa_form")
 
       </div>
     </div>
@@ -138,7 +138,7 @@ if ($detect->isMobile() == false):?>
       </div>
       <div id="contraparte-collapse" class="collapse" data-parent="#formOrder">
      
-      @include("demandas.agregarn.contraparte_form")
+      @include("demandas.contraparte_form")
 
       </div>
     </div>
@@ -151,7 +151,7 @@ if ($detect->isMobile() == false):?>
       </div>
       <div id="extrajudicial-collapse" class="collapse" data-parent="#formOrder">
      
-      @include("demandas.agregarn.extrajudicial_form")
+      @include("demandas.extrajudicial_form")
 
       </div>
     </div>
@@ -164,7 +164,7 @@ if ($detect->isMobile() == false):?>
       </div>
       <div id="honorarios-collapse" class="collapse" data-parent="#formOrder">
      
-      @include("demandas.agregarn.contraparte_form")
+     @include("demandas.honorarios_form")
 
       </div>
     </div>
@@ -180,27 +180,69 @@ if ($detect->isMobile() == false):?>
 
 <script>
 
+//PESTANA SELECCIONADA
 window.onload= function(){
-  
-   <?php if(  isset($tab)  &&  $tab == 6): ?>
- 
-  $("#persona").removeClass("active")
-  $("#pestana-persona").removeClass("active")
-  $("#pestana-extrajudicial").addClass("active");
-  $("#extrajudicial").addClass("active");
-  <?php endif; ?>
 
-
-
+let tab= document.getElementById("tab").value;
+tab_selected( tab);
    // establecer SALDO CAPITAL   INICIAL
-   if( document.getElementById("operacion").value == "A"  ||  document.getElementById("operacion").value == "A+" ){
-      //capital
-      document.querySelector("#formDeman input[name=SALDO]").value=  document.querySelector("#formDeman input[name=DEMANDA]").value
-  }
 
 
 
+  //hAY INTERVENCION
+  if( document.querySelector("#formContra input[name=ABOGADO]").value != "")
+  $("#pestana-contraparte").css("background-color", "#ffaaaa");
  };
+
+
+ function tab_selected( tab_n){
+  //6 ARREGLO EXTRAJUDICIAL
+  
+   switch(tab_n){
+    case "1": 
+      $("#honorarios,#demanda,#seguimiento,#observacion,#contraparte,#extrajudicial").removeClass("active");
+    $("#pestana-honorarios,#pestana-demanda,#pestana-seguimiento,#pestana-observacion,#pestana-contraparte,#pestana-extrajudicial").removeClass("active");
+   $("#pestana-persona").addClass("active");
+    $("#persona").addClass("active");
+    break;
+    case "2": 
+      $("#honorarios,#persona,#seguimiento,#observacion,#contraparte,#extrajudicial").removeClass("active");
+    $("#pestana-honorarios,#pestana-persona,#pestana-seguimiento,#pestana-observacion,#pestana-contraparte,#pestana-extrajudicial").removeClass("active");
+    $("#pestana-demanda").addClass("active");
+    $("#demanda").addClass("active");
+    break;
+    case "3": 
+      $("#honorarios,#demanda,#persona,#observacion,#contraparte,#extrajudicial").removeClass("active");
+    $("#pestana-honorarios,#pestana-demanda,#pestana-persona,#pestana-observacion,#pestana-contraparte,#pestana-extrajudicial").removeClass("active");
+    $("#pestana-seguimiento").addClass("active");
+    $("#seguimiento").addClass("active");
+    break;
+    case "4": 
+      $("#honorarios,#demanda,#seguimiento,#persona,#contraparte,#extrajudicial").removeClass("active");
+    $("#pestana-honorarios,#pestana-demanda,#pestana-seguimiento,#pestana-persona,#pestana-contraparte,#pestana-extrajudicial").removeClass("active");
+    $("#pestana-observacion").addClass("active");
+    $("#observacion").addClass("active");
+    break;
+     case "5": 
+      $("#honorarios,#demanda,#seguimiento,#observacion,#persona,#extrajudicial").removeClass("active");
+    $("#pestana-honorarios,#pestana-demanda,#pestana-seguimiento,#pestana-observacion,#pestana-persona,#pestana-extrajudicial").removeClass("active");
+    $("#pestana-contraparte").addClass("active");
+    $("#contraparte").addClass("active");
+    break;
+    case "6": 
+      $("#honorarios,#demanda,#seguimiento,#observacion,#contraparte,#persona").removeClass("active");
+    $("#pestana-honorarios,#pestana-demanda,#pestana-seguimiento,#pestana-observacion,#pestana-contraparte,#pestana-persona").removeClass("active");
+    $("#pestana-extrajudicial").addClass("active");
+    $("#extrajudicial").addClass("active");
+    break;
+    case "7": 
+      $("#demanda,#seguimiento,#observacion,#contraparte,#persona,#extrajudicial").removeClass("active");
+    $("#pestana-demanda,#pestana-seguimiento,#pestana-observacion,#pestana-contraparte,#pestana-persona,#pestana-extrajudicial").removeClass("active");
+    $("#pestana-honorarios").addClass("active");
+    $("#honorarios").addClass("active");
+    break;
+   } 
+ }
 
 </script>
 
@@ -320,7 +362,11 @@ return enpuntos;
   function habilitarCampos( targetId, hab){
     let target= document.getElementById(targetId);
     let context= target.elements;
-    Array.prototype.forEach.call( context, function(ar){ar.disabled=!hab;   });
+    Array.prototype.forEach.call( context, function(ar){
+      if( ar.type.toString() != "hidden")
+      ar.disabled=!hab; 
+        }
+        );
   }
 
  

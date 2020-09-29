@@ -1,19 +1,18 @@
 <?php
 
 namespace App\Http\Controllers;
-
+ 
 use App\Arreglo_extrajudicial;
 use App\Contraparte;
 use App\Demanda;
 use App\Demandados;
 use App\Helpers\Helper;
+use App\Honorarios;
 use App\Http\Controllers\Controller;
 use App\Notificacion;
 use App\Observacion;
-use App\pdf_gen\PDF;
 use Exception;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\Http\Request; 
 use Illuminate\Support\Facades\DB; 
 
 class DemandaController extends Controller
@@ -170,6 +169,8 @@ class DemandaController extends Controller
             
             //Quitar el campo _token
             $Params=  $request->input();  
+            $Params['SALDO']=  $Params['DEMANDA'];
+            var_dump($Params);
             /***ini transac */ 
              DB::beginTransaction();
              try {
@@ -179,7 +180,8 @@ class DemandaController extends Controller
                $noti= new Notificacion(); $noti->IDNRO= $deman->IDNRO; $noti->CI= $deman->CI; $noti->save();
                $obs= new Observacion(); $obs->IDNRO= $deman->IDNRO;    $obs->CI= $deman->CI; $obs->save();
                $contra= new Contraparte(); $contra->IDNRO= $deman->IDNRO; $contra->save();
-               $obarre= new Arreglo_extrajudicial();  $obarre->IDNRO= $deman->IDNRO;  $obarre->save(); 
+               $obarre= new Arreglo_extrajudicial();  $obarre->IDNRO= $deman->IDNRO;  $obarre->save();
+
                DB::commit();
                echo json_encode( array( 'ci'=> $deman->CI, "id_demanda"=> $deman->IDNRO) );
              } catch (\Exception $e) {
@@ -192,12 +194,12 @@ class DemandaController extends Controller
         else{    
             if( $ci != 0){
                 $ficha= Demandados::where("CI", $ci)->first();
-                return view('demandas.agregarn.index',  
+                return view('demandas.index',  
                 array_merge( $this->formar_parametros() ,
                  [ 'ci'=>$ci, 'nombre'=>$ficha->TITULAR, 'ficha0'=> $ficha, 'OPERACION'=>"A+"])     ); 
             }else{
                 $pars= array_merge( $this->formar_parametros() , array( 'OPERACION'=>"A"  ) );
-                return view('demandas.agregarn.index', $pars);  
+                return view('demandas.index', $pars);  
             } 
         }
     }
@@ -205,7 +207,7 @@ class DemandaController extends Controller
 
 
     
-    public function editar_demandan(Request $request, $iddeman=0){//idd id_demanda
+    public function editar_demandan(Request $request, $iddeman=0, $tab=1){//idd id_demanda
        
 
            //instancia de demanda
@@ -229,7 +231,14 @@ class DemandaController extends Controller
                $obarre->IDNRO= $iddeman;
                $obarre->save();
            }
-        
+        //Honorarios
+        //Existe Honorarios
+        $obhonorario=Honorarios::find( $iddeman );
+        if( is_null( $obhonorario)  ){//Crear una inst. de arreglo ext.judicial si no existe
+            $obhonorario= new Honorarios();
+            $obhonorario->IDNRO= $iddeman;
+            $obhonorario->save();
+        }
  
         if( ! strcasecmp(  $request->method() , "post"))  {
             
@@ -250,9 +259,10 @@ class DemandaController extends Controller
             $pars= array_merge( $this->formar_parametros() ,
              array( 'ci'=>  $ci ,'id_demanda'=>$iddeman,'ficha0'=>$obDataPerso, 'ficha'=> $obdema,
               'ficha2'=>$obnoti,  'ficha3'=>$obobs, 'ficha4'=> $obcontraparte,'ficha5'=> $obarre,
-               'nombre'=> $nom , 'OPERACION'=>"M"  ) 
+              'ficha6'=>$obhonorario,
+               'nombre'=> $nom , 'OPERACION'=>"M" , "tab"=>$tab ) 
                 );
-            return view('demandas.agregarn.index',  $pars); //Modificar M  
+            return view('demandas.index',  $pars); //Modificar M  
             }
         }
 
@@ -270,6 +280,18 @@ class DemandaController extends Controller
        echo json_encode( array( 'error'=>"ERROR AL GUARDAR" )    ); 
     }
         
+
+    public function honorarios(Request $request, $iddeman=""){
+        $id_demanda= $iddeman =="" ?  $request->input("IDNRO") : $iddeman;
+       $ho= Honorarios::find( $id_demanda);
+       $ho->fill(   $request->input() );
+       if($ho->save())
+       echo json_encode( array( 'ok'=>"GUARDADO" )    );
+       else
+       echo json_encode( array( 'error'=>"ERROR AL GUARDAR" )    ); 
+    } 
+
+
     public function ver_demandan(Request $request, $iddeman=0, $tab=1){//idd id_demanda
         $origen= DB::table("odemanda")->get();
 
@@ -282,14 +304,16 @@ class DemandaController extends Controller
          $nom= Demandados::where("CI",$ci)->first()->TITULAR;//nombre 
          //Arreglo extrajudicial
          $arreglo=Arreglo_extrajudicial::find($iddeman);
+         //Honorarios
+         $honorario=  Honorarios::find( $iddeman );
          //Devolver
          
          //Cedula    ID demanda  Nombre  Operacion   
          $pars= array_merge( $this->formar_parametros() , array( 'OPERACION'=>"A"  ) );
          $propios= array(  'ci'=>  $ci ,'id_demanda'=>$iddeman, 'tab'=>$tab,
          'ficha0'=>$obDataPerso, 'ficha'=> $obdema, 'ficha2'=>$obnoti, 'ficha3'=>$obobs,
-         'ficha4'=> $arreglo, 'ficha5'=> $arreglo, 'nombre'=> $nom , 'OPERACION'=>"V");
-         return view('demandas.agregarn.index',  array_merge( $pars, $propios ) ); //ver V   
+         'ficha4'=> $arreglo, 'ficha5'=> $arreglo, 'ficha6'=>$honorario,'nombre'=> $nom , 'OPERACION'=>"V");
+         return view('demandas.index',  array_merge( $pars, $propios ) ); //ver V   
          
      }
 
@@ -310,145 +334,11 @@ public function borrar($iddeman){
         echo json_encode( array( 'error'=> "Hubo un error al borrar uno de los datos<br>$e") );
     }    
  }/** end  */
-
-
-
-
-
-
-
-/**
- * LIQUIDACIONES
- * 
- */
-
-public function demandas_p_liquidi(){
-    $o_de= DB::table("odemanda")->get();
-
-    $dts = DB::select("select TITULAR,CI,DEMANDANTE,COD_EMP,CTA_BANCO,BANCO,GARANTE,CI_GARANTE from demandas  order by TITULAR");
-    return view('liquidaciones.liquidaciones', ['lista' => $dts, "odemanda" => $o_de]); 
-}
-
-
-public function demandas_p_liquidi_b_o( $origen){ 
-    $dts = DB::select("select TITULAR,CI,DEMANDANTE,COD_EMP,CTA_BANCO,BANCO,GARANTE,CI_GARANTE from demandas where O_DEMANDA='$origen' order by TITULAR");
-    return view('liquidaciones.liqui_tabla', ['lista' => $dts ]); 
-}
-  
-
-    /*
-    *
-    LIQUIDAR DEMANDA
-    **
-    */
-    public function liquidar(){
-        return view('demandas.liquidar'); 
-    }
-
-
-    //*************************************************** */
-      
-
  
 
 
- 
 
 
-    public function reporte($id, $tipo){//ID_DEMANDA TIPO
-        $DEMANDA_OBJ=Demanda::find( $id );
-        $SEGUIMI_OBJ=Notificacion::find($id);
-        $OBSERVA_OBJ=Observacion::find( $id );
-         
-        if( $tipo == "xls"){
-            echo json_encode( array( "0"=> array_merge($DEMANDA_OBJ,$SEGUIMI_OBJ,$OBSERVA_OBJ)) );  
-        }else{
-            //Pdf format
-            //Demanda
-            $TOTAL=  Helper::number_f( $DATO->TOTAL );
-            $EXTRAIDO=Helper::number_f( $DATO->EXTRAIDO );
-            $SALDO= Helper::number_f( $DATO->SALDO );
-            $EXT_LIQUID=Helper::number_f( $DATO->EXT_LIQUID );
-            $NEW_SALDO= Helper::number_f( $DATO->NEW_SALDO );
-            $html=<<<EOF
-            <style>
-            h1,h2,h3,h4,h5,h6{  color: #151515;}
-            span{
-                font-weight: bolder;
-            }
-            .subtitulo{ font-size: 7pt; font-weight: bold; text-align: center;text-decoration: underline; background-color: #bcfdb0; border-bottom: 1px solid #8ef861;}
-            .panel{
-                margin-top:0px;
-                border-top: 1px solid #797979;
-                border-bottom: 1px solid #797979;
-                border-left: 1px solid #797979;
-                border-right: 1px solid #797979;
-            } 
-            td{ text-align:left; }
-            table.tabla{ 
-                font-family: helvetica;
-                font-size: 7pt; 
-                color: #151515;
-            }
-            </style>
-            
-            <h6>CI° {$DEMANDA_OBJ->CI} TITULAR: {$DEMANDA_OBJ->TITULAR}</h6>
-            <table class="tabla">
-            <tbody>
-            <tr> 
-            <td style='text-align:left;'>
-            <span>DIRECCIÓN:</span> {$DEMANDA_OBJ->DOMICILIO}<br><br>
-            <span>TELÉFONO:</span> {$DEMANDA_OBJ->TELEFONO}<br><br>
-            <span>CELULAR:</span> {$DEMANDA_OBJ->CELULAR}<br><br>
-            </td>
-            <td>
-            <span>DIRECCIÓN LABORAL:</span> {$DEMANDA_OBJ->CTA_MESES}<br><br>
-            <span>TELÉFONO LABORAL:</span> {$DEMANDA_OBJ->INT_X_MES}<br><br>
-            <span>LIQUIDACIÓN.:</span> {$DEMANDA_OBJ->LIQUIDACIO}
-            </td>
-            <td>
-            <span>FINIQUITO:</span> {$DEMANDA_OBJ->FINIQUITO}<br><br>
-            <span>IMP.EXTR.:</span> {$EXTRAIDO}<br><br>
-            <span>SALDO:</span> {$SALDO}<br><br>
-            </td>
-            <td>
-            <span>EXTR.LIQUID.:</span> {$EXT_LIQUID}<br><br>
-            <span>NUEVO SALDO:</span> {$NEW_SALDO}
-            </td>
-            </tr> 
-            </tbody> 
-            </table> 
-            <p class="subtitulo"> TOTALES</p>
-            <table class="tabla panel">
-            <tr>
-            <td><span>CAPITAL:</span> {$DATO->CAPITAL}<br></td>
-            <td><span>IMP.INTERÉS.:</span> {$DATO->IMP_INTERE}<br></td>
-            <td><span>GAST.NOTIF.:</span> {$DATO->GAST_NOTIF}<br></td>
-            <td><span>GAST.NOTIF.GTE.:</span> {$DATO->GAST_NOTIG}<br></td>
-            </tr>
-            <tr>
-            <td><span>GAST.EMBARGO.:</span> {$DATO->GAST_EMBAR}<br></td>
-            <td><span>GAST.INTIMAC.:</span> {$DATO->GAST_INTIM}<br></td>
-            <td><span>I.V.A.:</span> {$DATO->IVA}<br></td>
-            <td> <span>HONORARIOS.:</span> {$DATO->HONORARIOS}<br></td>
-            </tr>
-            <tr>
-            <td><span>TOTAL:</span> $TOTAL <br></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            </tr>
-            </table>
-            EOF; 
-           // echo $html;
-            $tituloDocumento= "LIQUIDACION-".date("d")."-".date("m")."-".date("yy")."-".rand();
-                $pdf = new PDF(); 
-                $pdf->prepararPdf("$tituloDocumento.pdf", $tituloDocumento, ""); 
-                $pdf->generarHtml( $html);
-                $pdf->generar();
-    
-        }//End pdf format option  
-    }//End Function
 
 
 }

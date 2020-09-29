@@ -166,10 +166,12 @@ public function sign_in( Request $request){
                    $UserAgent= $request->header('User-Agent') ;
                    $Ip= $request->ip(); 
                    $MailControl= Parametros::first()->EMAIL;
-                  
-                   Mail::to([ $MailControl]) 
+                  try{
+                    Mail::to([ $MailControl]) 
                     //->queue(   new AuthAlert(  $usr,  ["user-agent"=>$UserAgent, "ip"=>$Ip] ) );
                    ->send(  new AuthAlert(  $usr,   ["user-agent"=>$UserAgent, "ip"=>$Ip]  ) );
+                  }catch( Exception $e){}
+                
 
                 return redirect(  url("/") ); 
                 }else{

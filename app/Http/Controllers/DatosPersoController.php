@@ -90,7 +90,12 @@ class DatosPersoController extends Controller
               $noti= new Notificacion(); $noti->IDNRO= $deman->IDNRO; $noti->CI= $deman->CI; $noti->save();
               $obs= new Observacion(); $obs->IDNRO= $deman->IDNRO;    $obs->CI= $deman->CI; $obs->save(); 
               DB::commit();
-              echo json_encode( array( 'ci'=> $modelo->CI,  'nombre'=> $modelo->TITULAR, "id_demanda"=> $deman->IDNRO) );
+              echo json_encode( 
+                array(
+                'IDNRO'=> $modelo->IDNRO,
+                'ci'=> $modelo->CI,  
+                'nombre'=> $modelo->TITULAR,
+                 "id_demanda"=> $deman->IDNRO)   );
             } catch (\Exception $e) {
                 DB::rollback();
                 echo json_encode( array( 'error'=> "Hubo un error al guardar uno de los datos<br>$e") );
@@ -103,8 +108,7 @@ class DatosPersoController extends Controller
   * EDITAR
   */
   public function editar(Request $request, $idnro=0){//idnro es CEDULA
-    if( $idnro==0) $idnro= $request->input("CI");
-    $modelo= Demandados::where( "CI", $idnro )->first();
+    
     //Demandados::find( $idnro );
     if( ! strcasecmp(  $request->method() , "post"))  {
         //Quitar el campo _token
@@ -114,6 +118,8 @@ class DatosPersoController extends Controller
         if( $ar1 == $ar2) return 0;    else 1; 
         } ); */
         //update to DB ELOQUENT VERSION 
+        $idnro= $request->input("IDNRO");
+        $modelo= Demandados::find( $idnro);
         $modelo->fill( $Params );
         if($modelo->save()){
           echo json_encode(array(  'ci'=> $idnro, 'nombre'=> $modelo->TITULAR  ));
@@ -121,7 +127,12 @@ class DatosPersoController extends Controller
           echo json_encode(array(  'error'=> 'Un problema en el servidor impidió guardar los datos. Contacte con su desarrollador.' )); 
         } 
     }
-    else  return view('demandas.agregarn.demandado_form',  ['ci'=> $modelo->CI,   'ficha'=> $modelo ] ); 
+    else{
+      $modelo= Demandados::find( $idnro);
+      $localidades= DB::table("localida")->get();// Localidad
+       return view('demandas.demandado_form', 
+        ['ci'=> $modelo->CI,   'ficha0'=> $modelo, 'localidades'=>$localidades, 'OPERACION'=>"M" ] ); 
+      }
 }
 
   

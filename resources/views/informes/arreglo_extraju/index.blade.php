@@ -22,7 +22,21 @@ $iconsize=  $dete->isMobile() ? "": "fa-lg";
 
 <form id="arreglo-search" action="<?=url("informes-arregloextrajudicial")?>" method="post"  onsubmit="actualizar_grill_parametros(event)">
 @csrf
+<div class="row">
+<div class="col-12 col-sm-4 col-md-4  col-lg-3 no-gutters">
+<span style="font-size: 10pt; font-weight: 600; ">Desde:</span> 
+<input class="form-control form-control-sm" type="date" id="Desde" name="Desde"> 
+</div>
    
+<div class="col-12 col-sm-4 col-md-4 col-lg-3">
+<span style="font-size: 10pt; font-weight: 600;">Hasta: </span>
+ <input class="form-control form-control-sm"  type="date" id="Hasta" name="Hasta" >
+  </div>
+  <div class="col-12 col-sm-2 col-md-2 col-lg-1 d-flex">
+ <button style="background-color: #a3c5fc;color: #1a0c00;" type="submit" class="btn btn-sm btn-info mt-1">BUSCAR</button>
+  </div>
+  
+</div>
 </form>
 
 <div id="status"></div>

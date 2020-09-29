@@ -141,31 +141,30 @@ public function editar( Request $request, $iddeman=0){
     /***NOtificaciones vencidas*** */
 
 
-    private function fecha_sgte( $fecha){
-        
-        $fechaformateada=  date_parse_from_format( "d/m/Y", $fecha);//un arreglo
+    private function fecha_sgte( $fecha){  
        //convertir a segundos
         //strtotime recibe la fecha en formato Y-m-d
-        $date1 = strtotime( $fechaformateada['year']."/".$fechaformateada['month']."/".$fechaformateada['day']  ); //fecha en seg 
+        $date1 = strtotime( $fecha  ); //fecha en seg 
         $fechasgte =  strtotime("+1 day", $date1);//fecha de notificacion mas 1 dia
         return $fechasgte;
     }
-    private function es_notifi_vencida( $fech){
+
+    private function is_fecha_vencimiento( $fech, $dias=""){
         /****DIAS PARA EL VENCIMIENTO */
-        $dias_vtos= DB::table("parametros")->get("DIASVTO")->first();; 
-        $diavto= $dias_vtos->dias;//dias para el vencimiento
+        $dias_param=DB::table("parametros")->get("DIASVTO")->first()->DIASVTO;
+        $diavto= $dias!="" ? intval($dias) : intval( $dias_param  );
+
         $vencido_datos= array("vencido"=>false);
          /**VERIFICACION FECHA VALIDA */
         $fecha_demanda = date_create_from_format('j/m/Y',  trim( $fech ));  
         if( $fecha_demanda ){//Si la fecha convertida es valida  
-
             $i=1;
             while($i<= $diavto){ 
                $fechasgte= $this->fecha_sgte( $fech);
-                //FECHA DE NOTIFICACION ES ANTERIOR O IGUAL A HOY, Y NO ES DOMINGO  NI SABADO
-               if( $fechasgte <= time()  &&  date("N", $fechasgte)!=1 && date("N",$fechasgte)!=7  ){ 
+                //FECHA DE NOTIFICACION ES ANTERIOR O IGUAL A HOY, Y NO ES DOMINGO  NI SABADO 
+               if( $fechasgte <= time() &&  date("N", $fechasgte)!=1 && date("N",$fechasgte)!=7  ){ 
                   
-                 $vencido_datos= array("vencido"=> true, "fechavenci"=>  date("d-m-Y", $fechasgte) );
+                 $vencido_datos= array("vencido"=> true, "fechavenci"=>  date("d-m-Y", $fechasgte) ); 
                 $i= $diavto;//salir
                }//END IF
                  $i++; 
@@ -174,79 +173,416 @@ public function editar( Request $request, $iddeman=0){
         return $vencido_datos;
     }
 
+    private function get_fecha_vencimiento( $fech, $dias=""){
+        /****DIAS PARA EL VENCIMIENTO */
+        $dias_param=DB::table("parametros")->get("DIASVTO")->first()->DIASVTO;
+        $diavto= $dias!="" ? intval($dias) : intval( $dias_param  );
+
+        $vencido_datos= "";
+         /**VERIFICACION FECHA VALIDA */
+        $fecha_demanda = date_create_from_format('Y-m-j',  trim( $fech ));  
+        if( $fecha_demanda ){//Si la fecha convertida es valida  
+            $i=1;
+            $fechasgte= "";
+            $fechasgt_str= $fech;
+            while($i<= $diavto){  
+               $fechasgte= $this->fecha_sgte(   $fechasgt_str); 
+               $fechasgt_str=  date("Y-m-j", $fechasgte);
+              
+               if(  $i==$diavto ){
+                        // NO ES DOMINGO  NI SABADO y ya termino el plazo de x dias
+                        if( date("N", $fechasgte)!=1 && date("N",$fechasgte)!=7){ 
+                            $vencido_datos=   date("Y-m-j", $fechasgte) ;  
+                            $i= $diavto+1;
+                        } 
+               }else{
+                $i++;
+               }  
+            }//END WHILE 
+        }//END IF
+        return $vencido_datos;
+    }
+
 
 
     /*
-    Procesar demandas con notificaciones vencidas
-    */
-    public function procesar_notifi_venc(){
-        //Filtrar 
-        $SEGUIMIENTO= DB::table("notificaciones") 
-        ->where(  function($query) {
-            $query->where('ARREGLO_EX', 'N')
-                  ->orWhere('ARREGLO_EX', "");
-        }  )                        //Sin arreglo extrajudicial
-        ->where('EMBARGO_N', '0')
-        ->where('SD_FINIQUI', '0')
-        ->get(); 
+    VERIFICA demandas con notificaciones vencidas Y NO VENCIDAS
+    */ 
 
-        foreach ($SEGUIMIENTO as $it)
-        {
-            $fechaHoy= date("d/m/Y");
-            $obs_notifi="";
-            //Primer escenario
-            if( ($this->es_notifi_vencida(  $it->NOTIFI_1 ) )['vencido']  &&  strlen($it->ADJ_AI) <= 1){//adjunto autointerlocutorio sin fecha
-                $obs_notifi= "Adj. AI venció al ". ($this->es_notifi_vencida(  $it->NOTIFI_1 ))['fechavenci']; 
+
+
+private function fecha_valida($fecha){
+    
+   return ($fecha !="" &&  $fecha !="0000-00-00");
+}
+
+
+
+/*
+select `notificaciones`.`IDNRO`, `NOTIFI_1`, DATEDIFF( NOTIFI_1, NOW()) AS NOTIFI1_V, `ADJ_AI`,
+ `INTIMACI_1`, DATEDIFF( INTIMACI_1, NOW()) AS INTIMACI1_V,
+  `INTIMACI_2`, DATEDIFF( INTIMACI_2, NOW()) AS INTIMACI2_V,
+   `NOTIFI1_AI_TIT`, DATEDIFF( NOTIFI1_AI_TIT, NOW()) AS NOTIFI1_AI_TIT_V,
+    `NOTIFI1_AI_GAR`, DATEDIFF( NOTIFI1_AI_GAR, NOW()) AS NOTIFI1_AI_GAR_V, 
+    `NOTIFI2_AI_TIT`, DATEDIFF( NOTIFI2_AI_TIT, NOW()) AS NOTIFI2_AI_TIT_V,
+     `NOTIFI2_AI_GAR`, DATEDIFF( NOTIFI2_AI_GAR, NOW()) AS NOTIFI2_AI_GAR_V, `CITACION`, 
+     `NOTIFI_2`, DATEDIFF( NOTIFI_2, NOW()) AS NOTIFI2_V, 
+     `NOTIFI_3`, DATEDIFF( NOTIFI_3, NOW()) AS NOTIFI3_V, 
+     `NOTIFI_4`, DATEDIFF( NOTIFI_4, NOW()) AS NOTIFI4_V, 
+     `NOTIFI_5`, DATEDIFF( NOTIFI_5, NOW()) AS NOTIFI5_V, `ADJ_SD`, `ADJ_APROBA`, `ADJ_OFICIO`, `SALDO`,
+      `ADJ_LIQUI` from `notificaciones` inner join `demandas2` on `demandas2`.`IDNRO` = `notificaciones`.`IDNRO` 
+      where (`ARREGLO_EX` = 'N' or `ARREGLO_EX` = '') and (`EMBARGO_N` is null or `EMBARGO_N` = '0') and 
+      (`SD_FINIQUI` is null or `SD_FINIQUI` = '0') and `demandas2`.`SALDO` > 0 and (`NOTIFI_5` is null or `NOTIFI_5` = '0000-00-00')
+       and (select count(*) from `mov_cta_judicial` inner join `cuenta_judicial` on 
+       `cuenta_judicial`.`IDNRO` = `mov_cta_judicial`.`CTA_JUDICIAL` where `cuenta_judicial`.`ID_DEMA` = `demandas2`.`IDNRO` limit 1) = 0
+*/
+
+    //GRABAR NOTIFICACIONES
+    public function procesar_notifi_venc(){
+        set_time_limit(0);
+        ini_set('memory_limit', '-1');
+        //DB::enableQueryLog();
+           //Filtrar 
+           $SEGUI_OBJ= Notificacion::
+           join("demandas2", "demandas2.IDNRO","=","notificaciones.IDNRO")
+           ->where(  function($query) {
+               $query->where('ARREGLO_EX', 'N')
+                     ->orWhere('ARREGLO_EX', "");
+           }  )                       //Sin arreglo extrajudicial
+           ->where(function($query) {
+            $query->whereNull('EMBARGO_N')
+                    ->orWhere('EMBARGO_N','0')    ;
+            })
+            ->where(function($query) {
+                $query->whereNull('SD_FINIQUI')
+                        ->orWhere('SD_FINIQUI','0')    ;
+                })
+           ->where('demandas2.SALDO', '>', 0)
+           ->where(function($query) {
+            $query->whereNull('NOTIFI_5')
+                    ->orWhere('NOTIFI_5','0000-00-00')    ;
+            })
+            ->where("FLAG","=", "N")
+            ->where(function ($query) {
+                $query->select(DB::raw("count(*)"))
+                    ->from('mov_cta_judicial')
+                    ->join("cuenta_judicial","cuenta_judicial.IDNRO", "=","mov_cta_judicial.CTA_JUDICIAL")
+                    ->whereColumn('cuenta_judicial.ID_DEMA', 'demandas2.IDNRO')
+                    ->limit(1); 
+            }, "=", 0)
+           ->select("notificaciones.IDNRO" , "notificaciones.CI" ,"NOTIFI_1", DB::raw('DATEDIFF( NOTIFI_1, NOW()) AS NOTIFI1_V'),   "ADJ_AI",
+            "INTIMACI_1",  DB::raw('DATEDIFF( INTIMACI_1, NOW()) AS INTIMACI1_V'),
+            "INTIMACI_2",  DB::raw('DATEDIFF( INTIMACI_2, NOW()) AS INTIMACI2_V'), 
+            "NOTIFI1_AI_TIT",  DB::raw('DATEDIFF( NOTIFI1_AI_TIT, NOW()) AS NOTIFI1_AI_TIT_V'),
+            "NOTIFI1_AI_GAR",  DB::raw('DATEDIFF( NOTIFI1_AI_GAR, NOW()) AS NOTIFI1_AI_GAR_V'),
+            "NOTIFI2_AI_TIT",  DB::raw('DATEDIFF( NOTIFI2_AI_TIT, NOW()) AS NOTIFI2_AI_TIT_V'),
+            "NOTIFI2_AI_GAR",  DB::raw('DATEDIFF( NOTIFI2_AI_GAR, NOW()) AS NOTIFI2_AI_GAR_V'),
+             "CITACION","NOTIFI_2" , DB::raw('DATEDIFF( NOTIFI_2, NOW()) AS NOTIFI2_V'),
+             "NOTIFI_3" , DB::raw('DATEDIFF( NOTIFI_3, NOW()) AS NOTIFI3_V'),
+             "NOTIFI_4" , DB::raw('DATEDIFF( NOTIFI_4, NOW()) AS NOTIFI4_V'),
+             "NOTIFI_5" , DB::raw('DATEDIFF( NOTIFI_5, NOW()) AS NOTIFI5_V'),
+             "ADJ_SD", "ADJ_APROBA",  "ADJ_OFICIO", "SALDO", "ADJ_LIQUI");
+        //$sQ= $SEGUI_OBJ->toSql();
+        
+           $SEGUIMIENTO= $SEGUI_OBJ->get(); 
+          // dd(DB::getQueryLog());
+        foreach( $SEGUIMIENTO as $it):
+            $FLAG= false;
+             
+            DB::beginTransaction();
+            try{ //Primer escenario 
+                 echo "CI ". $it->ADJ_AI;
+
+             if( $this->fecha_valida($it->NOTIFI_1) && intval($it->NOTIFI1_V )<=0  &&  ( $it->ADJ_AI=="0000-00-00" ||  $it->ADJ_AI=="" ||  is_null($it->ADJ_AI) ) ){//adjunto autointerlocutorio sin fecha
+              
+                $fecha_ven= $this->get_fecha_vencimiento(  $it->NOTIFI_1 , 3 ) ;
                 
+                if($fecha_ven != ""  ) 
+                {
+                    $obs_notifi= "Notificacion 1. Adj. AI venció el ". $fecha_ven ; 
+                    $Datos= array(  "IDNRO"=>$it->IDNRO, "FECHA"=> $it->NOTIFI_1,"FECHAV"=> $fecha_ven,
+                     "OBS"=> $obs_notifi,"VENCIDO"=>"S"); 
+                    $est=DB::table("vtos")->insert( $Datos); 
+                    //Notificacion procesa S(si) N(no)
+                    if(!$FLAG) { $it->FLAG="S"; $it->save(); $FLAG= true; }
+                 }
+            }elseif(intval($it->NOTIFI1_V )>0){
+                $fecha_ven= ($this->get_fecha_vencimiento(  $it->NOTIFI_1,3 ) );
+                if($fecha_ven != "") 
+                {
+                    $Datos= array(  "IDNRO"=>$it->IDNRO, "FECHA"=> $it->NOTIFI_1,"FECHAV"=> $fecha_ven,"VENCIDO"=>"N");
+                    $est=DB::table("vtos")->insert( $Datos);
+                    if(!$FLAG) { $it->FLAG="S"; $it->save(); $FLAG= true; }
+                } 
             }
-            //Segundo Escenario
-            if( ($this->es_notifi_vencida( $it->INTIMACI_2 ))['vencido'] &&  strlen($it->CITACION) <= 1){
-                $obs_notifi= "Citación venció al ". ($this->es_notifi_vencida(  $it->INTIMACI_2))['fechavenci']; 
-                
+            //Segundo Escenario Intimacion 1
+            if( $this->fecha_valida( $it->INTIMACI_1) &&  intval($it->INTIMACI1_V) <= 0    &&  ($it->CITACION=="0000-00-00" || $it->CITACION=="") ){
+                $fecha_ven=($this->get_fecha_vencimiento( $it->INTIMACI_1 )) ;
+               
+                if($fecha_ven != "") 
+                {
+                    $obs_notifi= "Intimacion 1, Citación venció el ". $fecha_ven; 
+                    $Datos= array(  "IDNRO"=>$it->IDNRO, "FECHA"=> $it->INTIMACI_1,"FECHAV"=> $fecha_ven, 
+                    "OBS"=> $obs_notifi , "VENCIDO"=> "S" );
+                    $est=DB::table("vtos")->insert( $Datos);
+                    if(!$FLAG) { $it->FLAG="S"; $it->save(); $FLAG= true; }
+                }
+            }elseif( intval($it->INTIMACI1_V) > 0){
+                $fecha_ven=($this->get_fecha_vencimiento( $it->INTIMACI_1 )) ;
+                if($fecha_ven != "") 
+                {
+                    $Datos= array(  "IDNRO"=>$it->IDNRO, "FECHA"=> $it->INTIMACI_1,"FECHAV"=> $fecha_ven, "VENCIDO"=>"N");
+                    $est=DB::table("vtos")->insert( $Datos);
+                    if(!$FLAG) { $it->FLAG="S"; $it->save(); $FLAG= true; }
+                }
+            }
+
+             //Segundo Escenario Intimacion 2
+             if( $this->fecha_valida( $it->INTIMACI_2) &&  intval($it->INTIMACI2_V) <= 0 &&   ($it->CITACION=="0000-00-00" || $it->CITACION=="") ){
+                $fecha_ven=($this->get_fecha_vencimiento( $it->INTIMACI_2 )) ;
+               
+                if($fecha_ven != "") 
+                {
+                    $obs_notifi= "Intimacion 2, Citación venció el ". $fecha_ven; 
+                    $Datos= array(  "IDNRO"=>$it->IDNRO, "FECHA"=> $it->INTIMACI_2,"FECHAV"=> $fecha_ven, 
+                    "OBS"=> $obs_notifi , "VENCIDO"=> "S" );
+                    $est=DB::table("vtos")->insert( $Datos); 
+                    if(!$FLAG) { $it->FLAG="S"; $it->save(); $FLAG= true; }
+                }
+            }elseif( intval($it->INTIMACI2_V) > 0 ){
+                $fecha_ven=($this->get_fecha_vencimiento( $it->INTIMACI_2 )) ; 
+                if($fecha_ven != "") 
+                {
+                    $Datos= array(  "IDNRO"=>$it->IDNRO, "FECHA"=> $it->INTIMACI_2,"FECHAV"=> $fecha_ven, "VENCIDO"=> "N");
+                    $est=DB::table("vtos")->insert( $Datos);
+                    if(!$FLAG) { $it->FLAG="S"; $it->save(); $FLAG= true; }
+                }  
             }
             //Tercer escenario
-            if( ($this->es_notifi_vencida( $it->NOTIFI_2 ))['vencido'] &&  strlen($it->ADJ_SD) <= 1){
-                $obs_notifi= "Adj. SD. venció al ". ($this->es_notifi_vencida(  $it->NOTIFI_2))['fechavenci']; 
-               
-            }   
-            //Cuarto escenario
-            if( $it->SALDO <= 0  &&  strlen($it->ADJ_LIQUI) <= 1 ){
-                $obs_notifi= "Adj. Liquid. Sin Fecha, saldo: ". $it->SALDO; 
-               
+            if(  $this->fecha_valida($it->NOTIFI_2) &&  intval($it->NOTIFI2_V)<=0 &&    ($it->ADJ_SD=="0000-00-00" || $it->ADJ_SD=="") ){
+                $fecha_ven= ($this->get_fecha_vencimiento( $it->NOTIFI_2 ))  ;
+                 if($fecha_ven != "") 
+                {
+                    $obs_notifi= "Notificacion 2. Adj. SD. venció el ". $fecha_ven; 
+                    $Datos= array(  "IDNRO"=>$it->IDNRO, "FECHA"=> $it->NOTIFI_2,"FECHAV"=> $fecha_ven,
+                     "OBS"=> $obs_notifi , "VENCIDO"=> "S" );
+                    $est=DB::table("vtos")->insert( $Datos);
+                    if(!$FLAG) { $it->FLAG="S"; $it->save(); $FLAG= true; }
+                }  
+            }elseif( intval($it->NOTIFI2_V) > 0 ){
+                $fecha_ven= ($this->get_fecha_vencimiento( $it->NOTIFI_2 ))  ; 
+                if($fecha_ven != "") 
+                {
+                    $Datos= array(  "IDNRO"=>$it->IDNRO, "FECHA"=> $it->NOTIFI_2,"FECHAV"=> $fecha_ven, "VENCIDO"=> "N");
+                    $est=DB::table("vtos")->insert( $Datos);
+                    if(!$FLAG) { $it->FLAG="S"; $it->save(); $FLAG= true; }
+                } 
             }
+            //Cuarto escenario
+            if( $this->fecha_valida($it->NOTIFI_3) && intval($it->NOTIFI3_V)<=0 ){
+                $fecha_ven= ($this->get_fecha_vencimiento( $it->NOTIFI_3 ))  ;
+                 if($fecha_ven != "") 
+                {
+                    $obs_notifi="Notificacion 3  venció el ". $fecha_ven; 
+                    $Datos= array(  "IDNRO"=>$it->IDNRO, "FECHA"=> $it->NOTIFI_3,"FECHAV"=> $fecha_ven,
+                     "OBS"=> $obs_notifi, "VENCIDO"=>"S");
+                    $est=DB::table("vtos")->insert( $Datos);
+                    if(!$FLAG) { $it->FLAG="S"; $it->save(); $FLAG= true; }
+                 }
+            }elseif(  intval($it->NOTIFI3_V) > 0  )  {
+                $fecha_ven= ($this->get_fecha_vencimiento( $it->NOTIFI_3 )) ; 
+                if($fecha_ven != "") 
+                {
+                    $Datos= array(  "IDNRO"=>$it->IDNRO, "FECHA"=> $it->NOTIFI_3,"FECHAV"=> $fecha_ven,   "VENCIDO"=>"N");
+                    $est=DB::table("vtos")->insert( $Datos);
+                    if(!$FLAG) { $it->FLAG="S"; $it->save(); $FLAG= true; }
+                 } 
+            }
+           
             //Quinto escenario
-            if( ($this->es_notifi_vencida( $it->NOTIFI_4 ))['vencido'] &&  strlen($it->ADJ_APROBA) <= 1){
-                $obs_notifi= "Adj. Aprob. venció al ". ($this->es_notifi_vencida(  $it->NOTIFI_4))['fechavenci']; 
-             
-            }  
+            if( $this->fecha_valida($it->NOTIFI_4) &&  intval($it->NOTIFI4_V)<=0 &&   ($it->ADJ_APROBA=="0000-00-00" || $it->ADJ_APROBA=="")){
+                $fecha_ven= ($this->get_fecha_vencimiento( $it->NOTIFI_4 )) ;
+                
+                 if($fecha_ven != ""){ 
+                    $obs_notifi= "Notificacion 4. Adj. Aprob. venció el ". $fecha_ven; 
+                    $Datos= array(  "IDNRO"=>$it->IDNRO, "FECHA"=> $it->NOTIFI_4,"FECHAV"=> $fecha_ven,
+                     "OBS"=> $obs_notifi , "VENCIDO"=> "S"); 
+                    $est=DB::table("vtos")->insert( $Datos);  
+                    if(!$FLAG) { $it->FLAG="S"; $it->save(); $FLAG= true; }
+                }
+            }elseif(  intval($it->NOTIFI4_V) > 0 ){
+                $fecha_ven= ($this->get_fecha_vencimiento( $it->NOTIFI_4 )) ; 
+                if($fecha_ven != "") 
+               {
+                   $Datos= array(  "IDNRO"=>$it->IDNRO, "FECHA"=> $it->NOTIFI_4,"FECHAV"=> $fecha_ven, "VENCIDO"=> "N");
+                   $est=DB::table("vtos")->insert( $Datos); 
+                   if(!$FLAG) { $it->FLAG="S"; $it->save(); $FLAG= true; }
+                }
+            }
             //Sexto escenario
-            if( ($this->es_notifi_vencida( $it->NOTIFI_5 ))['vencido'] &&  strlen($it->ADJ_OFICIO) <= 1){
-                $obs_notifi= "Adj. Oficio. venció al ". ($this->es_notifi_vencida(  $it->NOTIFI_5))['fechavenci']; 
+            if(  $this->fecha_valida($it->NOTIFI_5) &&  intval( $it->NOTIFI5_V )<=0 &&  ($it->ADJ_OFICIO=="0000-00-00" || $it->ADJ_OFICIO=="")  ){
+                $fecha_ven= ($this->get_fecha_vencimiento(  $it->NOTIFI_5)) ;
+                 if($fecha_ven != "") 
+                {
+                    $obs_notifi= "Notificacion 5. Adj. Oficio. venció al ". $fecha_ven; 
+                    $Datos= array(  "IDNRO"=>$it->IDNRO, "FECHA"=> $it->NOTIFI_5,"FECHAV"=> $fecha_ven,
+                     "OBS"=> $obs_notifi , "VENCIDO"=> "S");
+                    $est=DB::table("vtos")->insert( $Datos); 
+                    if(!$FLAG) { $it->FLAG="S"; $it->save(); $FLAG= true; }
+                }
+            }elseif(  intval( $it->NOTIFI5_V ) >0 ){
+                $fecha_ven= ($this->get_fecha_vencimiento(  $it->NOTIFI_5)) ;
+                if($fecha_ven != "") 
+                {
+                    $Datos= array(  "IDNRO"=>$it->IDNRO, "FECHA"=> $it->NOTIFI_5,"FECHAV"=> $fecha_ven, "VENCIDO"=> "N");
+                    $est=DB::table("vtos")->insert( $Datos);
+                    if(!$FLAG) { $it->FLAG="S"; $it->save(); $FLAG= true; }
+                }  
+            }
+             //Septimo escenario
+             if(  $this->fecha_valida( $it->NOTIFI1_AI_TIT) &&   intval( $it->NOTIFI1_AI_TIT_V )<=0  ){
+                $fecha_ven= ($this->get_fecha_vencimiento(  $it->NOTIFI1_AI_TIT)) ;
+                if($fecha_ven != "") 
+                {
+                    $obs_notifi= "Notificación 1 A.I. al titular venció al ". $fecha_ven; 
+                    $Datos= array(  "IDNRO"=>$it->IDNRO, "FECHA"=> $it->NOTIFI1_AI_TIT,"FECHAV"=> $fecha_ven, 
+                    "OBS"=> $obs_notifi, "VENCIDO"=> "S");
+                    $est=DB::table("vtos")->insert( $Datos); 
+                    if(!$FLAG) { $it->FLAG="S"; $it->save(); $FLAG= true; }
+                } 
+            }elseif( intval( $it->NOTIFI1_AI_TIT_V )  > 0 ){
+                $fecha_ven= ($this->get_fecha_vencimiento(  $it->NOTIFI1_AI_TIT)); 
+                if($fecha_ven != "") 
+                {
+                    $Datos= array(  "IDNRO"=>$it->IDNRO, "FECHA"=> $it->NOTIFI1_AI_TIT,"FECHAV"=> $fecha_ven, "VENCIDO"=> "N");
+                    $est=DB::table("vtos")->insert( $Datos);
+                    if(!$FLAG) { $it->FLAG="S"; $it->save(); $FLAG= true; }
+                } 
+            }
+             //Octavo escenario
+             if( $this->fecha_valida($it->NOTIFI1_AI_GAR ) &&   intval( $it->NOTIFI1_AI_GAR_V )<=0  ){
+                $fecha_ven= ($this->get_fecha_vencimiento(  $it->NOTIFI1_AI_GAR)) ;
+                if($fecha_ven != "") 
+                {
+                    $obs_notifi= "Notificación 1 A.I. al garante venció al ". $fecha_ven; 
+                    $Datos= array(  "IDNRO"=>$it->IDNRO, "FECHA"=> $it->NOTIFI1_AI_GAR,"FECHAV"=> $fecha_ven, 
+                    "OBS"=> $obs_notifi, "VENCIDO"=> "S");
+                    $est=DB::table("vtos")->insert( $Datos);
+                    if(!$FLAG) { $it->FLAG="S"; $it->save(); $FLAG= true; }
+                }
+            }elseif(  intval( $it->NOTIFI1_AI_GAR_V ) > 0 ){
+                $fecha_ven= ($this->get_fecha_vencimiento(  $it->NOTIFI1_AI_GAR)) ; 
+                if($fecha_ven != "") 
+                    {
+                    $Datos= array(  "IDNRO"=>$it->IDNRO, "FECHA"=> $it->NOTIFI1_AI_GAR,"FECHAV"=> $fecha_ven, "VENCIDO"=> "N");
+                    $est=DB::table("vtos")->insert( $Datos);
+                    if(!$FLAG) { $it->FLAG="S"; $it->save(); $FLAG= true; }
+                } 
+            }
+
+            //Noveno escenario
+            if(   $this->fecha_valida( $it->NOTIFI2_AI_TIT) &&   intval( $it->NOTIFI2_AI_TIT_V )<=0  ){
+                $fecha_ven= ($this->get_fecha_vencimiento(  $it->NOTIFI2_AI_TIT)) ;
+                if($fecha_ven != "") 
+                {
+                    $obs_notifi= "Notificación 2 A.I. al Titular venció al ". $fecha_ven; 
+                    $Datos= array(  "IDNRO"=>$it->IDNRO, "FECHA"=> $it->NOTIFI2_AI_TIT,"FECHAV"=> $fecha_ven, 
+                    "OBS"=> $obs_notifi, "VENCIDO"=> "S");
+                    $est=DB::table("vtos")->insert( $Datos); 
+                    if(!$FLAG) { $it->FLAG="S"; $it->save(); $FLAG= true; }
+                }
+            }elseif(  intval( $it->NOTIFI2_AI_TIT_V ) > 0 ){
+                $fecha_ven= ($this->get_fecha_vencimiento(  $it->NOTIFI2_AI_TIT)) ; 
+                if($fecha_ven != "") 
+                {
+                    $Datos= array(  "IDNRO"=>$it->IDNRO, "FECHA"=> $it->NOTIFI2_AI_TIT,"FECHAV"=> $fecha_ven, "VENCIDO"=> "N");
+                    $est=DB::table("vtos")->insert( $Datos); 
+                    if(!$FLAG) { $it->FLAG="S"; $it->save(); $FLAG= true; }
+                }
+            }
+            //decimo escenario
+            if(  $this->fecha_valida( $it->NOTIFI2_AI_GAR) &&  intval( $it->NOTIFI2_AI_GAR_V )<=0  ){
+                $fecha_ven= ($this->get_fecha_vencimiento(  $it->NOTIFI2_AI_GAR)) ;
+                if($fecha_ven != "") {
+                    $obs_notifi= "Notificación 2 A.I. al Garante venció al ". $fecha_ven; 
+                    $Datos= array(  "IDNRO"=>$it->IDNRO, "FECHA"=> $it->NOTIFI2_AI_GAR,"FECHAV"=> $fecha_ven,
+                     "OBS"=> $obs_notifi, "VENCIDO"=> "S");
+                    $est=DB::table("vtos")->insert( $Datos);  
+                    if(!$FLAG) { $it->FLAG="S"; $it->save(); $FLAG= true; }
+                }
+                
+            }elseif( intval( $it->NOTIFI2_AI_GAR_V ) > 0  ){
+                $fecha_ven= ($this->get_fecha_vencimiento(  $it->NOTIFI2_AI_GAR)) ; 
+                if($fecha_ven != "") 
+                {
+                    $Datos= array(  "IDNRO"=>$it->IDNRO, "FECHA"=> $it->NOTIFI2_AI_GAR,"FECHAV"=> $fecha_ven, "VENCIDO"=> "N");
+                    $est=DB::table("vtos")->insert( $Datos); 
+                    if(!$FLAG) { $it->FLAG="S"; $it->save(); $FLAG= true; }
+                } 
+            }
             
-            } 
-            
-            $Datos= array(
-                "TITULAR"=> $it->TITULAR,"DEMANDANTE"=> $it->DEMANDANTE,"COD_EMP"=> $it->COD_EMP,
-                "JUZGADO"=> $it->JUZGADO,"ACTUARIA"=> $it->ACTUARIA,"JUEZ"=> $it->JUEZ,"DEMANDA"=> $it->DEMANDA,
-                "SALDO"=> $it->SALDO,"EMBARGO_NR"=> $it->EMBARGO_NR,"FEC_EMBARG"=> $it->FEC_EMBARG,
-                "INSTITUCIO"=> $it->INSTITUCIO,"INST_TIPO"=> $it->INST_TIPO,"FECHA"=> $fechaHoy,"OBS"=> $obs_notifi
-            );
-            //$est=DB::table("vtos")->insert( $Datos);
-            //var_dump($est);
-        }//END FOREACH
-       
+            DB::commit();
+        }//End try
+        catch(Exception $e){   DB::rollBack();    break;}
+        endforeach;
+      return redirect(  "dema-noti-venc");
     }
 /**
  * Lista de demandas con fecha de  notificaciones vencidas
  */
     public function notificaciones_venc(){
-        $vtos= DB::table("vtos")->get(); 
+     
+        $vtos= DB::table("vtos") 
+        ->join("demandas2", "demandas2.IDNRO","=","vtos.IDNRO")
+        ->join("demandado", "demandas2.CI","=","demandado.CI")
+        ->join("demandan","demandas2.DEMANDANTE", "=","demandan.IDNRO", "left")
+        ->select("demandas2.CI", "demandas2.IDNRO AS DEMANDA", "demandado.TITULAR","demandan.DESCR as DEMANDANTE","COD_EMP",
+        "vtos.FECHA", "vtos.FECHAV","vtos.OBS",
+        DB::raw('DATEDIFF( vtos.FECHAV, NOW()) AS VENCIDO') );
+
+        if( strtolower(  request()->method()  )  == "post"){
+            $datos= request();
+            $modo= $datos['modo'];
+            $Desde= $datos['Desde'];
+            $Hasta= $datos['Hasta'];
+            if($modo=="NV")
+            $vtos= $vtos->where( DB::raw('DATEDIFF( vtos.FECHAV, NOW())'),">","0");
+            if($modo=="V")
+            $vtos= $vtos->where( DB::raw('DATEDIFF( vtos.FECHAV, NOW())'),"<=","0");
+            if( $Desde!=""  &&  $Hasta!="")
+            { 
+                $vtos= $vtos->whereDate(  "vtos.FECHAV",">=", $Desde);
+                $vtos= $vtos->whereDate(  "vtos.FECHAV","<=", $Hasta);
+            }
+        }
+
+        $vtos=$vtos->paginate(20); 
+
+        if( request()->ajax())
+        return view('notificaciones.grilla', ['lista' => $vtos ]); 
+        else
         return view('notificaciones.list_noti_venc', ['lista' => $vtos ]); 
     }
 
 
  
 
+
+
+    public function borrar_noti_vencidas(){
+        DB::beginTransaction();
+       try{
+        $borrar= DB::table("vtos")
+        ->where( DB::raw('DATEDIFF(FECHAV, NOW())'),"<=","0")
+        ->delete();
+        DB::commit();
+        return redirect("dema-noti-venc");
+       }catch(Exception $ex){
+           DB::rollBack();
+           echo "Error al borrar notificaciones vencidas";
+       }
+        
+    }
 
 
 }

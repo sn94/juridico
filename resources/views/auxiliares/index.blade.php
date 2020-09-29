@@ -6,6 +6,8 @@
 @endsection
 
 @section('content')
+ 
+
 
 <div class="form-group">
   <label for="actuaria">TIPO:</label>
@@ -125,7 +127,7 @@ $.ajax(
        success: function(res){
         $( divname).html( "");
            let r= JSON.parse(res);
-           if("ok" in r) alert( r.ok); 
+           if("ok" in r) {  }
             else alert( r.error) ;
             act_grilla();
        },

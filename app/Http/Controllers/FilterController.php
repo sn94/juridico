@@ -252,21 +252,40 @@ if($clave=="DEMANDANTE"){
     ->first(); 
     $valor= !is_null( $x )? $x->DESCR: $valor ;
 }
-    if( $clave=="TITULAR")
+elseif( $clave=="TITULAR")
        { //cortar a 31 caracteres
         if( strlen( trim($valor) )  > 31) $valor= substr($valor, 0, 30);
            $html.="<td class=\"titular\">  $valor</td>";
         }
-    else{
-        $cssclass= strtolower($clave);
-        $html.="<td class=\"$cssclass\">  $valor</td>";
-     
-    }
+elseif( $clave=="O_DEMANDA"){//O_DEMANDA
+
+    $ori= DB::table("odemanda")->where("IDNRO", $valor)->first();
+    if( !is_null($ori))    $html.="<td class=\"odemanda\"> $ori->CODIGO</td>";
+    
+}elseif( $clave=="JUZGADO"){
+    //JUZGADO
+    $ori= DB::table("juzgado")->where( "IDNRO",$valor)->first();
+    if( !is_null($ori))    $html.="<td class=\"juzgado\"> $ori->DESCR</td>";
+
+}elseif( $clave=="ACTUARIA"){
+    //ACTUARIA
+    $ori= DB::table("actuaria")->where( "IDNRO",$valor)->first();
+    if( !is_null($ori))    $html.="<td class=\"actuaria\"> $ori->DESCR</td>";
+}
+elseif( $clave=="JUEZ"){
+    //ACTUARIA
+    $ori= DB::table("juez")->where( "IDNRO",$valor)->first();
+    if( !is_null($ori))    $html.="<td class=\"juez\"> $ori->DESCR</td>";
+}else{
+
+    $cssclass= strtolower($clave);
+    $html.="<td class=\"$cssclass\">  $valor</td>";
+}
    
    return $html;
 }
 
-public function  reporte( $id_consulta, $tipo="xls"){
+public function  reporte( $id_consulta, $tipo="xls", $onlyHtml= "N"){
     set_time_limit(0);
     ini_set('memory_limit', '-1');
     $Filtro= Filtros::find( $id_consulta);
@@ -365,7 +384,12 @@ public function  reporte( $id_consulta, $tipo="xls"){
           $pdf = new PDF("L"); 
             $pdf->prepararPdf("$tituloDocumento.pdf", $tituloDocumento, ""); 
             $pdf->generarHtml( $html);
+            if( $onlyHtml=="N")
             $pdf->generar();
+            else{
+                
+                echo $html;
+            }
         }
           }//End Pdf gen
 }

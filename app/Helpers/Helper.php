@@ -1,6 +1,8 @@
 <?php
 namespace App\Helpers;
 use Exception;
+use Mockery\Undefined;
+
 class Helper
 {
     
@@ -66,5 +68,51 @@ class Helper
         }
         return $retorna;
       }
+
+
+
+
+public static   function dayName( $Dia=""){
+  $Dia=   $Dia=="" ?  date("N")  : $Dia;
+$DiaH="";
+switch( $Dia){
+    case 1:  $DiaH= "lunes";break;
+    case 2:  $DiaH= "martes";break;
+    case 3:  $DiaH= "miercoles";break;
+    case 4:  $DiaH= "jueves";break;
+    case 5:  $DiaH= "viernes";break;
+    case 6:  $DiaH= "sabado";break;
+    case 7:  $DiaH= "domingo";break;
+}  return   $DiaH;
+}
+      
+public  static function monthDescr($m=""){
+  $m=  $m== ""? date("n"): $m;
+  $r="";
+  switch( $m){
+      case 1: return "Enero";break;
+      case 2: return "Febrero";break;
+      case 3: return "Marzo";break;
+      case 4: return "Abril";break;
+      case 5: return "Mayo";break;
+      case 6: return "Junio";break;
+      case 7: return "Julio";break;
+      case 8: return "Agosto";break;
+      case 9: return "Septiembre";break;
+      case 10: return "Octubre";break;
+      case 11: return "Noviembre";break;
+      case 12: return "Diciembre";break;
+  }  return $r;
+}
+
+
+public static function fechaDescriptiva(){
+  $dia= Helper::dayName();
+  $mes= Helper::monthDescr();
+  $anio= date("Y");
+  $fechacompleta=  $dia.", ".(date("d"))." de $mes del $anio";
+  return $fechacompleta;
+}
+
 
 }

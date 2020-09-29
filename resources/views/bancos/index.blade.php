@@ -144,9 +144,7 @@ function ajaxCall( e, divnam, succes){
            $( divname).html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
          },
          success: succes,
-         error: function(){
-           $( divname).html(  "<h6 style='color:red;'>Problemas de conexión</h6>" ); 
-         }
+         error: function(){  $( divname).html(  "<h6 style='color:red;'>Problemas de conexión</h6>" );   }
        }
      );
 }

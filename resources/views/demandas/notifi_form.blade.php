@@ -49,7 +49,7 @@
       </div>
 
       <div class="form-group">
-        <label for="ctactecatas">Notificación:</label>
+        <label for="ctactecatas">1° Notificación:</label>
       <input   value="{{Helper::fecha_f((! isset($ficha2) ? '' : $ficha2-> NOTIFI_1))}}" name="NOTIFI_1"   type="date"    class="form-control form-control-sm   ">
       </div>
 
@@ -72,12 +72,16 @@
         <label for="ctactecatas">Intimación:</label>
       <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2-> INTIMACI_1)}}" name="INTIMACI_1"   type="date"     class="form-control form-control-sm   ">
     </div>
-
     <div class="form-group"> 
-      <label for="ctactecatas">Notificación:</label>
-      <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2-> INTIMACI_2)}}" name="INTIMACI_2"   type="date"      class="form-control form-control-sm   ">
-      </div>
+        <label for="ctactecatas">Noti. A.I.Titular:</label>
+      <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2->NOTIFI1_AI_TIT)}}" name="NOTIFI1_AI_TIT"   type="date"     class="form-control form-control-sm   ">
+    </div>
+    <div class="form-group"> 
+        <label for="ctactecatas">Noti. A.I.Garante:</label>
+      <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2->NOTIFI1_AI_GAR)}}" name="NOTIFI1_AI_GAR"   type="date"     class="form-control form-control-sm   ">
+    </div>
 
+   
 </div><!--COLUMNA 1-->
 
 
@@ -85,6 +89,19 @@
  <!--COLUMNA 2-->
 <div class="col-12 col-sm-6 col-md-6 col-lg-3 verde1" >
 
+<div class="form-group"> 
+      <label for="ctactecatas">Intimación 2:</label>
+      <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2-> INTIMACI_2)}}" name="INTIMACI_2"   type="date"      class="form-control form-control-sm   ">
+      </div>
+      <div class="form-group"> 
+        <label for="ctactecatas">Notif.2 A.I.Titular:</label>
+      <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2->NOTIFI2_AI_TIT)}}" name="NOTIFI2_AI_TIT"   type="date"     class="form-control form-control-sm   ">
+    </div>
+    <div class="form-group"> 
+        <label for="ctactecatas">Notif.2 A.I.Garante:</label>
+      <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2->NOTIFI2_AI_GAR)}}" name="NOTIFI2_AI_GAR"   type="date"     class="form-control form-control-sm   ">
+    </div>
+    
 <div class="form-group"> <label for="ctactecatas">Adj. Citación:</label>
       <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2-> CITACION)}}" name="CITACION"   type="date"   class="form-control form-control-sm   ">
     </div>
@@ -94,7 +111,7 @@
       <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2-> PROVI_CITA)}}" name="PROVI_CITA"   type="date"     class="form-control form-control-sm   ">
     </div> 
 
-<div class="form-group"> <label for="ctactecatas">Notificación:</label>
+<div class="form-group"> <label for="ctactecatas">2° Notificación:</label>
       <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2-> NOTIFI_2)}}" name="NOTIFI_2"   type="date"     class="form-control form-control-sm   ">
     </div>
 
@@ -115,7 +132,7 @@
       <input  maxlength="9"   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2-> SD_FINIQUI)}}" 	     type="text"     name="SD_FINIQUI"    class="form-control form-control-sm   ">
     </div>
 
-     <div class="form-group"> <label for="ctactecatas">Notificación:</label>
+     <div class="form-group"> <label for="ctactecatas">3° Notificación:</label>
       <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2->NOTIFI_3)}}" name="NOTIFI_3"   type="date"    class="form-control form-control-sm   ">
     </div>
 
@@ -137,7 +154,7 @@
 
     <!--NOTIFI 4 --> 
     <div class="form-group"> 
-      <label for="ctactecatas">Notificación:</label> 
+      <label for="ctactecatas">4° Notificación:</label> 
       <input   value="{{ Helper::fecha_f( !isset($ficha2) ? '' : $ficha2->NOTIFI_4) }}" name="NOTIFI_4" type="date"   class="form-control form-control-sm   ">
     </div>
 
@@ -154,7 +171,7 @@
     </div>
 
     <!-- NOTIFI_5 --> 
-    <div class="form-group"> <label  >Notificación:</label>
+    <div class="form-group"> <label  >5° Notificación:</label>
       <input   value="{{   Helper::fecha_f( !isset($ficha2) ? '' : $ficha2->NOTIFI_5 )  }}" name="NOTIFI_5" type="date"  class="form-control form-control-sm   ">
     </div>
 
@@ -233,7 +250,7 @@
     
 
     <div class="form-group">
-      <label for="ctactecatas">Notificación:</label>
+      <label for="ctactecatas">Notif. Honorarios:</label>
       <input   value="{{Helper::fecha_f(! isset($ficha2) ? '' : $ficha2->NOTIFI_HONOIVA )}}" name="NOTIFI_HONOIVA"   type="date"     class="form-control form-control-sm   ">
     </div> 
 
@@ -241,11 +258,11 @@
                     <div class="col-12 col-sm-5 col-md-6"> <label >Con depósito:</label><br>  </div>
                     <div class="col-12 col-sm-7 col-md-6">
                          <div class="form-check form-check-inline">
-                         <input {{isset($dato->CON_DEPOSITO)? (  $dato->CON_DEPOSITO =="S"?"checked":"") : ''}} onchange="cambiar(event)"  class="form-check-input" type="radio" name="CON_DEPOSITO" id="inlineRadio1" value="S">
+                         <input {{isset($ficha2->CON_DEPOSITO)? (  $ficha2->CON_DEPOSITO =="S"?"checked":"") : ''}} onchange="cambiar(event)"  class="form-check-input" type="radio" name="CON_DEPOSITO" id="inlineRadio1" value="S">
                          <label class="form-check-label" for="inlineRadio1">SI</label>
                          </div>
                          <div class="form-check form-check-inline">
-                         <input {{isset($dato->CON_DEPOSITO)? (  $dato->CON_DEPOSITO =="N"?"checked":""): ''}}  onchange="cambiar(event)" class="form-check-input" type="radio" name="CON_DEPOSITO" id="inlineRadio2" value="N">
+                         <input {{isset($ficha2->CON_DEPOSITO)? (  $ficha2->CON_DEPOSITO =="N"?"checked":""): ''}}  onchange="cambiar(event)" class="form-check-input" type="radio" name="CON_DEPOSITO" id="inlineRadio2" value="N">
                          <label class="form-check-label" for="inlineRadio2">NO</label>
                          </div>
                     </div>
@@ -321,11 +338,11 @@
       <div class="col-6 col-sm-6 col-md-12">
       <div class="form-group"> <label >Inmueble:</label><br> 
                          <div class="form-check form-check-inline">
-                         <input {{isset($dato->EMB_INMUEBLE)? (  $dato->EMB_INMUEBLE =="S"?"checked":"") : ''}} onchange="cambiar(event)"  class="form-check-input" type="radio" name="EMB_INMUEBLE" id="inlineRadio1" value="S">
+                         <input {{isset($ficha2->EMB_INMUEBLE)? (  $ficha2->EMB_INMUEBLE =="S"?"checked":"") : ''}} onchange="cambiar(event)"  class="form-check-input" type="radio" name="EMB_INMUEBLE" id="inlineRadio1" value="S">
                          <label class="form-check-label" for="inlineRadio1">SI</label>
                          </div>
                          <div class="form-check form-check-inline">
-                         <input {{isset($dato->EMB_INMUEBLE)? (  $dato->EMB_INMUEBLE =="N"?"checked":""): ''}}  onchange="cambiar(event)" class="form-check-input" type="radio" name="EMB_INMUEBLE" id="inlineRadio2" value="N">
+                         <input {{isset($ficha2->EMB_INMUEBLE)? (  $ficha2->EMB_INMUEBLE =="N"?"checked":""): ''}}  onchange="cambiar(event)" class="form-check-input" type="radio" name="EMB_INMUEBLE" id="inlineRadio2" value="N">
                          <label class="form-check-label" for="inlineRadio2">NO</label>
                          </div>
                     </div>
@@ -334,11 +351,11 @@
       <div class="form-group"> <label >Vehículo:</label><br>
                     
                     <div class="form-check form-check-inline">
-                    <input {{isset($dato->EMB_VEHICULO)? (  $dato->EMB_VEHICULO =="S"?"checked":"") : ''}} onchange="cambiar(event)"  class="form-check-input" type="radio" name="EMB_VEHICULO" id="inlineRadio1" value="S">
+                    <input {{isset($ficha2->EMB_VEHICULO)? (  $ficha2->EMB_VEHICULO =="S"?"checked":"") : ''}} onchange="cambiar(event)"  class="form-check-input" type="radio" name="EMB_VEHICULO" id="inlineRadio1" value="S">
                     <label class="form-check-label" for="inlineRadio1">SI</label>
                     </div>
                     <div class="form-check form-check-inline">
-                    <input {{isset($dato->EMB_VEHICULO)? (  $dato->EMB_VEHICULO =="N"?"checked":""): ''}}  onchange="cambiar(event)" class="form-check-input" type="radio" name="EMB_VEHICULO" id="inlineRadio2" value="N">
+                    <input {{isset($ficha2->EMB_VEHICULO)? (  $ficha2->EMB_VEHICULO =="N"?"checked":""): ''}}  onchange="cambiar(event)" class="form-check-input" type="radio" name="EMB_VEHICULO" id="inlineRadio2" value="N">
                     <label class="form-check-label" for="inlineRadio2">NO</label>
                     </div>
                </div> 

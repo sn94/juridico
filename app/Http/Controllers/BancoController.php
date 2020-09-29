@@ -31,6 +31,44 @@ class BancoController extends Controller
 
 
 
+    public function informes( $tipo="html"){ 
+        $datos= request()->input();
+
+        $banco_obj= DB::table("ctas_banco")->join("ctasban_mov", "ctasban_mov.IDBANCO", "=", "ctas_banco.IDNRO")
+        ->select("TITULAR","ctas_banco.CUENTA","ctas_banco.BANCO", DB::raw("IF(TIPO_MOV='D', IMPORTE,'') AS DEPOSITO"),
+        DB::raw("IF(TIPO_MOV='E', IMPORTE,'') AS EXTRACCION"), "FECHA" );
+      
+        if( sizeof( $datos) ){
+            if(  $datos['CUENTA'] != "" )
+            $banco_obj= $banco_obj->where("ctas_banco.CUENTA",   $datos['CUENTA'] ); 
+            if(  $datos['Desde'] != ""      &&    $datos['Hasta'] != "" )
+            $banco_obj= $banco_obj->whereDate("FECHA", ">=",  $datos['Desde']  )->whereDate("FECHA", "<=", $datos['Hasta']);
+        }
+        $lista_cruda= $banco_obj;
+        $banco_obj=  $banco_obj->get();
+
+       
+        if( request()->ajax())
+        {
+            if( $tipo=="html")
+            return view("bancos.grilla_plain", ["movi"=>  $banco_obj, "breadcrumbcolor"=>"#a3c5fc;"] );
+            if( $tipo=="json")
+            echo json_encode(  $banco_obj );
+            if( $tipo=="pdf")
+            $this->reporte_movimientos_b64("BANCOS", $lista_cruda);
+        }
+        else{
+            if($tipo== "html")
+            return view("bancos.informe", ["movi"=>  $banco_obj, "breadcrumbcolor"=>"#a3c5fc;"] );
+            if($tipo== "pdf")
+            $this->reporte_movimientos("MOVIMIENTOS DE CUENTAS BANCARIAS", $lista_cruda);
+        }
+       
+     }
+
+
+
+
     public function agregar(Request $request){
         if( sizeof(  $request->all() )  > 0){
             //Verificar si ya existe el numero de cuenta
@@ -290,6 +328,199 @@ public function reporte( $idnro, $tipo="xls"){
 
 }//End reporte function
  
+
+
+
+/*
+$b64Doc = chunk_split(base64_encode(file_get_contents($this->pdfdoc)));
+*/
+
+public function  reporte_movimientos( $Titulo,  $dts){
+    set_time_limit(0);
+    ini_set('memory_limit', '-1');
+     // Genera un PDF
+
+    //EJECUTAR;
+        $Titulo=  $Titulo ;
+        $html=<<<EOF
+         <style>
+         th{
+             font-size:6pt;
+             font-weight: bold;
+             background-color: #bac0fe;
+             color: #060327
+         }
+         .cuenta{
+            width: 55px;
+            text-align: center;
+         }
+         .banco{
+            width: 40px;
+            text-align: center;
+         }
+         .titular{
+             width: 95px;
+         }
+         .deposito,.extraccion, .fecha{
+            width: 60px;
+             text-align: right;
+         }
+         
+         .row{
+             font-size: 6pt;
+         }
+         </style>
+         <table>
+        <thead>
+        <tr>
+        EOF;
+        
+        //Columnas automaticas
+        $cols=0;
+        $resultados=  $dts->get();
+         foreach( $resultados as $objeto):
+            foreach( $objeto as $clave=>$valor): 
+               $css_class= strtolower($clave);
+               $html.="<th class=\"$css_class\">$clave</th>"; 
+            endforeach;
+        break;
+         endforeach;
+         $html.="</tr></thead><tbody>";
+      
+
+      
+       foreach( $resultados as $objeto): 
+       
+            $html.='<tr class="row">'; 
+          
+            foreach($objeto as $clave=>$valor): 
+                $css_class= strtolower($clave);
+                $valor= ( $clave== "DEPOSITO" ||  $clave== "EXTRACCION") ? Helper::number_f($valor) : ( $clave=="FECHA"? Helper::beautyDate($valor): $valor);
+                $html.="<td class=\"$css_class\">$valor</td>";   
+                
+            endforeach;
+            $html.="</tr>";  
+        endforeach; 
+
+        //total deposito y extraccion
+        $totales= $dts;
+        $tot_= $totales->sum("IMPORTE"); ;
+        $tot_depo= $dts->where("TIPO_MOV","D")->sum("IMPORTE"); 
+        $tot_extr= abs(  intval($tot_) - $tot_depo );
+        
+        $tot_depo_= Helper::number_f($tot_depo); 
+        $tot_extr_= Helper::number_f($tot_extr);   
+
+        $html.= <<<EOF
+        <tr class="row"><td class="titular"></td><td class="banco"></td><td class="cuenta"></td><td class="deposito">$tot_depo_</td><td class="extraccion">$tot_extr_</td><td class="fecha"></td></tr>
+        </tbody></table>"
+        EOF;
+
+      // echo $html;
+        $tituloDocumento= $Titulo."-".date("d")."-".date("m")."-".date("yy")."-".rand();
+       $pdf = new PDF(); 
+     $pdf->prepararPdf("$tituloDocumento.pdf", $tituloDocumento, ""); 
+        $pdf->generarHtml( $html);
+        $pdf->generar();  
+         
+}
+
+
+
+
+public function  reporte_movimientos_b64( $Titulo,  $dts){
+    set_time_limit(0);
+    ini_set('memory_limit', '-1');
+     // Genera un PDF
+
+    //EJECUTAR;
+        $Titulo=  $Titulo ;
+        $html=<<<EOF
+         <style>
+         th{
+             font-size:6pt;
+             font-weight: bold;
+             background-color: #bac0fe;
+             color: #060327
+         }
+         .cuenta{
+            width: 55px;
+            text-align: center;
+         }
+         .banco{
+            width: 40px;
+            text-align: center;
+         }
+         .titular{
+             width: 95px;
+         }
+         .deposito,.extraccion, .fecha{
+            width: 60px;
+             text-align: right;
+         }
+         
+         .row{
+             font-size: 6pt;
+         }
+         </style>
+         <table>
+        <thead>
+        <tr>
+        EOF;
+        
+        //Columnas automaticas
+        $cols=0;
+        $resultados=  $dts->get();
+         foreach( $resultados as $objeto):
+            foreach( $objeto as $clave=>$valor): 
+               $css_class= strtolower($clave);
+               $html.="<th class=\"$css_class\">$clave</th>"; 
+            endforeach;
+        break;
+         endforeach;
+         $html.="</tr></thead><tbody>";
+      
+
+      
+       foreach( $resultados as $objeto): 
+       
+            $html.='<tr class="row">'; 
+          
+            foreach($objeto as $clave=>$valor): 
+                $css_class= strtolower($clave);
+                $valor= ( $clave== "DEPOSITO" ||  $clave== "EXTRACCION") ? Helper::number_f($valor) : ( $clave=="FECHA"? Helper::beautyDate($valor): $valor);
+                $html.="<td class=\"$css_class\">$valor</td>";   
+                
+            endforeach;
+            $html.="</tr>";  
+        endforeach; 
+
+        //total deposito y extraccion
+        $totales= $dts;
+        $tot_= $totales->sum("IMPORTE"); ;
+        $tot_depo= $dts->where("TIPO_MOV","D")->sum("IMPORTE"); 
+        $tot_extr= abs(  intval($tot_) - $tot_depo );
+        
+        $tot_depo_= Helper::number_f($tot_depo); 
+        $tot_extr_= Helper::number_f($tot_extr);   
+
+        $html.= <<<EOF
+        <tr class="row"><td class="titular"></td><td class="banco"></td><td class="cuenta"></td><td class="deposito">$tot_depo_</td><td class="extraccion">$tot_extr_</td><td class="fecha"></td></tr>
+        </tbody></table>"
+        EOF;
+
+      // echo $html;
+        $tituloDocumento= $Titulo."-".date("d")."-".date("m")."-".date("yy")."-".rand();
+       $pdf = new PDF(); 
+     $pdf->prepararPdf("$tituloDocumento.pdf", $tituloDocumento, ""); 
+        $pdf->generarHtml( $html);
+        $salida= $pdf->generar_v2();  
+        $b64Doc = chunk_split(base64_encode(file_get_contents($salida)));
+        echo $b64Doc;
+         
+}
+
+
 
 
 

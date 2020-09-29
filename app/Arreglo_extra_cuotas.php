@@ -16,7 +16,7 @@ class Arreglo_extra_cuotas extends Model
 
     protected $primaryKey = 'IDNRO';
 
-    protected $fillable= [ 'ARREGLO', 'VENCIMIENTO','IMPORTE','FECHA_PAGO' ]; 
+    protected $fillable= [ 'ARREGLO' , 'NUMERO', 'VENCIMIENTO','IMPORTE','FECHA_PAGO' ]; 
 
     public $timestamps = false;
 

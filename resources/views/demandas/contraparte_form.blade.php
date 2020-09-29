@@ -26,19 +26,42 @@
 </div>
 
 <input id="IDNRO3"  type="hidden" name="IDNRO" value="{{isset($id_demanda)?$id_demanda:''}}">
- 
 
-      
 <!---HERE -->
 <div class="row">
   
-  <div class="col-12 col-md-8"> 
+<div class="col-12 col-sm-12 col-md-12 col-lg-4"> 
+<div class="row">
+<div class="col-12  col-sm-12 col-md-12"> 
     <div class="form-group">
         <label for="ctactecatas">Abogado:</label>
-        <input maxlength="40" value="{{! isset($ficha3) ? '' : $ficha3->ABOGADO}}" name="ABOGADO" type="text"  class="form-control form-control-sm   ">
+        <input maxlength="40" value="{{! isset($ficha4) ? '' : $ficha4->ABOGADO}}" name="ABOGADO" type="text"  class="form-control form-control-sm   ">
     </div>
     
   </div>
+  <div class="col-12 col-sm-12 col-md-12"> 
+    <div class="form-group">
+        <label for="ctactecatas">Dirección Legal:</label>
+        <input maxlength="80" value="{{! isset($ficha4) ? '' : $ficha4->DIRLEGAL}}" name="DIRLEGAL" type="text"  class="form-control form-control-sm   ">
+    </div>
+  </div>
+</div>
+</div>
+ 
+
+
+  <div class="col-12  col-sm-12 col-md-4 col-lg-4"> 
+    <div class="form-group">
+        <label for="">Observación:</label>
+        @php
+    echo Form::textarea('OBS', (! isset($ficha4) ? '' : $ficha4->OBS), [   'class'=> 'form-control form-control-sm','rows'=>4, 'maxlength'=>"120"]);
+    @endphp 
+      </div>
+  </div>
+
+
+
+
 </div> 
 
 

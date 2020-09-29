@@ -23,9 +23,9 @@ if( $detect->isMobile() == false){
       <th class="pb-0"></th>
       <th  class="pb-0"> {{$tipo=="E" ?"DESTINATARIO" : "REMITENTE"}}</th>
       <th class="pb-0">FECHA/HORA</th>  
-      @if(  $tipo== "E")
+     
       <th class="pb-0">LEÍDO</th>
-      @endif
+  
      </thead>
       <tbody>
         <?php  foreach( $lista as  $it) :?>
@@ -34,11 +34,11 @@ if( $detect->isMobile() == false){
           <td><a onclick="borrar(event)" href="<?=url("del-msg/".$it->IDNRO)?>" ><i class="fa fa-trash" aria-hidden="true"></i></a></td>
           <td>{{ $it->nick}}</td>
           <td> {{ Helper::beautyDate($it->created_at) }}   </td>   
-          @if(  $tipo== "E")
+          
           <td class="d-flex align-items-center">
             <input class="form-control form-control-sm" onchange="event.target.checked= !event.target.checked;"  type="checkbox" {{$it->LEIDO=="N" ? "" : "checked" }} >
           </td>
-          @endif
+           
       </tr>
         <?php endforeach; ?>
        

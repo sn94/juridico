@@ -9,7 +9,9 @@ $RUTA= $OPERACION == "A" ? url("ndemandado") : url("edemandado");
 
 {{csrf_field()}}
 
-
+@if( $OPERACION=="M")
+<input type="hidden" name="IDNRO" value="{{! isset($ficha0) ? '' : $ficha0->IDNRO}}">
+@endif
 
 <div id="persona-panel"></div>
 
@@ -21,7 +23,7 @@ $RUTA= $OPERACION == "A" ? url("ndemandado") : url("edemandado");
       <button type="submit" class="btn btn-success btn-sm mb-1" >Guardar</button>
       </div>
       <div class="col-12 col-md-2">
-        <div class="toast" role="alert" aria-live="polite" aria-atomic="true" data-delay="1000">
+        <div class="toast" role="alert" aria-live="polite" aria-atomic="true" data-delay="3000">
         <div role="alert" aria-live="assertive" aria-atomic="true" id="pers-msg">GUARDADO</div>
         </div>
       </div>
@@ -346,6 +348,7 @@ function campos_vacios(){
                habilitarCampos("formObser",true);
                habilitarCampos("formContra",true);
                habilitarCampos("formExtrajudi",true);
+               habilitarCampos("formHonorarios",true);
 }
 
 
@@ -354,7 +357,7 @@ function campos_vacios(){
 //TRAS haber registrado al demandado
 function distribuirClavesGene( id_demanda, cedula){
 
-  $("#formDeman input[name=IDNRO],#formNoti input[name=IDNRO],#formObser input[name=IDNRO],#formContra input[name=IDNRO],#formExtrajudi input[name=IDNRO]").val(id_demanda);
+  $("#formDeman input[name=IDNRO],#formNoti input[name=IDNRO],#formObser input[name=IDNRO],#formContra input[name=IDNRO],#formExtrajudi input[name=IDNRO],#formHonorarios input[name=IDNRO]").val(id_demanda);
 //Asignacion de clave a Demanda,Seguimiento,Observacion,Contraparte,Arreglo Extraj.
 //Asignar el numero de cedula
 $("input[name=CI]").val(  cedula); 
@@ -376,15 +379,23 @@ function enviarDatosPerso( ev){
    let res= jsonReceiveHandler( resp, divname);
    if( typeof res != "boolean" ){
                formEnviado= true;
+               
+               //Mostrar mensaje 
+               $(divname).html(  ""  ); //mensaje 
+               $("#pers-msg").text( "GUARDADO!");
+               $(".toast").toast("show"); 
+               //CONVERTIR A FORM DE EDICION
+               if( "IDNRO" in res){
+                  //obtener vista de edicion
+                  $.get("<?=url("edemandado")?>/"+res.IDNRO, function(vista){  $("#persona-collapse").html( vista);}  );
+                
+               }
                //Asignar ID DE DEMANDA si existe
                if( "id_demanda" in res) 
                distribuirClavesGene( res.id_demanda, res.ci );
                //HABILITAR FORMULARIOS RESTANTES
                habilitarFormJudiciales();
-               //Mostrar mensaje 
-               $(divname).html(  ""  ); //mensaje 
-               $("#pers-msg").text( "GUARDADO!");
-               $(".toast").toast("show"); 
+
    }
 };
 ajaxCall(ev, divname, success);  }   ;//end handler
