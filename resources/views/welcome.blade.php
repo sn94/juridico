@@ -5,7 +5,11 @@
 
 <?php  use App\Helpers\Helper; ?>
 
-<?php  if ($show == "S") {  ?>
+
+
+<?php  
+//******SOLO SUPERVISOR********* */
+if ($show == "S") {  ?>
      
 <div class="row">
 
@@ -61,7 +65,15 @@
 </div>
 
 
-<?php } ?>
+<?php }
+//solo SUPERVISOR
+?>
   
- 
+
+
+
+
+
+
+
 @endsection 

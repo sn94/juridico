@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 
-class AdminMiddleware
+class OperadorMiddleware
 {
     /**
      * Handle an incoming request.
@@ -15,12 +15,9 @@ class AdminMiddleware
      */
     public function handle($request, Closure $next)
     {
-
-        if( session("tipo") == "S")
+        if( session("tipo") == "O" ||   session("tipo") == "S")
         return $next($request);
         else
-        { 
-            return redirect("denegado");
-        }
+        return redirect("denegado");
     }
 }

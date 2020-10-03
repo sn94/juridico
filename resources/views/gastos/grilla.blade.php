@@ -20,7 +20,12 @@ $iconsize=  $dete->isMobile() ? "": "fa-lg";
 
 <table id="gastos" class="table  table-sm table-bordered  table-striped">
         <thead class="thead-dark" >
-            <tr><th></th><th></th>
+            <tr>
+              <th></th>
+              
+              @if( session("tipo")=="S" ) 
+              <th></th>
+              @endif
 
              <th >FECHA
              <a onclick="ordena_grilla('FECHA','A')" href="#"><i class="fa fa-arrow-up" aria-hidden="true"></i></a>
@@ -57,8 +62,11 @@ $iconsize=  $dete->isMobile() ? "": "fa-lg";
             <tr id="{{$it->IDNRO}}">
                
               <td><p class="pt-1 mr-1 ml-1 mb-0 text-center"><a onclick="mostrar_form(event)" data-toggle="modal" data-target="#showform"   href="<?= url("gasto/M/".$it->IDNRO) ?>"><i class="fa fa-pencil {{$iconsize}}" aria-hidden="true"></i></a></p></td>
+              
+              @if( session("tipo")=="S" )
               <td><p class="pt-1 mr-1 ml-1 mb-0 text-center"><a   onclick="borrar(event)" href="<?= url("dgasto/".$it->IDNRO) ?>"><i class="fa fa-trash {{$iconsize}}" aria-hidden="true"></i></a></p></td>
-           
+              @endif 
+
               <td  class="text-right"><p class="pt-1 mr-1 ml-1 mb-0"> {{  Helper::fecha_dma($it->FECHA) }} </p></td>
 
               <td  class="text-left"><p class="pt-1 mr-1 ml-1 mb-0">

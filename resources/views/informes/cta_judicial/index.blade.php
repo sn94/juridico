@@ -17,13 +17,13 @@
 @csrf
    
 <div class="row">
-<div class="col-2"> Cédula </div>
+ 
 <div class="col-10 col-md-3" >
 <div class="input-group mb-3">
   <div class="input-group-prepend">
     <span class="input-group-text" id="basic-addon1"><button style="border: none; background: none;" type="submit"><i class="mr-2 ml-2 fa fa-search fa-lg" aria-hidden="true"></i></button></span>
   </div>
-  <input id="CEDULA" type="text" name="CEDULA" class="form-control form-control" value="{{isset($CEDULA)?$CEDULA:'' }}">
+  <input id="CEDULA" placeholder="CEDULA" type="text" name="CEDULA" class="form-control form-control" value="{{isset($CEDULA)?$CEDULA:'' }}">
 </div>
 </div>
 </div>
@@ -49,7 +49,7 @@
     <a  id="info-xls" onclick="download_excel(event)" class="btn btn-sm btn-info" href="<?=url("informes-cuentajudicial/XLS")?>" ><i class="fa fa-file-excel-o fa-2x" aria-hidden="true"></i> <h3>EXCEL</h3></a>
    
     <a  id="info-pdf"  onclick="download_pdf(event)" class="btn btn-sm btn-info" href="<?=url("informes-cuentajudicial/PDF")?>" ><i class="fa fa-file-pdf-o fa-2x" aria-hidden="true"></i><h3>PDF</h3></a>
-    <a  id="info-print" class="btn btn-sm btn-info" href="#"><i class="fa fa-print fa-2x" aria-hidden="true"></i><h3>Printer</h3></a>
+    <a  id="info-print" onclick="print_( event)" class="btn btn-sm btn-info" href="<?=url("informes-cuentajudicial/S")?>"><i class="fa fa-print fa-2x" aria-hidden="true"></i><h3>Printer</h3></a>
     </div>
   </div>
 </div>
@@ -59,6 +59,23 @@
 
 <script>
 
+ 
+
+
+ function printDocument( html){
+   
+  
+  //print
+let documentTitle="ESTADO CTA. JUDICIAL";
+var ventana = window.open( "", 'PRINT', 'height=400,width=600,resizable=no');
+ventana.document.write("<style> @page   {  size:  auto;   margin: 0mm;  margin-left:10mm; }</style>");
+ventana.document.write( html);
+ventana.document.close(); 
+  ventana.focus();
+ventana.print();
+ventana.close();
+return true;
+}
 
  
 
@@ -91,13 +108,24 @@ function download_pdf( e){
 }
 
 
+function print_( e){
+  e.preventDefault();
+  let formu=document.getElementById("cuenta-judicial-search");
+   
+  ajaxCall( e.currentTarget.href, "#status", function(res){
+    $( "#status").html("");
+    printDocument(res);
+  },   {"CEDULA" : $("#CEDULA").val() });
+}
 
 function mostrar_informe(ev){
     ev.preventDefault();
     let pdf= ev.currentTarget.href+"/PDF";
     let xls= ev.currentTarget.href+"/XLS";
+    let pri=  ev.currentTarget.href+"/S";
      $("#info-xls").attr("href", xls );
      $("#info-pdf").attr("href", pdf  ); 
+     $("#info-print").attr("href", pri  ); 
   }
 
 

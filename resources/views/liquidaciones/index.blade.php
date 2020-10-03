@@ -38,9 +38,61 @@ if ($detect->isMobile() == false):?>
 
   
 
-
+<!-- MODAL TIPO DE INFORME -->
+<div id="show_opc_rep" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content" >
+    <a  id="info-xls" onclick="callToXlsGen(event, 'LIQUIDACIONES')" class="btn btn-sm btn-info" href="#" ><i class="fa fa-file-excel-o fa-2x" aria-hidden="true"></i> <h3>EXCEL</h3></a>
+   
+    <a  id="info-pdf"  class="btn btn-sm btn-info" href="#"><i class="fa fa-file-pdf-o fa-2x" aria-hidden="true"></i><h3>PDF</h3></a>
+    <a  id="info-print" onclick="printDocument(event)" class="btn btn-sm btn-info" href="#"><i class="fa fa-print fa-2x" aria-hidden="true"></i><h3>Printer</h3></a>
+    </div>
+  </div>
+</div>
 
 <script type="text/javascript">
+  function mostrar_informe(ev){
+    ev.preventDefault();
+    let report_path= ev.currentTarget.href; 
+    let id= (ev.currentTarget.parentNode.parentNode.id) ==undefined ? "" :  (ev.currentTarget.parentNode.parentNode.id) ;// TR ID 
+     let xlsr= id == "" ?  report_path+"/xls" : report_path+"/"+id+"/xls";
+     let pdfr= id == "" ?  report_path+"/pdf" : report_path+"/"+id+"/pdf";
+     $("#info-xls").attr("href", xlsr );
+     $("#info-pdf").attr("href", pdfr  );
+
+    $("#info-print").attr("href", pdfr+"/S");
+    ev.currentTarget.href.concat( id ) ;
+  }
+
+
+
+  async function getFiltroData( url_){
+
+let urlBill= url_;
+let respuesta= await fetch( urlBill);
+let html="";
+if( respuesta.ok)  html=  await respuesta.text();
+return html;
+}
+
+
+async function printDocument( ev){
+    ev.preventDefault(); 
+    let url=  ev.currentTarget.href;
+let html= await getFiltroData( url);
+  //print
+let documentTitle="LIQUIDACIONES";
+var ventana = window.open( "", 'PRINT', 'height=400,width=600,resizable=no');
+ventana.document.write("<style> @page   {  size:  auto;   margin: 0mm;  margin-left:10mm; }</style>");
+ventana.document.write( html);
+ventana.document.close(); 
+  ventana.focus();
+ventana.print();
+ventana.close();
+return true;
+}
+
+
 
   
  

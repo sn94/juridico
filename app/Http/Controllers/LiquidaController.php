@@ -180,7 +180,7 @@ public function list_array( $iddeman){
  
      
 
-public function reporte( $idnro, $tipo){
+public function reporte( $idnro, $tipo, $HTML= "N"){
     $DATO= Liquidacion::find(  $idnro);
     if( $tipo == "xls"){
         echo json_encode( array( "0"=> $DATO) );  
@@ -263,13 +263,19 @@ public function reporte( $idnro, $tipo){
         </table>
         EOF; 
        // echo $html;
+
+       if( $HTML=="N"){
         $tituloDocumento= "LIQUIDACION-".date("d")."-".date("m")."-".date("yy")."-".rand();
     
-           // $this->load->library("PDF"); 	
-            $pdf = new PDF(); 
-            $pdf->prepararPdf("$tituloDocumento.pdf", $tituloDocumento, ""); 
-            $pdf->generarHtml( $html);
-            $pdf->generar();
+        // $this->load->library("PDF"); 	
+         $pdf = new PDF(); 
+         $pdf->prepararPdf("$tituloDocumento.pdf", $tituloDocumento, ""); 
+         $pdf->generarHtml( $html);
+         $pdf->generar();
+       }else{ 
+           echo $html;
+       }
+       
 
     }//End pdf format option
      

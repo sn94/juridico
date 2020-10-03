@@ -257,23 +257,17 @@ public function reporte( $idnro, $tipo="xls"){
                 background-color: #c2fcca;
                 font-weight: bold;
             }
-            table.tabla{ 
-                border-top: 1px solid #606060;
-                border-bottom: 1px solid #606060;
-            }
+          
             tr.cuerpo{
                 color: #363636;
                 font-size: 8px;
                 font-weight: bold;
             }
-            tr.cuerpo td{
-                border-bottom: 1px solid #606060;
-            }
+            
             tr.pie td{ 
                 color: #0f0f0f;
                 font-weight: bold;
-                font-size: 9px;
-                border-bottom: 1px solid #606060;
+                font-size: 9px; 
             }
             .saldo-ok{
                 color: #035009;
@@ -317,11 +311,16 @@ public function reporte( $idnro, $tipo="xls"){
         </tbody></table>
         EOF;
         // echo $html;
-        $tituloDocumento= "EXTRACTO-".date("d")."-".date("m")."-".date("yy")."-".rand();
-        $pdf = new PDF(); 
-        $pdf->prepararPdf("$tituloDocumento.pdf", $tituloDocumento, ""); 
-        $pdf->generarHtml( $html);
-        $pdf->generar();
+        if( $tipo == "PRINT"){
+            echo  $html;
+        }else{
+            $tituloDocumento= "EXTRACTO-".date("d")."-".date("m")."-".date("yy")."-".rand();
+            $pdf = new PDF(); 
+            $pdf->prepararPdf("$tituloDocumento.pdf", $tituloDocumento, ""); 
+            $pdf->generarHtml( $html);
+            $pdf->generar();
+        }  
+    
 
     }//End pdf format option
      

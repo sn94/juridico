@@ -32,7 +32,11 @@ use App\Helpers\Helper;
 <div id="tabla-dinamica">
     <table id="demandadostable" class="table table-bordered table-striped">
       <thead class="thead-dark pb-0 pt-0">
-          <tr> <th></th> <th></th><th></th>
+          <tr> 
+            <th></th> 
+            @if(session("tipo")=="S" || session("tipo")=="O") <th></th> @endif
+            @if(session("tipo")=="S")  <th></th>  @endif
+           
           <th class="pb-0 pt-0">DEMANDANTE</th>  
           <th class="pb-0 pt-0">COD_EMP</th> 
           <th class="pb-0 pt-0">ORIGEN</th> 
@@ -47,9 +51,16 @@ use App\Helpers\Helper;
       <?php for($x=0; $x< sizeof($lista); $x++):
         $item= $lista[$x];    ?>
           <tr id="{{$item->IDNRO}}"> 
+
             <td><a href="<?= url("ficha-demanda/".$item->IDNRO)?>"><i  style="color:black;" class="fa fa-eye" aria-hidden="true"></i></a> </td> 
-           <td><a href="<?= url("demandas-editar/".$item->IDNRO)?>"><i   style="color:black;" class="fa fa-pencil" aria-hidden="true"></i></a> </td>
-           <td >  <a onclick="procesar_borrar(event)" href="<?= url("demandas-borrar/".$item->IDNRO)?>"><i  style="color:black;" class="fa fa-trash" aria-hidden="true"></i></a> </td> 
+            
+            @if(session("tipo")=="S" || session("tipo")=="O")
+            <td><a href="<?= url("demandas-editar/".$item->IDNRO)?>"><i   style="color:black;" class="fa fa-pencil" aria-hidden="true"></i></a> </td>
+            @endif 
+            @if(session("tipo")=="S")
+            <td >  <a onclick="procesar_borrar(event)" href="<?= url("demandas-borrar/".$item->IDNRO)?>"><i  style="color:black;" class="fa fa-trash" aria-hidden="true"></i></a> </td> 
+           @endif
+
             <td >  <?= $item->DEMANDANTE?> </td>
             <td><?= $item->COD_EMP?></td>  
             <td > <?= $item->O_DEMANDA?></a> </td>
@@ -73,8 +84,8 @@ function jsonReceiveHandler( data){// string JSON to convert     div Html Tag to
              if( "error" in res){
                alert(  res.error ); return false; 
              }else{   return res;  }
-           }catch(err){
-             alert(   err  );  return false;
+}catch(err){
+             return false;
            } return false;
 }/***End Json Receiver Handler */
 
@@ -85,8 +96,17 @@ function jsonReceiveHandler( data){// string JSON to convert     div Html Tag to
           if (confirm("Seguro que desear eliminar este registro?") ){
               $.ajax(  {
                   url: url_,
-                  success: function(res){
-                      let r= jsonReceiveHandler( res );
+                  statusCode: {
+                  302: function() {
+                    alert( "Acceso no autorizado" );
+                  }
+                },
+
+                  success: function(res, textstatus, xhr){
+                 
+                 
+
+                   let r= jsonReceiveHandler( res );
                       if( typeof r != "boolean"){
                           if( "error" in r) alert( r.error);
                           else{ 

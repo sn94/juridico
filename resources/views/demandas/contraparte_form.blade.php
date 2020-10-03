@@ -54,7 +54,7 @@
     <div class="form-group">
         <label for="">Observación:</label>
         @php
-    echo Form::textarea('OBS', (! isset($ficha4) ? '' : $ficha4->OBS), [   'class'=> 'form-control form-control-sm','rows'=>4, 'maxlength'=>"120"]);
+    echo Form::textarea('OBS', (! isset($ficha4) ? '' : $ficha4->OBS), [   'class'=> 'form-control form-control-sm','rows'=>4]);
     @endphp 
       </div>
   </div>

@@ -60,9 +60,8 @@
 </div>
 </form>
 
-<a href="<?=url("del-noti-venc")?>">BORRAR NOTIFICACIONES VENCIDAS</a>
 
-<a  id="info-print"  data-target="#show_opc_rep" data-toggle="modal" style="color: black;" href="#">
+<a   id="info-print"  data-target="#show_opc_rep" data-toggle="modal" style="color: black;" href="#">
 <i class="fa fa-print fa-2x" aria-hidden="true"></i></a>
 
 
@@ -71,14 +70,21 @@
  </div>
   
 
+ <!--BORRADO --> 
+ @if(session("tipo")=='S')
+ <a    href="<?=url("del-noti-venc")?>" style="font-size: 10pt; color: #420000;font-weight: 600; " > «BORRAR NOTIFICACIONES VENCIDAS» </a>
+@endif 
+
+
+
  <!-- MODAL TIPO DE INFORME -->
 <div id="show_opc_rep" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-sm">
     <div class="modal-content" >
-    <a  id="info-xls" onclick="download_excel(event)" class="btn btn-sm btn-info" href="<?=url("bank-informes/json")?>" ><i class="fa fa-file-excel-o fa-2x" aria-hidden="true"></i> <h3>EXCEL</h3></a>
+    <a  id="info-xls" onclick="download_excel(event)" class="btn btn-sm btn-info" href="<?=url("rep-notificaciones/XLS")?>" ><i class="fa fa-file-excel-o fa-2x" aria-hidden="true"></i> <h3>EXCEL</h3></a>
    
-    <a  id="info-pdf" onclick="download_pdf(event)"  class="btn btn-sm btn-info" href="#"><i class="fa fa-file-pdf-o fa-2x" aria-hidden="true"></i><h3>PDF</h3></a>
-    <a  id="info-print" onclick="printJS({printable:'grilla', type:'html', documentTitle:'', style: 'table{ color: black; } tr{margin:0px;}'})" class="btn btn-sm btn-info" href="#"><i class="fa fa-print fa-2x" aria-hidden="true"></i><h3>Printer</h3></a>
+    <a  id="info-pdf" onclick="download_pdf(event)"  class="btn btn-sm btn-info" href="<?=url("rep-notificaciones/PDF")?>"><i class="fa fa-file-pdf-o fa-2x" aria-hidden="true"></i><h3>PDF</h3></a>
+    <a  id="info-print" onclick="print_(event)" class="btn btn-sm btn-info" href="<?=url("rep-notificaciones/PRINT")?>" ><i class="fa fa-print fa-2x" aria-hidden="true"></i><h3>Printer</h3></a>
     </div>
   </div>
 </div>
@@ -87,9 +93,64 @@
 
 <script>
 
+function download_excel( e){
+  e.preventDefault();
+  let formu=document.getElementById("noti-search");
+
+  ajaxCall( e.currentTarget.href, "#status", function(res){
+    $( "#status").html("");
+    callToXlsGen_with_data("NOTIFICACIONES", res)
+  },   $(formu).serialize())
+}
+
+
+
+function download_pdf( e){
+  e.preventDefault();
+  let formu=document.getElementById("noti-search");
+  let oldaction= formu.action;
+  formu.target="_blank";
+  formu.action= $("#info-pdf").attr("href");
+  formu.submit();
+  formu.action= oldaction;
+  let divname="#status";}
+
 
  
-function ajaxCall( e, divnam, succes){
+
+
+ 
+function print_( e){
+  e.preventDefault();
+  let formu=document.getElementById("noti-search");
+   
+  ajaxCall( e.currentTarget.href, "#status", function(res){
+    $( "#status").html("");
+    printDocument(res);
+  } ,  $(formu).serialize() );
+}
+
+function printDocument( html){
+   
+  
+   //print
+ let documentTitle="GASTOS";
+ var ventana = window.open( "", 'PRINT', 'height=400,width=600,resizable=no');
+ ventana.document.write("<style> @page   {  size:  auto;   margin: 0mm;  margin-left:10mm; }</style>");
+ ventana.document.write( html);
+ ventana.document.close(); 
+   ventana.focus();
+ ventana.print();
+ ventana.close();
+ return true;
+ }
+
+
+
+
+
+
+function ajaxCall( e, divnam, succes, DATOS){
 
 let urL= e;
 if( typeof e == "object")  urL= e.target.action;
@@ -98,7 +159,7 @@ $.ajax(
      {
        url:  urL,
        method: "post",
-       data: $("#"+e.target.id).serialize(),
+       data:  DATOS==undefined? $("#"+e.target.id).serialize(): DATOS,
        headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
        beforeSend: function(){
          $( divname).html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 

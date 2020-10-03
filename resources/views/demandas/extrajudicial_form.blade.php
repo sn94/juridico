@@ -4,20 +4,23 @@
   <form  id="formExtrajudi"   method="post" action="<?= url("arreglo_extra")?>" onsubmit="enviarExtrajudi(event)">
 
   
-   <?php if( $OPERACION != "V"): ?>
+
    
     <div class="row">
+    <?php if( $OPERACION != "V"): ?>
       <div class=" col-12 col-md-1">
       <button type="submit" class="btn btn-success btn-sm" >Guardar</button>
       </div>
-      <div class="col-12 col-md-2">
+      
+      <?php endif; ?>
+     
+    </div>
+     
         <div class="toast" role="alert" aria-live="polite" aria-atomic="true" data-delay="1000">
         <div role="alert" aria-live="assertive" aria-atomic="true" id="extra-msg">GUARDADO</div>
         </div>
-      </div>
-    </div>
+       
 
-<?php endif; ?>
 
 
 
@@ -28,9 +31,9 @@
 
 <input id="IDNRO4"  type="hidden" name="IDNRO" value="{{ isset($id_demanda) ? $id_demanda:''}}"> 
 
-      
+ 
 
-<a href="<?=url("ver-recibos/".(isset($id_demanda) ? $id_demanda:'') )?>">RECIBOS</a>
+
 <div class="row">
 
 <div class="col-12 col-md-3">
@@ -61,10 +64,14 @@
 <button onclick="calcular_cuotas()" type="button" class="btn btn-sm btn-info">GENERAR CUOTAS</button>
 </div>
 @endif
+</div>
 
+@if( $OPERACION == "M" || $OPERACION == "V")
+  <a  class="btn btn-sm btn-danger"   href="<?=url("ver-recibos/".(isset($id_demanda) ? $id_demanda:'') )?>">Recibos</a>
+@endif 
 
 <table id="arreglojudi" class="table table-bordered">
-  <thead><th>CUOTA</th><th>VENCIMIENTO</th><th>IMPORTE</th><th>FECHA_PAGO</th><th></th></thead>
+  <thead><th>CUOTA</th><th>VENCIMIENTO</th><th>IMPORTE</th><th>FECHA_PAGO</th></thead>
   <tbody>
 
   
@@ -87,7 +94,7 @@
   ?>
   </tbody>
 </table>
-</div>
+ 
 
 
 
@@ -156,7 +163,7 @@ function campos_vacios_extrajudi(){
 
 async function getBillData( ID_RECIBO){
 
-    let urlBill= "<?=url('arregloextr-recibo')?>/"+ID_RECIBO;
+    let urlBill= "<?=url('arregloextr-recibo')?>/"+ID_RECIBO+"/E";
     let respuesta= await fetch( urlBill);
     let html="";
     if( respuesta.ok)  html=  await respuesta.text();
@@ -170,9 +177,9 @@ async function printBill( ID_RECIBO){
     var ventana = window.open( "", 'PRINT', 'height=400,width=600,resizable=no');
     ventana.document.write( html);
     ventana.document.close(); 
-      ventana.focus();
+    /*  ventana.focus();
     ventana.print();
-    ventana.close();
+    ventana.close();*/
     return true;
 }
 
@@ -203,7 +210,7 @@ function enviarExtrajudi( ev){ //ENVIO DE FORM OBSERVACION
                   $(".toast").toast("show"); 
                   rec_formato_numerico_extraju();
 
-                  if( "print" in res){
+                  if( "print" in res){//Se recibio ID de recibo
                     if(confirm("IMPRIMIR RECIBO?") )
                       printBill( res.print);
                   }

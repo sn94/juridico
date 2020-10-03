@@ -215,6 +215,7 @@ public function reporte(Request $request,  $tipo="xls"){
             }
             .detalle{
                 width: 200px;
+                text-align: center;
             }
             .importe{
                 width:100px;
@@ -252,7 +253,8 @@ public function reporte(Request $request,  $tipo="xls"){
             //con formato
             $f_MONTO= Helper::number_f( $mo->IMPORTE ); 
             $gooddate= Helper::beautyDate($mo->FECHA);
-            $html.= "<tr class=\"cuerpo\"> <td class=\"codigo\">{$mo->CODIGO}</td><td class=\"fecha\">{$gooddate}</td><td class=\"comprobante\">{$mo->NUMERO}</td><td class=\"detalle\">{$mo->DETALLE1}<br>{$mo->DETALLE2}</td><td  class=\"importe\">{$f_MONTO}</td></tr> ";
+            $MOTIVO=  (is_null( $mo->ID_DEMA) )? "VARIOS": ("COD-EMP: ".$mo->COD_EMP);
+            $html.= "<tr class=\"cuerpo\"> <td class=\"codigo\">{$mo->COD_GASTO}</td><td class=\"fecha\">{$gooddate}</td><td class=\"comprobante\">{$mo->NUMERO}</td><td class=\"detalle\">{$MOTIVO}</td><td  class=\"importe\">{$f_MONTO}</td></tr> ";
         endforeach;  
 
 
@@ -265,12 +267,16 @@ public function reporte(Request $request,  $tipo="xls"){
         </tbody></table>
         EOF;
          
-        //echo $html;
-        $tituloDocumento= "GASTOS-".date("d")."-".date("m")."-".date("yy")."-".rand();
-        $pdf = new PDF(); 
-        $pdf->prepararPdf("$tituloDocumento.pdf", $tituloDocumento, ""); 
-        $pdf->generarHtml( $html);
-        $pdf->generar();
+        if( $tipo=="PRINT"){
+            echo $html;
+        }else{
+            //echo $html;
+            $tituloDocumento= "GASTOS-".date("d")."-".date("m")."-".date("yy")."-".rand();
+            $pdf = new PDF(); 
+            $pdf->prepararPdf("$tituloDocumento.pdf", $tituloDocumento, ""); 
+            $pdf->generarHtml( $html);
+            $pdf->generar();
+        }
 
     }//End pdf format option
      

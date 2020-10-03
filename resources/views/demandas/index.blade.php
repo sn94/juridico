@@ -9,7 +9,16 @@
 
 @section('content')
 
- 
+<style>
+
+  a{
+    color:#525252;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 10pt;
+  }
+</style>
+
 <?php
 
 use App\Mobile_Detect; 
@@ -75,7 +84,7 @@ if ($detect->isMobile() == false):?>
     </li>
 
   </ul>
-  <div id="formOrder" class="tab-content">
+  <div id="formOrder" class="tab-content pr-md-2"  >
   <div id="persona" class="tab-pane show active">
       <div class="mb-3">
         <a href="#persona-collapse" data-toggle="collapse">
@@ -156,15 +165,16 @@ if ($detect->isMobile() == false):?>
       </div>
     </div>
 
+   
     <div id="honorarios" class="tab-pane">
       <div class="mb-3">
-        <a href="#honorarios-collapse" data-toggle="collapse">
+        <a id="pestana-honorarios" href="#honorarios-collapse" data-toggle="collapse">
           <i class="icon-credit-card"></i> Honorarios
         </a>
       </div>
       <div id="honorarios-collapse" class="collapse" data-parent="#formOrder">
      
-     @include("demandas.honorarios_form")
+      @include("demandas.honorarios_form")  
 
       </div>
     </div>

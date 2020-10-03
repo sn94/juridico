@@ -8,7 +8,9 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;  
 use App\Demandados;
+use App\Helpers\Helper;
 use App\Notificacion;
+use App\pdf_gen\PDF;
 
 class NotifiController extends Controller
 {
@@ -573,7 +575,7 @@ select `notificaciones`.`IDNRO`, `NOTIFI_1`, DATEDIFF( NOTIFI_1, NOW()) AS NOTIF
         DB::beginTransaction();
        try{
         $borrar= DB::table("vtos")
-        ->where( DB::raw('DATEDIFF(FECHAV, NOW())'),"<=","0")
+        ->where("VENCIDO","=","S")
         ->delete();
         DB::commit();
         return redirect("dema-noti-venc");
@@ -583,6 +585,125 @@ select `notificaciones`.`IDNRO`, `NOTIFI_1`, DATEDIFF( NOTIFI_1, NOW()) AS NOTIF
        }
         
     }
+
+
+
+
+
+
+
+
+
+
+    
+
+public function  reporte( Request $request, $tipo="XLS" ){
+    set_time_limit(0);
+    ini_set('memory_limit', '-1');
+     // Genera un PDF
+$vencidoparam=  $request->input("VENCIDO");
+
+$resultados= DB::table("vtos") 
+->join("demandas2", "demandas2.IDNRO","=","vtos.IDNRO")
+->join("demandado", "demandas2.CI","=","demandado.CI")
+->join("demandan","demandas2.DEMANDANTE", "=","demandan.IDNRO", "left")
+->select("demandas2.CI", "demandas2.IDNRO AS DEMANDA", "demandado.TITULAR","demandan.DESCR as DEMANDANTE","COD_EMP",
+"vtos.FECHA AS NOTIFICACION", "vtos.FECHAV as VENCIMIENTO",
+DB::raw("IF( VENCIDO='S',  vtos.OBS,  CONCAT('FALTAN  ',CONCAT(DATEDIFF(FECHAV, NOW()), ' DIAS')  )) AS OBSERVACION"));
+
+
+ 
+if( $vencidoparam=="V")
+{
+    $resultados=  $resultados->where("VENCIDO", "S"); 
+}
+if( $vencidoparam=="NV")
+{
+    $resultados=  $resultados->where("VENCIDO", "N"); 
+}
+
+$resultados=  $resultados->get();
+
+if( $tipo=="XLS") echo json_encode(  $resultados);
+else{
+
+
+    //EJECUTAR;
+        $Titulo=  "NOTIFICACIONES" ;
+        $html=<<<EOF
+         <style>
+         th{
+             font-size:6pt;
+             font-weight: bold;
+             background-color: #bac0fe;
+             color: #060327
+         }
+        .ci{
+            width: 50px;
+        }
+        .notificacion,.vencimiento{
+            width: 62px;
+        }
+        .cod_emp{
+            width: 55px;
+        }
+         .titular{
+             width: 200px;
+         }
+          
+         .row{
+             font-size: 6pt;
+         }
+          
+         </style>
+         <table>
+        <thead>
+        <tr>
+        EOF;
+        
+        //Columnas automaticas
+        $cols=0;
+         foreach( $resultados as $objeto):
+            foreach( $objeto as $clave=>$valor):
+                
+               // if( $cols==10) break;
+               $css_class= strtolower($clave);
+               $html.="<th class=\"$css_class\">$clave</th>";
+               
+            endforeach;
+        break;
+         endforeach;
+         $html.="</tr></thead><tbody>";
+      
+       foreach( $resultados as $objeto): 
+            $html.='<tr class="row">';
+            foreach($objeto as $clave=>$valor): 
+
+                $css_class= strtolower($clave);
+                $valor= ( $clave== "NOTIFICACION" ||  $clave== "VENCIMIENTO") ? Helper::beautyDate($valor) : $valor;
+                $html.="<td class=\"$css_class\">$valor</td>";     
+            endforeach;
+            $html.="</tr>"; 
+        endforeach; 
+
+
+        $html.="</tbody></table>";
+
+      // echo $html;
+      if(  $tipo=="PRINT"){ echo $html; }
+      else{
+        $tituloDocumento= $Titulo."-".date("d")."-".date("m")."-".date("yy")."-".rand();
+       $pdf = new PDF(); 
+     $pdf->prepararPdf("$tituloDocumento.pdf", $tituloDocumento, ""); 
+        $pdf->generarHtml( $html);
+        $pdf->generar();  
+        }
+    }//END 
+}
+
+
+
+
 
 
 }

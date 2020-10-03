@@ -3,7 +3,9 @@
 namespace App\Http;
 
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\AdminOperadorMiddleware;
 use App\Http\Middleware\CheckAuth;
+use App\Http\Middleware\OperadorMiddleware;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
@@ -67,6 +69,8 @@ class Kernel extends HttpKernel
      */
     protected $routeMiddleware = [
         'admin'=> \App\Http\Middleware\AdminMiddleware::class,
+        'operador'=> OperadorMiddleware::class,
+        'adminopera'=>AdminOperadorMiddleware::class,
         'auth' => \App\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,

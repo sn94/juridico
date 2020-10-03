@@ -74,7 +74,7 @@ endif;
     
 
 .verde1 {
-    background-color: #9E9E9E;
+    background-color: #aaaaaa;
 }
 
 .verde2 {

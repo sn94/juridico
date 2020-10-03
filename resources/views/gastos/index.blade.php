@@ -88,7 +88,7 @@ echo link_to('gasto', $title = "AGREGAR", $attributes = [ "class"=>"btn btn-sm b
     <a  id="info-xls" onclick="callToXlsGen(event, '{{$TITULO}}')" class="btn btn-sm btn-info" href="#" ><i class="fa fa-file-excel-o fa-2x" aria-hidden="true"></i> <h3>EXCEL</h3></a>
    
     <a  id="info-pdf"  onclick="download_pdf(event)" class="btn btn-sm btn-info" href="#"><i class="fa fa-file-pdf-o fa-2x" aria-hidden="true"></i><h3>PDF</h3></a>
-    <a  id="info-print" class="btn btn-sm btn-info" href="#"><i class="fa fa-print fa-2x" aria-hidden="true"></i><h3>Printer</h3></a>
+    <a  id="info-print"  onclick="print_(event)" class="btn btn-sm btn-info" href="#"><i class="fa fa-print fa-2x" aria-hidden="true"></i><h3>Printer</h3></a>
     </div>
   </div>
 </div>
@@ -115,9 +115,11 @@ function mostrar_informe(ev){
     ev.preventDefault();
     let pdf= ev.currentTarget.href+"/pdf";
     let xls= ev.currentTarget.href+"/xls";
+    let prin= ev.currentTarget.href+"/PRINT";
   
      $("#info-xls").attr("href", xls );
      $("#info-pdf").attr("href", pdf  ); 
+     $("#info-print").attr("href", prin  ); 
   }
 
 
@@ -230,7 +232,7 @@ function actualizar_grill_parametros(e){
 
 
  
-function ajaxCall( e, divnam, succes){
+function ajaxCall( e, divnam, succes, data){
 
   let urL= e;
   if( typeof e == "object")  urL= e.target.action;
@@ -239,7 +241,7 @@ function ajaxCall( e, divnam, succes){
        {
          url:  urL,
          method: "post",
-         data: $("#"+e.target.id).serialize(),
+         data:  data==undefined ? $("#"+e.target.id).serialize(): data,
          headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
          beforeSend: function(){
            $( divname).html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
@@ -323,6 +325,35 @@ function download_pdf( e){
   //let divname="#status";
    
 }
+
+
+
+
+function print_( e){
+  e.preventDefault();
+  let formu=document.getElementById("gastos-search");
+   
+  ajaxCall( e.currentTarget.href, "#status", function(res){
+    $( "#status").html("");
+    printDocument(res);
+  } ,  $(formu).serialize() );
+}
+
+function printDocument( html){
+   
+  
+   //print
+ let documentTitle="GASTOS";
+ var ventana = window.open( "", 'PRINT', 'height=400,width=600,resizable=no');
+ ventana.document.write("<style> @page   {  size:  auto;   margin: 0mm;  margin-left:10mm; }</style>");
+ ventana.document.write( html);
+ ventana.document.close(); 
+   ventana.focus();
+ ventana.print();
+ ventana.close();
+ return true;
+ }
+
 
 
 </script>

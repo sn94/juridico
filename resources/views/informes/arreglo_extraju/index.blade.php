@@ -55,7 +55,7 @@ $iconsize=  $dete->isMobile() ? "": "fa-lg";
     <a  id="info-xls" onclick="download_excel(event)" class="btn btn-sm btn-info" href="<?=url("informes-arre-extra/XLS")?>" ><i class="fa fa-file-excel-o fa-2x" aria-hidden="true"></i> <h3>EXCEL</h3></a>
    
     <a  id="info-pdf"  onclick="download_pdf(event)" class="btn btn-sm btn-info" href="<?=url("informes-arre-extra/PDF")?>" ><i class="fa fa-file-pdf-o fa-2x" aria-hidden="true"></i><h3>PDF</h3></a>
-    <a  id="info-print" class="btn btn-sm btn-info" href="#"><i class="fa fa-print fa-2x" aria-hidden="true"></i><h3>Printer</h3></a>
+    <a  id="info-print"  onclick="print_(event)" class="btn btn-sm btn-info" href="#"><i class="fa fa-print fa-2x" aria-hidden="true"></i><h3>Printer</h3></a>
     </div>
   </div>
 </div>
@@ -90,29 +90,35 @@ function download_pdf( e){
   formu.submit();
   formu.action= respath;
   let divname="#status";
-  /*$.ajax(
-       {
-         url:   $("#arreglo-search").attr("action"),
-         method: "post",
-         cache: false,
-         contentType: "application/json",
-         processData: false,
-         data:    $("#arreglo-search").serialize()  ,
-         headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-         beforeSend: function(){
-           $( divname).html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
-         },
-         success: function( res){
-          
-         },
-         error: function(){
-           $( divname).html(  "<h6 style='color:red;'>Problemas de conexión</h6>" ); 
-         }
-       }
-     );*/
+   
 }
 
 
+
+function print_( e){
+  e.preventDefault();
+  let formu=document.getElementById("arreglo-search");
+   
+  ajaxCall( e.currentTarget.href, "#status", function(res){
+    $( "#status").html("");
+    printDocument(res);
+  } );
+}
+
+function printDocument( html){
+   
+  
+   //print
+ let documentTitle="ARREGLOS EXTRAJUDICIALES";
+ var ventana = window.open( "", 'PRINT', 'height=400,width=600,resizable=no');
+ ventana.document.write("<style> @page   {  size:  auto;   margin: 0mm;  margin-left:10mm; }</style>");
+ ventana.document.write( html);
+ ventana.document.close(); 
+   ventana.focus();
+ ventana.print();
+ ventana.close();
+ return true;
+ }
 
 function mostrar_informe(ev){
     ev.preventDefault();
@@ -120,9 +126,11 @@ function mostrar_informe(ev){
     
     let pdf= ev.currentTarget.href+"/PDF";
     let xls= ev.currentTarget.href+"/XLS";
-  
+    let PRI= ev.currentTarget.href+"/PRINT";
+
      $("#info-xls").attr("href", xls );
      $("#info-pdf").attr("href", pdf  ); 
+     $("#info-print").attr("href", PRI  ); 
   }
 
 

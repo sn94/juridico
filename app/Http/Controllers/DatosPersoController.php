@@ -139,14 +139,19 @@ class DatosPersoController extends Controller
 
 
 public function borrar($ci){ //En realidad se recibiria el IDNRO
-   $demandado= Demandados::find( $ci);
-   $demanda= Demanda::where("CI", $demandado->CI)->first();
-   if( is_null($demanda)){  //Se puede borrar
-      Demandados::where("CI", $ci)->first()->delete();
-      echo json_encode( array( 'ci'=> $ci) );
-    }else{
-      echo json_encode( array( 'error'=> "Los datos de esta persona no pueden borrarse. Existen datos judiciales ") );
-    } 
+
+  if(session("tipo")=="S"){
+    $demandado= Demandados::find( $ci);
+    $demanda= Demanda::where("CI", $demandado->CI)->first();
+    if( is_null($demanda)){  //Se puede borrar
+       Demandados::where("CI", $ci)->first()->delete();
+       echo json_encode( array( 'ci'=> $ci) );
+     }else{
+       echo json_encode( array( 'error'=> "Los datos de esta persona no pueden borrarse. Existen datos judiciales ") );
+     } 
+  }else{
+    echo json_encode( array( 'error'=>"Acción no autorizada. Consulte con el administrador"));
+  }
 }/** end  */
 
 }

@@ -19,7 +19,13 @@ use App\Mobile_Detect;
 
 <table id="ctabancos" class="table  table-sm table-bordered table-responsive table-striped">
         <thead class="thead-dark">
-            <tr><th></th><th></th><th></th> <th></th><th>DEPÓS.</th><th>EXTR.</th><th class="text-right">BANCO</th><th class="text-right">CUENTA</th>
+            <tr>
+              <th></th>
+              <th></th>
+              @if( session("tipo")=="S" )
+              <th></th>
+              @endif 
+               <th></th><th>DEPÓS.</th><th>EXTR.</th><th class="text-right">BANCO</th><th class="text-right">CUENTA</th>
             <th class="text-right">TIPO CTA.</th><th>TITULAR</th><th>SALDO</th></tr>
         </thead>
         <tbody>
@@ -28,7 +34,9 @@ use App\Mobile_Detect;
             <tr  >
               <td ><p class="pt-1 mr-1 ml-1 mb-0 text-center"><a   href="<?=url("vbank")."/$it->IDNRO"?>"><i class="fa fa-eye fa-lg" aria-hidden="true"></i></a></p></td>
               <td><p class="pt-1 mr-1 ml-1 mb-0 text-center"><a onclick="mostrar_form(event)" data-toggle="modal" data-target="#showform"   href="<?= url("ebank/".$it->IDNRO) ?>"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></a></p></td>
+              @if( session("tipo")=="S" )
               <td><p class="pt-1 mr-1 ml-1 mb-0 text-center"><a   onclick="borrar(event)" href="<?= url("dbank/".$it->IDNRO) ?>"><i class="fa fa-trash fa-lg" aria-hidden="true"></i></a></p></td>
+              @endif
               <td>
                <!--MANDAR A IMPRIMIR -->
                <p class="pt-1 mr-1 ml-1 mb-0 text-center">

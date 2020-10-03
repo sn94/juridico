@@ -30,6 +30,37 @@ class ArregloExtrajudiController extends Controller
      
 
 
+
+    private  function generar_recibo( $cuota_pagad,  $acumu_pagos){
+        $IDNRO= request()->input("IDNRO"); 
+            $demanda= Demanda::find( $IDNRO);
+            $demandado=  (new Demandados())->where("CI", $demanda->CI)->first(); 
+            //Parametros
+            $titular=  $demandado->TITULAR;
+            $total= $acumu_pagos; 
+            $fechadescri=  Helper::fechaDescriptiva();
+                $cuots=  join(",", $cuota_pagad);
+            $concepto="Pago de cuota(s) ($cuots) del Arreglo extrajudicial N° $IDNRO";
+
+            //ID RECIBO
+            $idnro_= [];
+            //ULTIMO CODIGO
+            $nroRecibos= Recibo::count();
+            if( $nroRecibos == 0){
+                $parametros=  DB::table("parametros")->first();
+                $cod_recibo= $parametros->RECIBO;
+                $cod_sgte= intval( $cod_recibo) + 1;
+                $idnro_= [ 'IDNRO'=> $cod_sgte ];
+            }
+            $datosRecibo=['ARREGLO'=> $IDNRO, 'IMPORTE'=>$total, 'DEUDOR'=>$titular, 'CONCEPTO'=>$concepto,'FECHA_L'=>$fechadescri];
+
+            $recibo= new Recibo();
+            $recibo->fill( array_merge( $idnro_, $datosRecibo) );
+            $recibo->save();
+            return $recibo->IDNRO ;
+    }
+
+
     public function agregar(Request $request){
         if( sizeof(  $request->all() )  > 0){
 
@@ -76,37 +107,9 @@ class ArregloExtrajudiController extends Controller
                     
                 //GENERAR RECIBO?
                 if( $acumu_pagos > 0){
-
-                    $demandado=  (new Demandados())->where("CI", $demanda->CI)->first(); 
-                    //Parametros
-                    $titular=  $demandado->TITULAR;
-                    $total= $acumu_pagos; 
-                    $fechadescri=  Helper::fechaDescriptiva();
-                        $cuots=  join(",", $cuota_pagad);
-                    $concepto="Pago de cuota(s) ($cuots) del Arreglo extrajudicial N° $IDNRO";
-    
-                    //ID RECIBO
-                    $idnro_= [];
-                    //ULTIMO CODIGO
-                    $nroRecibos= Recibo::count();
-                    if( $nroRecibos == 0){
-                        $parametros=  DB::table("parametros")->first();
-                        $cod_recibo= $parametros->RECIBO;
-                        $cod_sgte= intval( $cod_recibo) + 1;
-                        $idnro_= [ 'IDNRO'=> $cod_sgte ];
-                    }
-                    $datosRecibo=['ARREGLO'=> $IDNRO, 'IMPORTE'=>$total, 'DEUDOR'=>$titular, 'CONCEPTO'=>$concepto,'FECHA_L'=>$fechadescri];
-
-                    $recibo= new Recibo();
-                    $recibo->fill( array_merge( $idnro_, $datosRecibo) );
-                    $recibo->save();
-
-                    //Descontar saldo demanda
-                    $demanda->SALDO=  abs(intval( $demanda->SALDO ) - $total);
-                    $demanda->save();
-
+                    $reciboid= $this->generar_recibo($cuota_pagad, $acumu_pagos); 
                     DB::commit();
-                    echo json_encode( array("print"=> $recibo->IDNRO )  );
+                    echo json_encode( array("print"=>  $reciboid)  );
 
                 }else {
                     DB::commit();
@@ -132,19 +135,36 @@ class ArregloExtrajudiController extends Controller
     }
 
 
+ 
+  
 
-    public function mostrarRecibo( $id_recibo){
-        $recibo= Recibo::find( $id_recibo);
+    public function mostrarRecibo( $id_recibo, $opcion= "V"){
+
+        if( request()->isMethod('post')){
+            
+            $id_recibo= request()->input("IDNRO") ;
+            $recibo= Recibo::find(  $id_recibo );
+            $recibo->fill(  request()->input() );
+            if( $recibo->save() )
+            echo json_encode(  array("ok"=>"Actualizado"));
+            else echo json_encode(  array("error"=> ""));
+        }else{
+            $recibo= Recibo::find( $id_recibo);
       
             $IMPORTE=  $recibo->IMPORTE;
             $TITULAR= $recibo->DEUDOR;
             $IMPORTEL= (new NumeroALetras())->toWords( $IMPORTE);
             $CONCEPTO= $recibo->CONCEPTO;
             $FECHAL=  $recibo->FECHA_L;
-            
-            return view("demandas.recibo",[ 'NRORECIBO'=> $id_recibo, 'IMPORTE'=> $IMPORTE, 'IMPORTEL'=>$IMPORTEL, "DEMANDADO"=> $TITULAR , 
-           "fechaletras"=>$FECHAL, "CONCEPTO"=>$CONCEPTO]);     
-        
+            if( $opcion== "V"){
+                return view("demandas.recibo",[   'NRORECIBO'=> $id_recibo, 'IMPORTE'=> $IMPORTE, 'IMPORTEL'=>$IMPORTEL, "DEMANDADO"=> $TITULAR , 
+            "fechaletras"=>$FECHAL, "CONCEPTO"=>$CONCEPTO]); 
+            }else{ 
+                return view("demandas.recibo",[  'NRORECIBO'=> $id_recibo, 'IMPORTE'=> $IMPORTE, 'IMPORTEL'=>$IMPORTEL, "DEMANDADO"=> $TITULAR , 
+            "fechaletras"=>$FECHAL, "CONCEPTO"=>$CONCEPTO, 'EDICION'=> true] ); 
+            }
+        }//Get Option
+      
        
     }
 

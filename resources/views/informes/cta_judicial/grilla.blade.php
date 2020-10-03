@@ -27,7 +27,17 @@ $iconsize=  $dete->isMobile() ? "": "fa-lg";
         </thead>
         <tbody>
           <!--CADA CTA TENDRA ALGUN DEPOSITO, EXTRACCION O EXTRACCION POR PROYECTO-->
-          <?php  foreach( $lista as $it):?>
+          <?php 
+          
+          $totdepo=0; $totextr_c=0;  $totextr_l=0;
+          
+          foreach( $lista as $it):
+            
+          $totdepo+=  intval($it->DEPOSITO);
+          $totextr_c+= intval( $it->{"EXT.CAPITAL"}  );
+          $totextr_l+= intval( $it->{"EXT.LIQUIDACION"}  );
+
+            ?>
             <tr style="font-size: 9pt;">
                 
               <td  class="text-right"><p class="pt-1 mr-1 ml-1 mb-0">
@@ -36,17 +46,25 @@ $iconsize=  $dete->isMobile() ? "": "fa-lg";
               <td  class="text-right"><p class="pt-1 mr-1 ml-1 mb-0">{{$it->TITULAR}}</p></td>
               <td class="text-right"><p class="pt-1 mr-1 ml-1 mb-0">{{$it->DEMANDANTE}}</p></td>
               <td class="text-right"><p class="pt-1 mr-1 ml-1 mb-0">{{$it->COD_EMP}}</p></td>
-              <td class="text-right"><p class="pt-1 mr-1 ml-1 mb-0">{{$it->DEMANDA}}</p></td>
+              <td class="text-right"><p class="pt-1 mr-1 ml-1 mb-0">{{ Helper::number_f($it->DEMANDA)}}</p></td>
               <td class="text-right"><p class="pt-1 mr-1 ml-1 mb-0">
               <a href="<?=url("ctajudicial/".$it->ID_DEMANDA)?>"> {{$it->CTA_BANCO}}</a>
               </p></td>
-              <td class="text-right"><p class="pt-1 mr-1 ml-1 mb-0">{{  $it->DEPOSITO  }}</p></td>
-              <td class="text-right"><p class="pt-1 mr-1 ml-1 mb-0">  {{  $it->{"EXT.CAPITAL"} }}</p></td>
-              <td class="text-right"><p class="pt-1 mr-1 ml-1 mb-0">   {{ $it->{"EXT.LIQUIDACION"} }}</p></td>
+              <td class="text-right"><p class="pt-1 mr-1 ml-1 mb-0">{{ Helper::number_f( $it->DEPOSITO)  }}</p></td>
+              <td class="text-right"><p class="pt-1 mr-1 ml-1 mb-0">  {{  Helper::number_f($it->{"EXT.CAPITAL"}) }}</p></td>
+              <td class="text-right"><p class="pt-1 mr-1 ml-1 mb-0">   {{ Helper::number_f($it->{"EXT.LIQUIDACION"}) }}</p></td>
             </tr>
             </tr>
 
           <?php  endforeach; ?>
+
+          <tr  style="font-size: 9pt;">
+          <td  class="text-right"></td><td  class="text-right"></td><td  class="text-right"></td>
+          <td  class="text-right"></td><td  class="text-right"></td><td style="font-weight: 600;"  class="text-right">TOTALES</td>
+          <td  class="text-right">{{ Helper::number_f($totdepo)}}</td>
+          <td  class="text-right">{{ Helper::number_f( $totextr_c)}}</td>
+          <td  class="text-right">{{ Helper::number_f($totextr_l)}}</td>
+        </tr>
         </tbody>
     </table> 
  

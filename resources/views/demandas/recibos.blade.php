@@ -17,7 +17,7 @@ use App\Helpers\Helper;
  
  
 
- <a href="<?= url("demandas-editar/$id_arreglo/6")?>">VOLVER</a>
+ <a class="btn btn-sm btn-danger" href="<?= url("demandas-editar/$id_arreglo/6")?>"> Volver</a>
 
 <div class="row">
 
@@ -30,7 +30,9 @@ use App\Helpers\Helper;
             </thead>
             <tbody>
             @foreach( $CUOTAS as $item)
-            <tr><td>{{$item->NUMERO}}</td> <td>{{$item->IMPORTE}}</td> <td>{{$item->VENCIMIENTO}}</td> <td>{{Helper::beautyDate($item->FECHA_PAGO) }}</td> </tr>
+            <tr><td class="text-center">{{$item->NUMERO}}</td> <td class="text-right">{{Helper::number_f($item->IMPORTE)}}</td> 
+            <td class="text-right"><span class="mr-1">{{ Helper::beautyDate($item->VENCIMIENTO)}}</span></td> 
+            <td class="text-right"> <span class="ml-1">{{Helper::beautyDate($item->FECHA_PAGO) }}</span></td> </tr>
             @endforeach
             </tbody>
         </table>
@@ -42,10 +44,13 @@ use App\Helpers\Helper;
         <h4>RECIBOS</h4>
     @if( sizeof( $RECIBOS) >0)
     <table class="table  table-responsive">
-        <thead> <tr><th class="text-center">N° Recibo</th><th>CONCEPTO</th><th></th></tr></thead>
+        <thead> <tr><th>FECHA</th><th>IMPORTE</th><th class="text-center">N° Recibo</th><th>CONCEPTO</th><th></th></tr></thead>
             <tbody>
         @foreach( $RECIBOS as $item)
-            <tr><td class="text-center">{{$item->IDNRO}}</td>
+            <tr>
+            <td>{{ Helper::beautyDate($item->created_at) }}</td>
+            <td class="text-right">{{ Helper::number_f($item->IMPORTE) }}</td>
+            <td class="text-center">{{$item->IDNRO}}</td>
             <td>{{$item->CONCEPTO}}</td>
             <td > <a style="color: black;" class="ml-2" onclick="printBill(event)" href="<?=url("arregloextr-recibo/".$item->IDNRO)?>"><i class="fa fa-print fa-lg" aria-hidden="true"></i></a></td>
             </tr>

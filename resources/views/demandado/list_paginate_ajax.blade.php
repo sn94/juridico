@@ -13,13 +13,20 @@ $detect= new Mobile_Detect();
  
  <table id="demandadostable" class="table table-responsive table-bordered table-striped">
   <thead class="thead-dark">
-      <tr> <th></th> <th></th><th>CI</th>  <th >TITULAR</th> <th>DOMICILIO</th> <th>TELÉFONO</th><th>Nro.Juicios</th> </tr>
+      <tr>
+         <th></th>
+        @if(session("tipo")=="S")
+       <th></th>
+       @endif
+       <th>CI</th>  <th >TITULAR</th> <th>DOMICILIO</th> <th>TELÉFONO</th><th>Nro.Juicios</th> </tr>
   </thead>
   <tbody>
   <?php foreach( $lista as $item): ?>
       <tr  id="{{$item->IDNRO}}" > 
     <td >  <a href="<?=url("demandas-by-id/".$item->IDNRO)?>" ><i class="fa fa-eye" aria-hidden="true" style="color:black;"></i></a>   </td> 
+    @if(session("tipo")=="S")
     <td > <p  > <a href="<?=url("ddemandado/".$item->IDNRO)?>" onclick="procesar_borrar(event,'{{$item->IDNRO}}')"><i class="fa fa-trash"  style="color:black;" aria-hidden="true"></i></a></p> </td> 
+    @endif
     <td >  <?=$item->CI?> </td>
     <td >  <?= $item->TITULAR?> </td> 
     <td  > <?= $item->DOMICILIO?> </td>  

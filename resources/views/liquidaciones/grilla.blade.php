@@ -36,9 +36,4 @@ $icons_size= $detect->isMobile() ? "": " fa-lg";
 
 
 
-
-     <!-- MODAL TIPO DE INFORME -->
-
-@include("layouts.report", ["TITULO"=>"LIQUIDACIONES" ]  )
- 
  

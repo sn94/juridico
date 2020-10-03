@@ -35,13 +35,13 @@ if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar
  <div id="demanda-panel">
 
  </div>
- <div class="row">
-    <div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 p-1 verde1"  >
+ <div class="row p-1">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4   verde1"  >
  
      
           <div class="row">
 <!--Primera columna-->
-<div class="col-12 col-sm-6 col-md-6 col-lg-12">
+<div class="col-12 col-sm-6 col-md-12 col-lg-12 p-1">
 
                <div class="row">
                <div class="col-12 col-sm-4 col-md-4 col-lg-4">  <label for="actuaria">Origen:</label></div>
@@ -96,16 +96,15 @@ if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar
                <input readonly type="text"   class="form-control form-control-sm number-format" value="{{Helper::number_f( !isset($ficha)? '' : $ficha->SALDO)}}">
                </div>
                </div>
-                         
-               </div><!--Primera columna-->
+                  
+</div>
 
-
-<!--Segunda columna-->
-               <div class="col-12 col-sm-6 col-md-6 col-lg-12">
+<div class="col-12 col-sm-6 col-md-12 col-lg-12">
+              
 
                <div class="row">
-               <div class="col-12 col-sm-3 col-md-3">  <label for="actuaria">Juzgado:</label> </div>
-               <div class="col-12 col-sm-9 col-md-9">
+               <div class="col-12 col-sm-3 col-md-4">  <label for="actuaria">Juzgado:</label> </div>
+               <div class="col-12 col-sm-9 col-md-8">
                               <select name="JUZGADO" class="form-control form-control-sm">
                                    <?php 
 
@@ -123,8 +122,8 @@ if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar
                </div>
               
                <div class="row">
-               <div class="col-12 col-sm-3 col-md-3">  <label for="actuaria">Juez:</label> </div>
-               <div class="col-12 col-sm-9 col-md-9">
+               <div class="col-12 col-sm-3 col-md-4">  <label for="actuaria">Juez:</label> </div>
+               <div class="col-12 col-sm-9 col-md-8">
                          <select name="JUEZ" class="form-control form-control-sm">
                                    <?php 
 
@@ -141,8 +140,8 @@ if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar
                </div>  </div> 
                
                <div class="row">
-               <div class="col-12 col-sm-3 col-md-3"> <label for="actuaria">Actuaria:</label></div>
-                         <div class="col-12 col-sm-9 col-md-9">
+               <div class="col-12 col-sm-3 col-md-4"> <label for="actuaria">Actuaria:</label></div>
+                         <div class="col-12 col-sm-9 col-md-8">
                          <select name="ACTUARIA" class="form-control form-control-sm">
                                              <?php 
 
@@ -160,13 +159,13 @@ if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar
                </div>
                
                <div class="row">
-               <div class="col-12 col-sm-6 col-md-6">  <label for="actuaria">Expediente N°:</label>  </div>
-               <div class="col-12 col-sm-6 col-md-6">  <input maxlength="20"  name="EXPED_NRO"  type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->EXPED_NRO}}">  </div>        
+               <div class="col-12 col-sm-3 col-md-4">  <label for="actuaria">Exped. N°:</label>  </div>
+               <div class="col-12 col-sm-9 col-md-8">  <input maxlength="20"  name="EXPED_NRO"  type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->EXPED_NRO}}">  </div>        
                </div>
 
                <div class="row">
-               <div class="col-12 col-sm-6 col-md-6"><label for="actuaria">Folio Expediente:</label></div>
-               <div class="col-12 col-sm-6 col-md-6">
+               <div class="col-12 col-sm-3 col-md-4"><label for="actuaria">Folio Expediente:</label></div>
+               <div class="col-12 col-sm-9 col-md-8">
                               <input maxlength="20"  name="FOLIO_EXPED"  type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->FOLIO_EXPED}}">
                </div>
                </div>
@@ -187,11 +186,11 @@ if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar
 
 
 <!--inicio Panel 2 -->
-    <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 p-1 verde2"  >
+    <div class="col-12 col-sm-6 col-md-12 col-lg-4 col-xl-4 p-1 verde2"  >
 
     <div class="row">
-          <div class="col-12 col-sm-5 col-md-5"> <label for="actuaria">Embarg. Institución:</label></div>
-          <div class="col-12 col-sm-7 col-md-7">
+          <div class="col-12 col-sm-4 col-md-4 col-lg-5"> <label for="actuaria">Embarg. Institución:</label></div>
+          <div class="col-12 col-sm-8 col-md-8 col-lg-7">
                  <select name="INSTITUCIO" class="form-control form-control-sm">
                     <?php 
 
@@ -209,22 +208,22 @@ if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar
      </div>
 
     <div class="row">
-          <div class="col-12 col-sm-5 col-md-5">   <label for="actuaria">Embargo N°:</label></div>
-          <div class="col-12 col-sm-7 col-md-7"> 
+          <div class="col-12 col-sm-4 col-md-4 col-lg-5">   <label for="actuaria">Embargo N°:</label></div>
+          <div class="col-12 col-sm-8 col-md-8 col-lg-7"> 
                 <input  name="EMBARGO_NR"  type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->EMBARGO_NR}}">
           </div>      
      </div> 
  
     <div class="row">
-          <div class="col-12 col-sm-5 col-md-5 col-lg-3">  <label for="actuaria">Fecha de embargo:</label> </div>
-          <div class="col-12 col-sm-7 col-md-7 col-lg-9">
+          <div class="col-12 col-sm-4 col-md-4 col-lg-5">  <label for="actuaria">Fecha de embargo:</label> </div>
+          <div class="col-12 col-sm-8 col-md-8 col-lg-7">
           <input  name="FEC_EMBARG"    type="date"      class="form-control form-control-sm" value="{{Helper::fecha_f( !isset($ficha)? '' : $ficha->FEC_EMBARG)}}">
           </div>      
      </div>
     
      <div class="row">
-          <div class="col-12 col-sm-5 col-md-5"> <label for="actuaria">Banco:</label></div>
-          <div class="col-12 col-sm-7 col-md-7">
+          <div class="col-12 col-sm-4 col-md-4 col-lg-5"> <label for="actuaria">Banco:</label></div>
+          <div class="col-12 col-sm-8 col-md-8 col-lg-7">
             <select name="BANCO" class="form-control form-control-sm">
                    <?php 
 
@@ -243,8 +242,8 @@ if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar
 
 
     <div class="row">
-          <div class="col-12 col-sm-5 col-md-5"> <label for="actuaria">Cta.Cte.Judicial:</label></div>
-          <div class="col-12 col-sm-7 col-md-7">
+          <div class="col-12 col-sm-4 col-md-4 col-lg-5"> <label for="actuaria">Cuenta Judicial:</label></div>
+          <div class="col-12 col-sm-8 col-md-8 col-lg-7">
               <input  name="CTA_BANCO"  type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->CTA_BANCO}}">
           </div>
      </div>
@@ -254,8 +253,8 @@ if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar
     Adj.Lev.Embargo:
      
     <div class="row">
-          <div class="col-12 col-sm-4 col-md-4">  <label for="actuaria">Fecha:</label></div>
-          <div class="col-12 col-sm-8 col-md-8">
+          <div class="col-12 col-sm-4 col-md-4 col-lg-5">  <label for="actuaria">Fecha:</label></div>
+          <div class="col-12 col-sm-8 col-md-8 col-lg-7">
           <input name="ADJ_LEV_EMB_FEC"   type="date"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->ADJ_LEV_EMB_FEC}}">
            </div>
              
@@ -281,17 +280,17 @@ if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar
      
 
     <!--ini panel 2 col 2-->
-    <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 p-1 verde3"   >
+    <div class="col-12 col-sm-6 col-md-12 col-lg-4 col-xl-4 p-1 verde3"   >
     Lev.Embargo Capital:
    
    <div class="row">
-           <div class="col-12 col-sm-3 col-md-4"> <label for="actuaria">Numero:</label></div>
-           <div class="col-12 col-sm-9 col-md-8">  <input name="LEV_EMB_CAP_NRO"   type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->LEV_EMB_NRO}}"> </div>
+           <div class="col-12 col-sm-4 col-md-4"> <label for="actuaria">Numero:</label></div>
+           <div class="col-12 col-sm-8 col-md-8">  <input name="LEV_EMB_CAP_NRO"   type="text"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->LEV_EMB_NRO}}"> </div>
     </div>
  
    <div class="row">
-              <div class="col-12 col-sm-3 col-md-4">  <label for="actuaria">Fecha:</label> </div>
-              <div class="col-12 col-sm-9 col-md-8"> <input name="LEV_EMB_CAP_FEC"   type="date"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->LEV_EMB_FEC}}"> </div>         
+              <div class="col-12 col-sm-4 col-md-4">  <label for="actuaria">Fecha:</label> </div>
+              <div class="col-12 col-sm-8 col-md-8"> <input name="LEV_EMB_CAP_FEC"   type="date"   class="form-control form-control-sm" value="{{ !isset($ficha)? '' : $ficha->LEV_EMB_FEC}}"> </div>         
     </div>
 
           <div class="row">
@@ -314,8 +313,8 @@ if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar
           </div>
  
           <div class="row">
-               <div class="col-12 col-sm-2 col-md-4"> <label for="actuaria">Tipo:</label></div>
-               <div class="col-12 col-sm-10 col-md-8">
+               <div class="col-12 col-sm-4 col-md-4"> <label for="actuaria">Tipo:</label></div>
+               <div class="col-12 col-sm-8 col-md-8">
                          
                          <select name="INST_TIPO" class="form-control form-control-sm">
                          <?php 

@@ -370,7 +370,7 @@
     </div>
     </div>
 
-    <div class="col-12 col-md-8 col-lg-4 p-1 verde5"  >
+    <div class="col-12 col-md-12 col-lg-4 p-1 verde5"  >
  <!--INHIBICION -->
   
  <p>Adj.Inhibición</p>

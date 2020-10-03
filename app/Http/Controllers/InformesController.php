@@ -89,13 +89,17 @@ class InformesController extends Controller
          (select count(*) from arr_extr_cuotas where arr_extr_cuotas.ARREGLO=demandas2.IDNRO) as CUOTAS, 
          (select count(*) from arr_extr_cuotas where arr_extr_cuotas.ARREGLO=demandas2.IDNRO and 
          arr_extr_cuotas.FECHA_PAGO is not null) as PAGADAS from arreglo_extrajudicial join demandas2 
-         on demandas2.IDNRO=arreglo_extrajudicial.IDNRO join demandado on demandado.CI=demandas2.CI JOIN 
+         on demandas2.IDNRO=arreglo_extrajudicial.IDNRO join demandado on demandado.CI=demandas2.CI left JOIN
          demandan on demandan.IDNRO=demandas2.DEMANDANTE WHERE arreglo_extrajudicial.IMPORTE_T > 0     ");
     
         if( $request->ajax()){
             if($html == "S") //DEVOLVER DATOS CON FORMATO HTML
             return view('informes.arreglo_extraju.grilla', 
             [ "lista"=> $lista] );
+            else if ( $html ==  "PRINT")//cONTENIDO para imprimir
+            return view('informes.arreglo_extraju.grilla_print', 
+            [ "lista"=> $lista] );
+
             else if($html=="N" || $html=="XLS") //DEVOLUCION DE LISTA EN JSON
             echo json_encode(  $lista );
         }
@@ -103,6 +107,11 @@ class InformesController extends Controller
             if ( $html ==  "S")//cONTENIDO HTML
             return view('informes.arreglo_extraju.index', 
             [ "lista"=> $lista, "TITULO"=>"Arreglos Extrajudiciales"] );
+
+            if ( $html ==  "PRINT")//cONTENIDO para imprimir
+            return view('informes.arreglo_extraju.grilla_print', 
+            [ "lista"=> $lista] );
+
             if ( $html ==  "XLS" || $html=="N")//cONTENIDO JSON PARA XLS
             echo json_encode(  $lista ); 
             if ( $html ==  "PDF")//cONTENIDO PDF

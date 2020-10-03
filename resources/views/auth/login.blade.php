@@ -185,7 +185,7 @@ body, input, button {
          <div class="login">
   <div class="heading">
     <h4>INICIAR SESIÓN</h4>
-    <p style="color: white;">admin 123</p>
+    
     <form action="<?=url("signin")?>"  method="post">
     @csrf
       <div class="input-group input-group-lg">

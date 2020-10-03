@@ -33,14 +33,14 @@
 <div class="row p-2">
 <div class="form-group col-12 col-md-6">
           <label for="ctactecatas">Preventivo:</label>
-          <textarea maxlength="100" name="OBS_PREVEN"   cols="30" rows="3" class="form-control form-control-sm   ">
+          <textarea  name="OBS_PREVEN"   cols="30" rows="3" class="form-control form-control-sm   ">
             {{! isset($ficha3) ? '' : $ficha3->OBS_PREVEN }}</textarea> 
           </div>
 
 
           <div class="form-group col-12 col-md-6">
           <label for="ctactecatas">Ejecutivo:</label>
-          <textarea maxlength="100" name="OBS_EJECUT"   cols="30" rows="3" class="form-control form-control-sm   ">
+          <textarea   name="OBS_EJECUT"   cols="30" rows="3" class="form-control form-control-sm   ">
             {{! isset($ficha3) ? '' : $ficha3->OBS_EJECUT}}</textarea> 
           </div>
 

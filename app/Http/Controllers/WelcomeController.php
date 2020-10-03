@@ -58,6 +58,7 @@ class WelcomeController extends Controller
             }
         }else{
             return view('welcome', ["show"=>"N"]);
+           //return redirect("/");
         }
        
 
@@ -66,6 +67,10 @@ class WelcomeController extends Controller
 
   
   
+
+    public function unauthorized(){
+        return view("layouts.unauthorized");
+    }
 
 
 }
