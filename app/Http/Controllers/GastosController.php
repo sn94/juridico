@@ -93,7 +93,7 @@ class GastosController extends Controller
             if ($Datos["SIGNO"] == "-") {
                 $Datos['FLAG'] = "INGRESO";
                 //ignorar codigo de gasto
-                $Datos=  array_diff_key(  $Datos, ['CODIGO'=> '' ] );
+                $Datos =  array_diff_key($Datos, ['CODIGO' => '']);
                 $Datos["IMPORTE"] =  (-1) *  $Datos["IMPORTE"];
             }
 
@@ -182,9 +182,9 @@ class GastosController extends Controller
             $hasta = $request->input("Hasta");
 
             $query = Gastos::addSelect([
-                    'COD_GASTO' => Codigo_gasto::select('CODIGO')
-                        ->whereColumn('IDNRO', 'gastos.CODIGO')
-                ])
+                'COD_GASTO' => Codigo_gasto::select('CODIGO')
+                    ->whereColumn('IDNRO', 'gastos.CODIGO')
+            ])
                 ->addSelect([
                     'COD_EMP' => Demanda::select('COD_EMP')
                         ->whereColumn('IDNRO', 'gastos.ID_DEMA')
@@ -193,7 +193,7 @@ class GastosController extends Controller
             if ($desde != ""  && $hasta != "") $query->whereDate("FECHA", ">=", $desde)->whereDate("FECHA", "<=", $hasta);
             if ($modo == "D")  $query->where("ID_DEMA", "<>", "NULL");
             if ($modo == "V")  $query->whereNull('ID_DEMA');
-            if ($modo == "I")  $query->where('gastos.IMPORTE',"<","0");//por ingreso
+            if ($modo == "I")  $query->where('gastos.IMPORTE', "<", "0"); //por ingreso
             $dato = $query; //->paginate(20); 
 
         } else {
@@ -237,12 +237,30 @@ class GastosController extends Controller
     {
         set_time_limit(0);
         ini_set('memory_limit', '-1');
+
         $Movi =  $this->listar_datos_segun_param($request, FALSE);
+
         if ($tipo == "xls") {
             echo json_encode($Movi);
         } else {
+
             //Pdf format
             //Preparar variables que representan montos
+            $desde = "";
+            $hasta = "";
+            if ($request->getMethod(true) == "POST") {
+                $desde = $request->input("Desde");
+                $hasta = $request->input("Hasta");
+            }
+        
+            if ($desde != "") {
+                $desde = Helper::beautyDate($desde);
+                $hasta = Helper::beautyDate($hasta);
+            }
+            $TITULO_DE_PDF = "INFORME DE CAJA ";
+
+            if ($desde != ""   &&   $hasta != "")  $TITULO_DE_PDF .= "DESDE EL $desde HASTA EL $hasta ";
+
 
             $html = <<<EOF
         <style>
@@ -280,12 +298,13 @@ class GastosController extends Controller
             }
             
             tr.pie td{ 
+                border-top: 1px solid black;
                 color: #0f0f0f;
                 font-weight: bold;
                 font-size: 11px; 
             }
         </style>
-        <h6>GASTOS</h6>
+        <h6>$TITULO_DE_PDF </h6>
         <table class="tabla">
         <thead>
         <tr class="cabecera"><th class="codigo">CODIGO</th><th class="fecha">FECHA</th><th class="comprobante">COMPROBANTE</th><th class="detalle">DETALLES</th><th class="importe">IMPORTE</th><th class="text-center">MOV.</th></tr>
@@ -300,7 +319,7 @@ class GastosController extends Controller
                 $f_MONTO = Helper::number_f($mo->IMPORTE);
                 $gooddate = Helper::beautyDate($mo->FECHA);
                 $MOTIVO =    $mo->DETALLE1 . "-" . $mo->DETALLE2;
-                $f_FLAG= $mo->FLAG;
+                $f_FLAG = $mo->FLAG;
                 //$MOTIVO=  (is_null( $mo->ID_DEMA) )? "VARIOS": ("COD-EMP: ".$mo->COD_EMP);
                 $html .= "<tr class=\"cuerpo\"> <td class=\"codigo\">{$mo->COD_GASTO}</td><td class=\"fecha\">{$gooddate}</td><td class=\"comprobante\">{$mo->NUMERO}</td><td class=\"detalle\">{$MOTIVO}</td><td  class=\"importe\">{$f_MONTO}</td> <td  class=\"text-center\">{$f_FLAG}</td> </tr> ";
             endforeach;
@@ -311,7 +330,8 @@ class GastosController extends Controller
             $f_total = Helper::number_f($total);
 
             $html .= <<<EOF
-        <tr class="pie"><td  class="codigo"></td><td class="fecha"></td><td class="comprobante">TOTAL</td><td class="detalle"></td><td class="importe">$f_total</td></tr> 
+        <br>
+        <tr class="pie"><td  class="codigo"></td><td class="fecha"></td><td class="comprobante">TOTAL</td><td class="detalle"></td><td class="importe">$f_total</td> <td></td> </tr> 
         </tbody></table>
         EOF;
 
@@ -319,7 +339,7 @@ class GastosController extends Controller
                 echo $html;
             } else {
                 //echo $html;
-                $tituloDocumento = "GASTOS-" . date("d") . "-" . date("m") . "-" . date("yy") . "-" . rand();
+                $tituloDocumento = "GASTOS_INGRESOS-" . date("d") . "-" . date("m") . "-" . date("yy") . "-" . rand();
                 $pdf = new PDF();
                 $pdf->prepararPdf("$tituloDocumento.pdf", $tituloDocumento, "");
                 $pdf->generarHtml($html);

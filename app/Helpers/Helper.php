@@ -35,12 +35,12 @@ class Helper
           if( strlen($fecha[2] ) == 4 ){// dia mes anio
             if(  strlen($fecha[1])==1   )  $fecha[1]= "0".$fecha[1];
             if(  strlen($fecha[0])==1   )  $fecha[0]= "0".$fecha[0];
-            echo $fecha[2] ."-".$fecha[1]."-".$fecha[0]; 
+            return $fecha[2] ."-".$fecha[1]."-".$fecha[0]; 
           }else{
-            echo   $fecha[2]."-".$fecha[1]."-". $fecha[0]; 
+            return   $fecha[2]."-".$fecha[1]."-". $fecha[0]; 
           }
         }else
-        echo $fe;//la fecha esta en otro formato
+        return $fe;//la fecha esta en otro formato
       }
 
 /**Devuelde de yyyy-mm-dd a dd-mm-yyyy */
