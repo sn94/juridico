@@ -7,7 +7,7 @@ use App\Helpers\Helper;
 <input type="hidden" id="OPERACION" value="{{$OPERACION}}">
 
 <p style="text-align: center;font-weight: 600; background-color: #f9a84f; color: white;margin-bottom: 0px;">
-  NUEVO GASTO
+  GASTO/INGRESO
 </p>
 
 
@@ -21,39 +21,66 @@ use App\Helpers\Helper;
   $marcar_gasto= "checked";
   $marcar_ingreso= "";
   if( isset( $dato) ){
-    if(intval( $dato->IMPORTE) >= 0 )
-    {$marcar_gasto= "checked"; $marcar_ingreso="";}
-    else{
-    $marcar_gasto= ""; $marcar_ingreso="checked";
+  if(intval( $dato->IMPORTE) >= 0 )
+  {$marcar_gasto= "checked"; $marcar_ingreso="";}
+  else{
+  $marcar_gasto= ""; $marcar_ingreso="checked";
   }
   }
 
   @endphp
-  <div class="form-group m-0 p-2" style="background-color: #fdc673; ">
-    <h4 style="text-decoration: underline;">MARCAR COMO:</h4>
-    <div class="form-check form-check-inline">
-      <input {{$marcar_gasto}} class="form-check-input" id="ESGASTO" type="radio" name="SIGNO" value="+">
-      <label class="form-check-label" for="inlineRadio1">GASTO</label>
+
+
+
+  <div class="row">
+    <div class="col-12 col-md-4">
+      <div class="form-group m-0 p-2" style="background-color: #fdc673; ">
+        <h4 style="text-decoration: underline;">MARCAR COMO:</h4>
+        <div class="form-check form-check-inline">
+          <input {{$marcar_gasto}} class="form-check-input" id="ESGASTO" type="radio" name="SIGNO" value="+">
+          <label class="form-check-label" for="inlineRadio1">GASTO</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input {{$marcar_ingreso}} class="form-check-input" id="ESINGRESO" type="radio" name="SIGNO" value="-">
+          <label class="form-check-label" for="inlineRadio2">INGRESO</label>
+        </div>
+      </div>
     </div>
-    <div class="form-check form-check-inline">
-      <input {{$marcar_ingreso}} class="form-check-input" id="ESINGRESO" type="radio" name="SIGNO" value="-">
-      <label class="form-check-label" for="inlineRadio2">INGRESO</label>
+    <div class="col-12 col-md-4">
+      <div class="form-group m-0 p-2" style="background-color: #fdc673; ">
+        <h4 style="text-decoration: underline;">CONCEPTO:</h4>
+        <div class="form-check form-check-inline">
+          <input {{ isset($dato) && !is_null($dato->ID_DEMA) ? 'checked' : ''}} class="form-check-input" id="GastDema" onchange="modo_gastos(event)" type="radio" name="modo" value="gastdema">
+          <label class="form-check-label" for="inlineRadio1">Por demanda</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input {{ isset($dato) && is_null($dato->ID_DEMA) ? 'checked' : ''}} class="form-check-input" id="OtrosGast" onchange="modo_gastos(event)" type="radio" name="modo" value="gastotro">
+          <label class="form-check-label" for="inlineRadio2">Otros</label>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="form-group m-0 p-2" style="background-color: #fdc673; ">
+        <h4 style="text-decoration: underline;">MEDIO:</h4>
+        @php
+        $medios_de_io= ['EFECTIVO'=>'EFECTIVO', 'CHEQUE'=>'CHEQUE', 'GIRO_TIGO'=>'GIROS TIGO' ];
+        @endphp
+        <select name="METODO" id="" class="form-control form-control-sm">
+          @foreach( $medios_de_io as $medio=> $val)
+          @if( isset($dato) && $dato->METODO == $medio )
+          <option selected value="{{$medio}}">{{$val}}</option>
+          @else
+          <option value="{{$medio}}">{{$val}}</option>
+          @endif
+          @endforeach
+        </select>
+      </div>
     </div>
   </div>
 
 
 
-  <div class="form-group m-0 p-2" style="background-color: #fdc673; ">
-    <h4 style="text-decoration: underline;">CONCEPTO:</h4>
-    <div class="form-check form-check-inline">
-      <input {{ isset($dato) && !is_null($dato->ID_DEMA) ? 'checked' : ''}} class="form-check-input" id="GastDema" onchange="modo_gastos(event)" type="radio" name="modo" value="gastdema">
-      <label class="form-check-label" for="inlineRadio1">Por demanda</label>
-    </div>
-    <div class="form-check form-check-inline">
-      <input {{ isset($dato) && is_null($dato->ID_DEMA) ? 'checked' : ''}} class="form-check-input" id="OtrosGast" onchange="modo_gastos(event)" type="radio" name="modo" value="gastotro">
-      <label class="form-check-label" for="inlineRadio2">Otros</label>
-    </div>
-  </div>
+
 
 
   @csrf
