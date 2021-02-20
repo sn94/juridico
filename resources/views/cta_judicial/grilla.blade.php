@@ -11,9 +11,11 @@ use App\Helpers\Helper;
         </thead>
         <tbody>
           <?php 
+
+$total_deposito=0; $total_extraccion= 0;
           if( !is_null($movi)):
 
-            $total_deposito=0; $total_extraccion= 0;
+          
           foreach( $movi as $it):
           
             if( $it->TIPO_MOVI=="D" )  $total_deposito+= intval($it->IMPORTE);

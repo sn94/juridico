@@ -59,7 +59,7 @@
 </div>
 </div>
 
-@if($OPERACION=="A"  ||  $OPERACION=="A+" )
+@if($OPERACION=="A"  ||  $OPERACION=="A+" ||  $OPERACION=="M" )
 <div class="col-12 col-md-3 d-flex align-items-center">
 <button onclick="calcular_cuotas()" type="button" class="btn btn-sm btn-info">GENERAR CUOTAS</button>
 </div>

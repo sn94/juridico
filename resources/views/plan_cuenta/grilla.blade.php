@@ -24,7 +24,7 @@ if( $detect->isMobile() == false){
 <table id="plancuenta" class="table table-striped table-bordered table-responsive">
       <thead class="thead-dark ">
       <th class="pb-0"></th>
-      @if( session("tipo") == "S"))
+      @if( session("tipo") == "S")
       <th class="pb-0"></th>
       @endif 
 
@@ -37,7 +37,7 @@ if( $detect->isMobile() == false){
         <tr> 
           <td><a data-toggle="modal" data-target="#showform" onclick="editar(event)" href="<?=url("plan-cuenta/M/".$it->IDNRO)?>"><i class="fa fa-pencil" aria-hidden="true"></i></a></td>
           
-          @if( session("tipo") == "S"))
+          @if( session("tipo") == "S")
           <td><a onclick="borrar(event)" href="<?=url("del-plan-cuenta/".$it->IDNRO)?>" ><i class="fa fa-trash" aria-hidden="true"></i></a></td>
           @endif 
 

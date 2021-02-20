@@ -78,6 +78,11 @@ use App\Helpers\Helper;
 
   <script>
 
+
+
+var GrillaActualizada= false; 
+
+
 function jsonReceiveHandler( data){// string JSON to convert     div Html Tag to display errors
   try{
              let res= JSON.parse( data);
@@ -119,5 +124,63 @@ function jsonReceiveHandler( data){// string JSON to convert     div Html Tag to
               })
           }
       }
+
+      function actualizarGrill(){
+  $.ajax( {
+            url: "<?= url("demandas-by-id/$idnro")?>",
+            success: function(res){  
+               $("#tabla-dinamica").html( res);  
+               },
+            beforeSend: function(){  
+                  $("#tabla-dinamica").html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" );       
+            }, 
+            error: function(err){  $("#tabla-dinamica").html( "<h6 style='color:red;'>"+err+"</h6>" ); }
+        });
+}
+
+window.onload= function(){
+
+  window.onfocus= function(){
+ 
+ if( !GrillaActualizada){
+   actualizarGrill();
+   GrillaActualizada=  true;
+ }
+
+};  
+  window.onmouseenter= function(){
+ 
+ if( !GrillaActualizada){
+   actualizarGrill();
+   GrillaActualizada=  true;
+ }
+
+};
+  window.onmouseover= function(){
+ 
+  if( !GrillaActualizada){
+    actualizarGrill();
+    GrillaActualizada=  true;
+  }
+
+};
+
+window.onmouseleave= function(){
+  console.log("leave");
+  GrillaActualizada= false;
+};
+
+window.onblur= function(){
+
+  GrillaActualizada= false;
+};
+
+window.onbeforeunload= function(){
+
+GrillaActualizada= false;
+};
+
+};
+
   </script>
 @endsection

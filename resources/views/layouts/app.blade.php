@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\URL;
 ?>
-<!DOCTYPE html> 
+<!DOCTYPE html>
 
 <head>
     <meta charset="utf-8">
@@ -19,88 +19,121 @@ use Illuminate\Support\Facades\URL;
     <!--Estilo print -->
     <link href="<?= url("print/print.min.css") ?>" rel="stylesheet">
 
-    
 
-     <style>
-        .app .app-body .app-sidebar{
-             background: #092804;
-         }
-         .app .app-body .app-sidebar .sidebar-nav > .sidebar-nav-link.collapsed, .app .app-body .app-sidebar .sidebar-nav > li > .sidebar-nav-link.collapsed, .app .app-body .app-sidebar .sidebar-nav > .sidebar-nav-group > .sidebar-nav-link.collapsed {
+
+    <style>
+        .app .app-body .app-sidebar {
+            background: #092804;
+        }
+
+        .app .app-body .app-sidebar .sidebar-nav>.sidebar-nav-link.collapsed,
+        .app .app-body .app-sidebar .sidebar-nav>li>.sidebar-nav-link.collapsed,
+        .app .app-body .app-sidebar .sidebar-nav>.sidebar-nav-group>.sidebar-nav-link.collapsed {
             background-color: #092804;
-            }
+        }
 
-        .card-header{
+        .card-header {
             background-color: #a5efa0;
         }
 
-<?php
-use App\Http\Controllers\MessengerController;
-use App\Mobile_Detect;
-$adapta=new Mobile_Detect();
-if( $adapta->isMobile()): ?>
+        <?php
 
-        table, label, select{   font-size: 12px !important;  font-family:Verdana, Geneva, Tahoma, sans-serif;   }
-        table.table td{ padding: 0px !important;}
-        input{ font-size: 14px; }
-      
-<?php
-else: ?>
-        table{  font-size: 14px !important;   font-family:Verdana, Geneva, Tahoma, sans-serif;     }
-        label, select{ font-size: 12.5px !important;  font-family:Verdana, Geneva, Tahoma, sans-serif;   }
-        table.table td{ padding: 0px !important;}
-        input{ font-size: 12px !important; font-weight: 600;  font-family:Verdana, Geneva, Tahoma, sans-serif; } 
-<?php
-endif;
-?>
-      
-      .toast{
-          color:#092804;
-          font-weight: bold;
-          font-size: 16px;
-          text-align: center;
-      }
+        use App\Http\Controllers\MessengerController;
+        use App\Mobile_Detect;
 
-        label{  font-weight: 600; text-transform: uppercase;  }
-       
+        $adapta = new Mobile_Detect();
+        if ($adapta->isMobile()) : ?>table,
+        label,
+        select {
+            font-size: 12px !important;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+        }
 
- 
-      
- 
-       .name-titular{
-        font-size: 14px; text-transform: capitalize; font-weight: bold;
-       }
+        table.table td {
+            padding: 0px !important;
+        }
+
+        input {
+            font-size: 14px;
+        }
+
+        <?php
+        else : ?>table {
+            font-size: 14px !important;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+        }
+
+        label,
+        select {
+            font-size: 12.5px !important;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+        }
+
+        table.table td {
+            padding: 0px !important;
+        }
+
+        input {
+            font-size: 12px !important;
+            font-weight: 600;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+        }
+
+        <?php
+        endif;
+        ?>.toast {
+            color: #092804;
+            font-weight: bold;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        label {
+            font-weight: 600;
+            text-transform: uppercase;
+        }
 
 
-    
 
-.verde1 {
-    background-color: #aaaaaa;
-}
 
-.verde2 {
-    background-color: #BDBDBD;
-}
 
-.verde3 {
-    background-color: #a6a6a6;
-}
+        .name-titular {
+            font-size: 14px;
+            text-transform: capitalize;
+            font-weight: bold;
+        }
 
-.verde4 {
-    background-color: #b4b4b4;
-}
 
-.verde5 {
-    background-color: #949494;
-}
 
-.verde6 {
-    background-color: #549751;
-}
 
-.verde7 {
-    background-color: #5B8959;
-}
-     </style>
+        .verde1 {
+            background-color: #aaaaaa;
+        }
+
+        .verde2 {
+            background-color: #BDBDBD;
+        }
+
+        .verde3 {
+            background-color: #a6a6a6;
+        }
+
+        .verde4 {
+            background-color: #b4b4b4;
+        }
+
+        .verde5 {
+            background-color: #949494;
+        }
+
+        .verde6 {
+            background-color: #549751;
+        }
+
+        .verde7 {
+            background-color: #5B8959;
+        }
+    </style>
 </head>
 
 <body>
@@ -112,183 +145,182 @@ endif;
                         <span class="x"></span></button>
                 </div>
                 <div class="sidebar-header">
-                    <a href="<?= url("/") ?>"><img src="<?=url("assets/img/balanza.jpg")?>" class="user-photo"></a>
+                    <a href="<?= url("/") ?>"><img src="<?= url("assets/img/balanza.jpg") ?>" class="user-photo"></a>
                     <p class="username">Estudio Jurídico Sa.<br><small>
-                        {{session('nick').","}}
-                    {{  session('tipo')== "S" ? "SUPERVISOR": (session('tipo')=="U" ? "USUARIO" : "OPERADOR") }}
+                            {{session('nick').","}}
+                            {{ session('tipo')== "S" ? "SUPERVISOR": (session('tipo')=="U" ? "USUARIO" : "OPERADOR") }}
 
-                    </small>
+                        </small>
                     </p>
                 </div>
                 <ul id="sidebar-nav" class="sidebar-nav">
-                 
+
                     <li class="sidebar-nav-group">
-                        <a href="<?=url("ldemandados")?>" class="sidebar-nav-link" ><i class="icon-doc"></i>
+                        <a href="<?= url("ldemandados") ?>" class="sidebar-nav-link"><i class="icon-doc"></i>
                             DEMANDAS</a>
-                         
+
                     </li>
-                    
-                     
+
+
                     <li class="sidebar-nav-group">
                         <a href="#opcinformes" class="sidebar-nav-link" data-toggle="collapse"><i class="icon-pencil"></i> INFORMES</a>
-                        <ul id="opcinformes" class="collapse" data-parent="#sidebar-nav"> 
-                        <li><a href="<?=url("filtros")?>" class="sidebar-nav-link">Filtros</a></li> 
-                        <li><a href="{{url('informes-cuentajudicial')}}" class="sidebar-nav-link">Estado Cta. Judicial</a></li>
-                        <li><a href="{{url('informes-arregloextrajudicial')}}" class="sidebar-nav-link">Cobro extrajudicial</a></li>
-                           
+                        <ul id="opcinformes" class="collapse" data-parent="#sidebar-nav">
+                            <li><a href="<?= url("filtros") ?>" class="sidebar-nav-link">Filtros</a></li>
+                            <li><a href="{{url('informes-cuentajudicial')}}" class="sidebar-nav-link">Estado Cta. Judicial</a></li>
+                            <li><a href="{{url('informes-arregloextrajudicial')}}" class="sidebar-nav-link">Cobro extrajudicial</a></li>
+
                         </ul>
                     </li>
                     <li class="sidebar-nav-group">
-                    <a href="#banco-menu" class="sidebar-nav-link" data-toggle="collapse" ><i class="icon-note"></i> BANCOS</a>
+                        <a href="#banco-menu" class="sidebar-nav-link" data-toggle="collapse"><i class="icon-note"></i> BANCOS</a>
                         <ul id="banco-menu" class="collapse" data-parent="#sidebar-nav">
-                        <li><a href="<?=url("bank")?>" class="sidebar-nav-link">Cta.de Banco</a></li> 
-                        <li><a href="<?=url("bank-informes")?>" class="sidebar-nav-link">Informes</a></li>
+                            <li><a href="<?= url("bank") ?>" class="sidebar-nav-link">Cta.de Banco</a></li>
+                            <li><a href="<?= url("bank-informes") ?>" class="sidebar-nav-link">Informes</a></li>
                         </ul>
                     </li>
                     <li class="sidebar-nav-group"><a href="#layout" class="sidebar-nav-link" data-toggle="collapse"><i class="icon-layers"></i> GASTOS</a>
                         <ul id="layout" class="collapse" data-parent="#sidebar-nav">
-                            <li><a href="<?=  url("gastos") ?>" class="sidebar-nav-link">Cargar</a></li>
-                            <li><a href="<?=  url("plan-de-cuentas") ?>" class="sidebar-nav-link">Plan de cta.</a></li> 
+                            <li><a href="<?= url("gastos") ?>" class="sidebar-nav-link">Cargar</a></li>
+                            <li><a href="<?= url("plan-de-cuentas") ?>" class="sidebar-nav-link">Plan de cta.</a></li>
                         </ul>
                     </li>
                     @if( session("tipo") == "S")
                     <li class="sidebar-nav-group"><a href="#reference" class="sidebar-nav-link" data-toggle="collapse"><i class="icon-notebook"></i> AUXILIARES</a>
                         <ul id="reference" class="collapse" data-parent="#sidebar-nav">
-                            <li><a href="<?= url("auxiliar")?>" class="sidebar-nav-link">Datos aux.</a></li>
-                            <li><a href="<?= url("users")?>" class="sidebar-nav-link">Usuarios</a></li>
-                            <li><a href="<?= url("params")?>" class="sidebar-nav-link">Parámetros</a></li> 
+                            <li><a href="<?= url("auxiliar") ?>" class="sidebar-nav-link">Datos aux.</a></li>
+                            <li><a href="<?= url("users") ?>" class="sidebar-nav-link">Usuarios</a></li>
+                            <li><a href="<?= url("params") ?>" class="sidebar-nav-link">Parámetros</a></li>
 
                         </ul>
                     </li>
                     @endif
                     <li class="sidebar-nav-group"><a href="#notifi" class="sidebar-nav-link" data-toggle="collapse"><i class="icon-notebook"></i> NOTIFICACIONES</a>
                         <ul id="notifi" class="collapse" data-parent="#sidebar-nav">
-                            <li><a href="<?= url("dema-noti-venc")?>" class="sidebar-nav-link">LISTAR</a></li>
-                            <li><a onclick="procesarNotificaciones(event)" href="#" class="sidebar-nav-link">PROCESAR</a></li> 
+                            <li><a href="<?= url("dema-noti-venc") ?>" class="sidebar-nav-link">LISTAR</a></li>
+                            <li><a onclick="procesarNotificaciones(event)" href="#" class="sidebar-nav-link">PROCESAR</a></li>
 
                         </ul>
                     </li>
                 </ul>
-                <div class="sidebar-footer"><a href="<?=url("messenger")?>" data-toggle="tooltip" title="Mensajes"><i class="fa fa-comment"></i> </a>
-                
-                <a href="<?=url("signout")?>" data-toggle="tooltip" title="Logout"><i class="fa fa-power-off"></i></a></div>
+                <div class="sidebar-footer"><a href="<?= url("messenger") ?>" data-toggle="tooltip" title="Mensajes"><i class="fa fa-comment"></i> </a>
+
+                    <a href="<?= url("signout") ?>" data-toggle="tooltip" title="Logout"><i class="fa fa-power-off"></i></a>
+                </div>
             </div>
             <div class="app-content">
                 <nav class="navbar navbar-expand navbar-light bg-white"><button type="button" class="btn btn-sidebar" data-toggle="sidebar"><i class="fa fa-bars"></i></button>
-                    <div class="navbar-brand">EST. JUR&Iacute;DICO &middot;  </div>
+                    <div class="navbar-brand">EST. JUR&Iacute;DICO &middot; </div>
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item dropdown"><a href="#" class="nav-link dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <span class="badge badge-pill  {{ MessengerController::numeroMensajesSinLeer() > 0 ? 'badge-danger' :'badge-primary'}}"> 
-                        {{MessengerController::numeroMensajesSinLeer()}}</span> 
-                        <i class="fa fa-bell-o"></i></a>
+                                <span class="badge badge-pill  {{ MessengerController::numeroMensajesSinLeer() > 0 ? 'badge-danger' :'badge-primary'}}">
+                                    {{MessengerController::numeroMensajesSinLeer()}}</span>
+                                <i class="fa fa-bell-o"></i></a>
 
                             <div class="dropdown-menu dropdown-menu-right"><a href="{{url('messenger')}}" class="dropdown-item"><small class="dropdown-item-title"> Nuevo mensaje</small><br>
-                    
-                                   
+
+
                                 </a>
-                                <div class="dropdown-divider"></div><a href="<?= url("list-msg/R")?>" class="dropdown-item dropdown-link">Recibidos&nbsp; <span class="badge badge-pill badge-primary ">{{MessengerController::numeroMensajesSinLeer()}}</span></a>
-                                @if( MessengerController::mensajesRecibidosSinLeer() <= 0 )
-                               
-                                <div class="dropdown-divider"></div><a href="./pages/content/notification.html" class="dropdown-item"><small class="text-secondary">0 MENSAJES NUEVOS</small><br>
-                                    <div>..</div>
-                                </a>
-                                @endif
+                                <div class="dropdown-divider"></div><a href="<?= url("list-msg/R") ?>" class="dropdown-item dropdown-link">Recibidos&nbsp; <span class="badge badge-pill badge-primary ">{{MessengerController::numeroMensajesSinLeer()}}</span></a>
+                                @if( MessengerController::mensajesRecibidosSinLeer() <= 0 ) <div class="dropdown-divider">
+                            </div><a href="./pages/content/notification.html" class="dropdown-item"><small class="text-secondary">0 MENSAJES NUEVOS</small><br>
+                                <div>..</div>
+                            </a>
+                            @endif
 
-                                <div class="dropdown-divider"></div><a href="<?= url("list-msg/E") ?>" class="dropdown-item dropdown-link">Enviados&nbsp;<span class="badge badge-pill badge-primary ">{{MessengerController::numeroEnviados()}}</span>  </a>
-                                @if(  MessengerController::mensajesEnviados() <= 0 )
-                                 
-                                <div class="dropdown-divider"></div><a href="./pages/content/notification.html" class="dropdown-item"><small class="text-secondary">0 MENSAJES NUEVOS</small><br>
-                                    <div>..</div>
-                                </a>
-                                @endif
-
-                                 
-                                 
-
-                            </div>
-                        </li>
-                    </ul>
-                </nav>
-                <nav aria-label="breadcrumb"  >
-                    <ol class="breadcrumb" style="background-color: {{ isset($breadcrumbcolor)  ?  $breadcrumbcolor : '#dee2e6;' }}">
-                    @yield('breadcrumb')
-                       
-                    </ol>
-                </nav>
+                            <div class="dropdown-divider"></div><a href="<?= url("list-msg/E") ?>" class="dropdown-item dropdown-link">Enviados&nbsp;<span class="badge badge-pill badge-primary ">{{MessengerController::numeroEnviados()}}</span> </a>
+                            @if( MessengerController::mensajesEnviados() <= 0 ) <div class="dropdown-divider">
+            </div><a href="./pages/content/notification.html" class="dropdown-item"><small class="text-secondary">0 MENSAJES NUEVOS</small><br>
+                <div>..</div>
+            </a>
+            @endif
 
 
 
 
-
-                <!-- inicio CONTENT-->
-
-                <div class="container-fluid" id="juridicosys-content">
-                    
-                    @yield('content')
-                         
-                           
-                    </div>
-                    <!-- END CONTENT -->
-
-
-
-
-
-
-
-
-            </div>
         </div>
+        </li>
+        </ul>
+        </nav>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb" style="background-color: {{ isset($breadcrumbcolor)  ?  $breadcrumbcolor : '#dee2e6;' }}">
+                @yield('breadcrumb')
+
+            </ol>
+        </nav>
+
+
+
+
+
+        <!-- inicio CONTENT-->
+
+        <div class="container-fluid" id="juridicosys-content">
+
+            @yield('content')
+
+
+        </div>
+        <!-- END CONTENT -->
+
+
+
+
+
+
+
+
     </div>
-  
-    <script src="<?=url("app.js")?>"></script>
+    </div>
+    </div>
+
+    <script src="<?= url("app.js") ?>"></script>
     <!-- librerias para generar archivos excel -->
-    <script src="<?=url("xls.js")?>"></script>
+    <script src="<?= url("xls.js") ?>"></script>
     <!-- inicializacion de las librerias anteriores.-->
-    <script src="<?=url("xls_ini.js")?>?v={{rand()}}"></script>
+    <script src="<?= url("xls_ini.js") ?>?v={{rand()}}"></script>
     <!--lib para imprimir -->
-    <script src="<?=url("print/print.min.js")?>"></script>
-    <script src="<?=url("print/init.js")?>"></script>
-    <!-- - eDITOR WYSIWYG --> 
-    
-    <script src="<?=url("ckeditor/ckeditor.js")?>"></script>
-    <script src="<?=url("ckeditor/styles.js")?>"></script>
- 
-    <script src="<?=url("ckeditor/config.js")?>"></script> 
-   
+    <script src="<?= url("print/print.min.js") ?>"></script>
+    <script src="<?= url("print/init.js") ?>"></script>
+    <!-- - eDITOR WYSIWYG -->
+
+    <script src="<?= url("ckeditor/ckeditor.js") ?>"></script>
+    <script src="<?= url("ckeditor/styles.js") ?>"></script>
+
+    <script src="<?= url("ckeditor/config.js") ?>"></script>
+
 
     <script>
+        function procesarNotificaciones(ev) {
+            ev.preventDefault();
+            let divname = "#juridicosys-content";
+            $.ajax({
+                url: "<?= url("proce-noti-venc") ?>",
+                method: "get",
+                beforeSend: function() {
+                    $(divname).html("<div class='spinner mx-auto'><div class='spinner-bar'></div></div><h3>PROCESANDO NOTIFICACIONES..</h3>");
+                },
+                success: function(res) {
+                    $(divname).html(res);
+                    //   window.location="<?= url("dema-noti-venc") ?>";  
+                },
+                error: function() {
+                    $(divname).html("<h6 style='color:red;'>Problemas de conexión</h6>");
+                }
+            });
+        }
 
-function procesarNotificaciones(ev){
-ev.preventDefault();
-let divname="#juridicosys-content";
-$.ajax(
-     {
-       url:  "<?=url("proce-noti-venc")?>",
-       method: "get", 
-       beforeSend: function(){ $( divname).html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div><h3>PROCESANDO NOTIFICACIONES..</h3>" ); 
-       },
-       success: function(res){ 
-           $(divname).html( res);
-         //   window.location="<?=url("dema-noti-venc")?>";  
-            },
-       error: function(){  $( divname).html(  "<h6 style='color:red;'>Problemas de conexión</h6>" );   }
-     }
-   );
-}
+        $("input[type=date]").each(function(index, elemento) {
 
-        $("input[type=date]").each(  function(index, elemento){
+            if ($(elemento).val() == "")
+                $(elemento).css("color", "white");
 
-            if( $(elemento).val() == "")
-            $(elemento).css("color", "white");
-            
-            $(elemento).bind("change", function(){
-                if( this.value ==""  ||  this.value == undefined){
-                    console.log( this.value );
-                    $(  this  ).css("color", "white");
+            $(elemento).bind("change", function() {
+                if (this.value == "" || this.value == undefined) {
+                    console.log(this.value);
+                    $(this).css("color", "white");
                     return;
                 }
-                $(  this  ).css("color", "black");
+                $(this).css("color", "black");
             })
         });
     </script>

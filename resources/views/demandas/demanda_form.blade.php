@@ -93,7 +93,9 @@ if( $OPERACION == "A" || $OPERACION == "M") $rutaEspecial=  url("demandas-editar
                <div class="row">
                <div class="col-12 col-sm-4 col-md-4"> <label for="actuaria">Saldo:</label></div>
                <div class="col-12 col-sm-8 col-md-8">
-               <input readonly type="text"   class="form-control form-control-sm number-format" value="{{Helper::number_f( !isset($ficha)? '' : $ficha->SALDO)}}">
+               
+               <input readonly type="text" class="form-control form-control-sm number-format" value="{{Helper::number_f( !isset($ficha)? '' : $ficha->SALDO)}}">
+               
                </div>
                </div>
                   
@@ -397,7 +399,8 @@ function rec_formato_numerico_dema(){
 
 
 function control_post_registro(res){
-     if($("#operacion").val() == "A+"){
+     console.log("control_post_registro", res );
+     if($("#operacion").val() == "A+"){//rEGISTRO DE DEMANDADO YA EXISTENTE, SOLO SE LE CARGA UN NUEVO JUICIO
      //Asignar ID DE DEMANDA
      $("#formNoti input[name=IDNRO],#formObser input[name=IDNRO],#formContra input[name=IDNRO],#formExtrajudi input[name=IDNRO]").val( res.id_demanda);
      //Asignar el numero de cedula
@@ -408,14 +411,19 @@ function control_post_registro(res){
      habilitarCampos("formContra",true);
      habilitarCampos("formExtrajudi",true);
                
-} 
+     } 
+     //cambiar a edicion
+     if($("#operacion").val() == "A+"   ){//rEGISTRO DE DEMANDADO YA EXISTENTE, SOLO SE LE CARGA UN NUEVO JUICIO
+     document.getElementById("operacion").value= "M";
+     show_edit_demanda_form(   res.id_demanda);
+     }
 }
  
 function enviarDemanda( ev){ // ENVIO FORM DEMANDA
   
-  ev.preventDefault();  
- //limpiar campo demanda 
-limpiar_campos_dema();
+     ev.preventDefault();  
+     //limpiar campo demanda 
+     limpiar_campos_dema();
       $.ajax(
       {
         url:  ev.target.action,
@@ -436,8 +444,10 @@ limpiar_campos_dema();
             }else{ 
               //Mostrar mensaje 
               $("#demanda-panel").html(  ""  ); //mensaje 
-              $("#dema-msg").text( "GUARDADO!");
-                $(".toast").toast("show"); 
+              if ($("#operacion").val() == "M" )
+               {  $("#dema-msg").text( "GUARDADO!");$(".toast").toast("show"); }
+
+
               control_post_registro( res );
             }
             rec_formato_numerico_dema();
@@ -455,7 +465,26 @@ limpiar_campos_dema();
 
 
 
+function   show_edit_demanda_form(  id_demanda){
 
+          $.ajax(  {
+          url: "<?=url("demandas-editar")?>"+"/"+id_demanda,
+          beforeSend: function(){
+                    $("#demanda-collapse").html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
+                    
+               },
+          success: function(  form){
+              
+               $("#demanda-collapse").html( form ); 
+               $("#dema-msg").text( "GUARDADO!");$(".toast").toast("show"); 
+          }, 
+          error: function(){ 
+                    $("#demanda-collapse").html(  "" );
+                    alert("Problemas de conexión"); 
+                    }
+
+          });
+}
 
 
 

@@ -51,6 +51,40 @@ class DatosPersoController extends Controller
         return view('demandado.list_paginate', ['lista' => $dmds]  ); 
     }
 
+
+
+
+    public function index_garantes( Request $request, $argumento=""){
+      /*
+        select  demandado.*, count(demandas2.CI) as nro from `demandado` inner join `demandas2`
+         on `demandas2`.`CI` = `demandado`.`CI` where  demandado.CI LIKE '%p%' or  TITULAR LIKE '%p%' or 
+         DOMICILIO LIKE '%p%' OR TELEFONO LIKE '%p%' GROUP by demandas2.IDNRO  limit 20 offset 0
+        */
+        $argumento=  preg_split("/[\s]+/", $argumento);
+        if( sizeof($argumento)) $argumento= implode("%", $argumento);
+        //Con paginacion 
+        $consulta= "";
+        if(  $argumento != ""){
+          $consulta= DB::table("demandado") 
+          ->selectRaw(" demandado.IDNRO,demandado.CI_GARANTE,demandado.GARANTE,demandado.DOM_GARANT, demandado.TEL_GARANT")
+          ->whereRaw(" (demandado.CI_GARANTE LIKE '%$argumento%' or  demandado.GARANTE LIKE '%$argumento%')  ") 
+          ->whereRaw("( (demandado.CI_GARANTE is NOT null AND demandado.CI_GARANTE <> '')   or  (demandado.GARANTE is NOT null  AND demandado.GARANTE <> '') ) ")  ;
+        }else{
+          $consulta= DB::table("demandado") 
+          ->selectRaw( "demandado.IDNRO, demandado.CI_GARANTE,demandado.GARANTE,demandado.DOM_GARANT, demandado.TEL_GARANT")
+          ->whereRaw(" ((demandado.CI_GARANTE is NOT null AND demandado.CI_GARANTE <> '')   or  (demandado.GARANTE is NOT null  AND demandado.GARANTE <> '') ) ") ;
+        }
+       $dmds=  $consulta->paginate(20);
+      $sqlq= $consulta->toSql(); 
+      
+     //echo $sqlq;
+      if(  $request->ajax()){
+      return view('demandado.garante.list_paginate_ajax', ['lista' => $dmds]  ); 
+      }else
+      return view('demandado.garante.list_paginate', ['lista' => $dmds]  ); 
+  }
+
+
  
 /**
  * FICHA DE DATOS PERSONALES

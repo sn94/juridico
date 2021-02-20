@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Banc_mov;
 use App\CuentaJudicial;
 use App\Demanda;
+use App\Demandados;
 use App\Filtros;
 use App\Http\Controllers\Controller;
 use App\Liquidacion;
@@ -222,6 +223,62 @@ public function COMPATIBILIDAD_FECHA_BANCO(){
 
 
 
+
+
+//CAlCULO DE LIQUIDACION
+public function COMPATIBILIDAD_SALDO_DEMANDA(){
+     
+    set_time_limit(0);
+    ini_set('memory_limit', '-1');
+    $rows=Demanda::get(); 
+    DB::beginTransaction();
+   try{
+        foreach( $rows as $ite){
+      
+               // if(  $ite->SALDO == 0  ||  is_null( $ite->SALDO ) ){
+                    
+                    
+                $judicialoptions=new JudicialController();
+                $SALDO_CAPITAL=   $judicialoptions->saldo_C_y_L(  $ite->IDNRO, "array", true);
+                $ite->SALDO=     $SALDO_CAPITAL['saldo_capital'];
+               $ite->save();
+           // }
+        } 
+        DB::commit();
+   }catch (\Exception $e) {DB::rollback(); } 
+
+}
+
+//LIMPIEZA DE TELEFONOS
+public function COMPATIBILIDAD_TELEFONOS(){
+     
+    set_time_limit(0);
+    ini_set('memory_limit', '-1');
+    $rows=Demandados::get(); 
+    DB::beginTransaction();
+   try{
+        foreach( $rows as $ite){
+      
+               $TELE= $ite->TELEFONO;
+               $CELU1= $ite->CELULAR;
+               $CELU2= $ite->CELULAR2;
+               $TELET= $ite->TEL_TRABAJ;
+               $TELE_=  preg_replace("/[\.\-\/]/", " ", $TELE);
+               $CELU1_=  preg_replace("/[\.*\-*\/*]/", " ", $CELU1);
+               $CELU2_=  preg_replace("/[\.*\-*\/*]/", " ", $CELU2);
+               $TELET_= preg_replace("/[\.*\-*]/", " ", $TELET);
+               $ite->TELEFONO=  $TELE_;
+               $ite->CELULAR=  $CELU1_;
+               $ite->CELULAR2=  $CELU2_;
+               $ite->TEL_TRABAJ=  $TELET_;
+               echo  $TELE_. "  ".$CELU1_."  ".$CELU2_." ".$TELET_."<br>";
+               $ite->save();
+           // }
+        } 
+        DB::commit();
+   }catch (\Exception $e) {DB::rollback(); } 
+
+}
 public function test(){
     set_time_limit(0);
     ini_set('memory_limit', '-1');

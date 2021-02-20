@@ -54,7 +54,7 @@ $RUTA= $OPERACION == "A" ? url("ndemandado") : url("edemandado");
 
             <div class="row">
             <div class="col-12 col-sm-3 col-md-12 col-lg-12"><label for="direccion">Direccion:</label>  </div>
-            <div class="col-12 col-sm-9 col-md-12 col-lg-12"> <input maxlength="78" value="{{! isset($ficha0) ? '' : $ficha0->DOMICILIO}}" name="DOMICILIO" type="text" id="direccion" class="form-control form-control-sm   ">
+            <div class="col-12 col-sm-9 col-md-12 col-lg-12"> <input maxlength="150" value="{{! isset($ficha0) ? '' : $ficha0->DOMICILIO}}" name="DOMICILIO" type="text" id="direccion" class="form-control form-control-sm   ">
             </div></div>
             <!--telefono y celular-->
             <div class="row">
@@ -63,7 +63,7 @@ $RUTA= $OPERACION == "A" ? url("ndemandado") : url("edemandado");
               <div class="input-group-prepend">
               <span class="input-group-text" id="basic-addon1"><i class="fa fa-phone fa-lg" aria-hidden="true"></i></span>
               </div> 
-              <input maxlength="20" value="{{! isset($ficha0) ? '' : $ficha0->TELEFONO}}" name="TELEFONO" type="text" id="telefono" class="form-control form-control-sm   ">
+              <input oninput="phone_input(event)" maxlength="20" value="{{! isset($ficha0) ? '' : $ficha0->TELEFONO}}" name="TELEFONO" type="text" id="telefono" class="form-control form-control-sm   ">
           </div>
             </div>
             <div class="col-12 col-sm-6 col-md-12    col-lg-12">
@@ -71,9 +71,19 @@ $RUTA= $OPERACION == "A" ? url("ndemandado") : url("edemandado");
               <div class="input-group-prepend">
               <span class="input-group-text" id="basic-addon1"><i class="fa fa-mobile fa-lg" aria-hidden="true"></i></span>
               </div>  
-              <input maxlength="20" value="{{! isset($ficha0) ? '' : $ficha0->CELULAR}}" name="CELULAR" type="text"   class="form-control form-control-sm   ">
+              <input  oninput="phone_input(event)"  maxlength="20" value="{{! isset($ficha0) ? '' : $ficha0->CELULAR}}" name="CELULAR" type="text"   class="form-control form-control-sm   ">
           </div>
             </div>
+
+            <div class="col-12 col-sm-6 col-md-12    col-lg-12">
+            <div class="input-group input-group-sm">
+              <div class="input-group-prepend">
+              <span class="input-group-text" id="basic-addon1"><i class="fa fa-mobile fa-lg" aria-hidden="true"></i></span>
+              </div>  
+              <input  oninput="phone_input(event)" maxlength="20" value="{{! isset($ficha0) ? '' : $ficha0->CELULAR2}}" name="CELULAR2" type="text"   class="form-control form-control-sm   ">
+          </div>
+            </div>
+
             </div>
              <!--Telefono y celular-->
            
@@ -96,7 +106,7 @@ $RUTA= $OPERACION == "A" ? url("ndemandado") : url("edemandado");
 
             <div class="row">
             <div class="col-12 col-sm-3 col-md-12 col-lg-12"><label for="laboral">Direccion:</label></div>
-            <div class="col-12 col-sm-9 col-md-12  col-lg-12"><input maxlength="79" value="{{! isset($ficha0) ? '' : $ficha0->LABORAL}}"  name="LABORAL" type="text"   class="form-control form-control-sm   ">
+            <div class="col-12 col-sm-9 col-md-12  col-lg-12"><input maxlength="150" value="{{! isset($ficha0) ? '' : $ficha0->LABORAL}}"  name="LABORAL" type="text"   class="form-control form-control-sm   ">
             </div></div>
 
 
@@ -104,7 +114,7 @@ $RUTA= $OPERACION == "A" ? url("ndemandado") : url("edemandado");
               <div class="input-group-prepend">
               <span class="input-group-text" id="basic-addon1"><i class="fa fa-phone fa-lg" aria-hidden="true"></i></span>
               </div>
-              <input maxlength="21" value="{{! isset($ficha0) ? '' : $ficha0->TEL_TRABAJ}}" name="TEL_TRABAJ" type="text" id="tel_trabaj" class="form-control form-control-sm   ">
+              <input  oninput="phone_input(event)" maxlength="21" value="{{! isset($ficha0) ? '' : $ficha0->TEL_TRABAJ}}" name="TEL_TRABAJ" type="text" id="tel_trabaj" class="form-control form-control-sm   ">
             </div>
 
              
@@ -130,7 +140,7 @@ $RUTA= $OPERACION == "A" ? url("ndemandado") : url("edemandado");
         </div>
           <div class="row">
           <div class="col-12 col-sm-3 col-md-12 "> <label for="dgarante">Direccion:</label></div>
-          <div class="col-12 col-sm-9 col-md-12"> <input maxlength="75" value="{{! isset($ficha0) ? '' : $ficha0->DOM_GARANT}}"  name="DOM_GARANT" type="text" id="dgarante" class="form-control form-control-sm   ">
+          <div class="col-12 col-sm-9 col-md-12"> <input maxlength="150" value="{{! isset($ficha0) ? '' : $ficha0->DOM_GARANT}}"  name="DOM_GARANT" type="text" id="dgarante" class="form-control form-control-sm   ">
           </div></div>
           <!--TELEFONO Y CELULAR-->
           <div class="row">
@@ -139,7 +149,7 @@ $RUTA= $OPERACION == "A" ? url("ndemandado") : url("edemandado");
           <div class="input-group-prepend">
           <span class="input-group-text" id="basic-addon1"><i class="fa fa-phone fa-lg" aria-hidden="true"></i></span>
           </div>
-          <input  maxlength="20" value="{{! isset($ficha0) ? '' : $ficha0->TEL_GARANT}}" name="TEL_GARANT" type="text" id="tgarante" class="form-control form-control-sm   ">
+          <input  oninput="phone_input(event)"   maxlength="20" value="{{! isset($ficha0) ? '' : $ficha0->TEL_GARANT}}" name="TEL_GARANT" type="text" id="tgarante" class="form-control form-control-sm   ">
           </div>
           </div>
           <div class="col-12 col-sm-6   col-lg-12">
@@ -147,7 +157,7 @@ $RUTA= $OPERACION == "A" ? url("ndemandado") : url("edemandado");
           <div class="input-group-prepend">
           <span class="input-group-text" id="basic-addon1"><i class="fa fa-mobile fa-lg" aria-hidden="true"></i></span>
           </div>
-          <input  maxlength="20" value="{{! isset($ficha0) ? '' : $ficha0->CEL_GARANT}}" name="CEL_GARANT" type="text" id="tgarante" class="form-control form-control-sm   ">
+          <input  oninput="phone_input(event)"  maxlength="20" value="{{! isset($ficha0) ? '' : $ficha0->CEL_GARANT}}" name="CEL_GARANT" type="text" id="tgarante" class="form-control form-control-sm   ">
           </div>
           </div>
           </div> <!--TELEFONO Y CELULAR-->
@@ -168,14 +178,14 @@ $RUTA= $OPERACION == "A" ? url("ndemandado") : url("edemandado");
 
           <div class="row">
              <div class="col-12 col-sm-4 col-md-12"><label for="dlabogarante">Dir.Laboral:</label></div>
-             <div class="col-12 col-sm-8 col-md-12"><input maxlength="75" value="{{! isset($ficha0) ? '' : $ficha0->LABORAL_G}}" name="LABORAL_G" type="text"   class="form-control form-control-sm   ">
+             <div class="col-12 col-sm-8 col-md-12"><input maxlength="150" value="{{! isset($ficha0) ? '' : $ficha0->LABORAL_G}}" name="LABORAL_G" type="text"   class="form-control form-control-sm   ">
           </div></div>
 
           <div class="input-group input-group-sm">
               <div class="input-group-prepend">
               <span class="input-group-text" id="basic-addon1"><i class="fa fa-phone fa-lg" aria-hidden="true"></i></span>
               </div>
-              <input maxlength="20" value="{{! isset($ficha0) ? '' : $ficha0->TEL_LAB_G}}" name="TEL_LAB_G" type="text"   class="form-control form-control-sm   ">
+              <input  oninput="phone_input(event)"  maxlength="20" value="{{! isset($ficha0) ? '' : $ficha0->TEL_LAB_G}}" name="TEL_LAB_G" type="text"   class="form-control form-control-sm   ">
         </div>
 
          
@@ -220,7 +230,7 @@ $RUTA= $OPERACION == "A" ? url("ndemandado") : url("edemandado");
               <div class="input-group-prepend">
               <span class="input-group-text" id="basic-addon1"><i class="fa fa-phone fa-lg" aria-hidden="true"></i></span>
               </div>
-              <input maxlength="17" value="{{! isset($ficha0) ? '' : $ficha0->TEL_GAR_3}}" name="TEL_GAR_3" type="text" id="ctactecatas" class="form-control form-control-sm   ">
+              <input  oninput="phone_input(event)"  maxlength="17" value="{{! isset($ficha0) ? '' : $ficha0->TEL_GAR_3}}" name="TEL_GAR_3" type="text" id="ctactecatas" class="form-control form-control-sm   ">
     </div>
       </div>
       <div class="col-12 col-sm-6 col-md-12  col-lg-6">
@@ -228,7 +238,7 @@ $RUTA= $OPERACION == "A" ? url("ndemandado") : url("edemandado");
               <div class="input-group-prepend">
               <span class="input-group-text" id="basic-addon1"><i class="fa fa-mobile fa-lg" aria-hidden="true"></i></span>
               </div>
-              <input maxlength="17" value="{{! isset($ficha0) ? '' : $ficha0->CEL_GAR_3}}" name="CEL_GAR_3" type="text" id="ctactecatas" class="form-control form-control-sm   ">
+              <input  oninput="phone_input(event)"  maxlength="17" value="{{! isset($ficha0) ? '' : $ficha0->CEL_GAR_3}}" name="CEL_GAR_3" type="text" id="ctactecatas" class="form-control form-control-sm   ">
     </div>
       </div>
     </div><!--TELEFONO Y CELULAR -->
@@ -395,6 +405,11 @@ function enviarDatosPerso( ev){
                distribuirClavesGene( res.id_demanda, res.ci );
                //HABILITAR FORMULARIOS RESTANTES
                habilitarFormJudiciales();
+               //Cambiar form de edicion
+               if(  $("#operacion")=="A"){
+                show_edit_demandado_form(  res.IDNRO);
+                $("#operacion").val("M");
+               }
 
    }
 };
@@ -403,5 +418,26 @@ ajaxCall(ev, divname, success);  }   ;//end handler
 existeCI(  handler) ;
 }/** */
 
+
+function   show_edit_demandado_form(  id_demandado){
+
+$.ajax(  {
+url: "<?=url("edemandado")?>"+"/"+id_demandado,
+beforeSend: function(){
+          $("#persona-collapse").html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
+          
+     },
+success: function(  form){
+    
+     $("#persona-collapse").html( form ); 
+     $("#dema-msg").text( "GUARDADO!");$(".toast").toast("show"); 
+}, 
+error: function(){ 
+          $("#persona-collapse").html(  "" );
+          alert("Problemas de conexión"); 
+          }
+
+});
+}
 
 </script>

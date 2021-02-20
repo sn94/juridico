@@ -284,9 +284,11 @@ class JudicialController extends Controller
 // Saldo capital -  (Extracciones capital  )
 //Saldo liquidacion - (extracciones liquidacion)
 
-public function saldo_C_y_L(  $iddeman, $tipo="array" ){
+public function saldo_C_y_L(  $iddeman, $tipo="array" , $reparar= false ){
       //monto de la demanda - extracciones
       $demanda_reg=Demanda::find( $iddeman);  //Buscar demanda por su ID
+
+
      // $MontoDemanda=  intval($demanda_reg->DEMANDA);//Monto de la demanda
       //Consultar registro
       $liquidacion_reg=Notificacion::find( $iddeman);
@@ -297,8 +299,9 @@ public function saldo_C_y_L(  $iddeman, $tipo="array" ){
       //EXTRACCIONES
      // $Extracciones_capital=0;
       $Extracciones_liquida=0;
-  //dd( CuentaJudicial::where( "ID_DEMA", $demanda_reg->IDNRO)->first());
-   /* $cta_judi_reg=CuentaJudicial::where( "ID_DEMA", $iddeman)->first();
+      $Extracciones_capital=0;
+if(  intval($demanda_reg->SALDO)== 0  ||   ( is_null( $demanda_reg->SALDO ))  ||   $reparar){
+    $cta_judi_reg=CuentaJudicial::where( "ID_DEMA", $iddeman)->first();
     if( !is_null($cta_judi_reg)){
         $MOVIS= $cta_judi_reg->movcuentajudicial;//Instancia de cta judicial de la demanda
         if(  ! is_null($MOVIS)):
@@ -307,8 +310,11 @@ public function saldo_C_y_L(  $iddeman, $tipo="array" ){
                 if(  $it->TIPO_MOVI == "E"  &&  $it->TIPO_CTA == "C") //Si es extraccion CAPITAL
                 $Extracciones_capital+=  intval(  $it->IMPORTE);
         endforeach;
-
-
+    endif;
+    }
+}//end verificacion cero
+  
+/*
           //Extracciones de liquidacion    
           foreach( $MOVIS as $it):
             if(  $it->TIPO_MOVI == "E"  &&  $it->TIPO_CTA == "L") //Si es extraccion CAPITAL
@@ -320,11 +326,22 @@ public function saldo_C_y_L(  $iddeman, $tipo="array" ){
   //Calculo de saldos
     //SALDO CAPITAL
    // $saldo_capital= $MontoDemanda -  $Extracciones_capital;
-   $saldo_capital= $demanda_reg->SALDO;
+   $saldo_capital_respaldo=  intval($demanda_reg->DEMANDA) - $Extracciones_capital;
+
+   $saldo_capital=
+    (intval($demanda_reg->SALDO)== 0   ||   ( is_null( $demanda_reg->SALDO )  || $reparar)  ) ?  $saldo_capital_respaldo :   $demanda_reg->SALDO;
     $saldo_liquida= $total_liquidaciones- $Extracciones_liquida;
 
      
     $data=array( "saldo_capital"=> $saldo_capital, "saldo_liquida"=> $saldo_liquida);
+    
+    /********************* */
+      //Validar saldo si esta vacio
+      if(  ( intval( $demanda_reg->SALDO)  == 0)    || ( is_null( $demanda_reg->SALDO ))  ||  $reparar ){
+        $demanda_reg->SALDO=  $saldo_capital_respaldo;
+        $demanda_reg->save();
+    }
+    /******************** */
     if( $tipo== "array")
     return $data;
     if( $tipo== "json")

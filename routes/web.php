@@ -32,6 +32,9 @@ Datos personales
     /*************************LISTADO*****************/
 Route::get("ldemandados", "DatosPersoController@index"); //lista datos personales
 Route::get("ldemandados/{argumento}", "DatosPersoController@index"); //lista datos personales
+//garantes
+Route::get("lgarantes", "DatosPersoController@index_garantes"); //lista datos codeudor
+Route::get("lgarantes/{argumento}", "DatosPersoController@index_garantes"); //lista datos codeudor
 
 Route::get("existe-ci/{ci}", "DatosPersoController@existe"); //existencia de Nro de CI
 /****************************C R U D************** */
@@ -60,6 +63,9 @@ Route::post( "demandas-agregar", 'DemandaController@nueva_demandan');
 //EDICION DE DATOS PERSONALES
 Route::get( "demandas-editar/{iddeman}", 'DemandaController@editar_demandan')->middleware("adminopera");
 Route::get( "demandas-editar/{iddeman}/{tab}", 'DemandaController@editar_demandan')->middleware("adminopera");
+//solo formulario de editar demanda
+//Route::get( "demandas-editar/{iddeman}", 'DemandaController@editar_demanda_form')->middleware("adminopera");
+/* * * */
 Route::post( "demandas-editar", 'DemandaController@editar_demandan');
 Route::post("enotifi", "NotifiController@editar");
 Route::post("eobser", "ObservaController@editar");
@@ -105,7 +111,7 @@ Route::get('rel-filtro',   'FilterController@relaciones_filtro'); //Datos de rel
 Route::get('filtro-aviso-rec/{id}',   'FilterController@aviso_recorte_cols');
 Route::get('filtro-orden/{col}/{sentido}',   'FilterController@filtro_orden');
 /*************************** */
-
+Route::get('dgasto/{id}',   'GastosController@borrar'); //vista completa con grilla  12/ 2 / 2021
 
 
 
@@ -120,7 +126,7 @@ Route::group(['middleware' => 'admin'], function () {
 
     /**BORRADO */
     Route::get('del-plan-cuenta/{id}',   'PlanCtaGastoController@borrar'); 
-    Route::get('dgasto/{id}',   'GastosController@borrar'); //vista completa con grilla
+    //Route::get('dgasto/{id}',   'GastosController@borrar'); //vista completa con grilla
     Route::get('dbank/{id}',   'BancoController@borrar'); 
     Route::get('dmovibank/{id}',   'BancoController@borrar_movimiento'); 
     Route::get("dliquida/{idnro}", "LiquidaController@delete"); 
@@ -286,7 +292,7 @@ Route::post('bank-informes',   'BancoController@informes');
 Route::get('bank-informes/{tipo}',   'BancoController@informes'); 
 Route::post('bank-informes/{tipo}',   'BancoController@informes'); 
 
-//Route::get('test',   'ProduccionController@COMPATIBILIDAD_FECHA_BANCO');
+Route::get('test',   'ProduccionController@COMPATIBILIDAD_TELEFONOS');
 
 
 

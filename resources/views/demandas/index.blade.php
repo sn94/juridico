@@ -323,6 +323,16 @@ let w=  obj.value.replaceAll(/\./g , "");
 obj.value= w;
 }
    
+
+function phone_input(ev){
+     if( ev.data == null) return;
+     
+    if( (ev.data.charCodeAt() < 48 || ev.data.charCodeAt() > 57)  && ev.data.charCodeAt()!= 32   ){ 
+      ev.target.value= 
+      ev.target.value.substr( 0, ev.target.selectionStart-1) + " "
+      ev.target.value.substr( ev.target.selectionStart );
+    }  }
+
   //Validacion para controlar entradas de teclado
   //Permite solo entrada numerica
    function solo_numero(ev){

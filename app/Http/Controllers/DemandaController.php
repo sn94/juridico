@@ -93,7 +93,7 @@ class DemandaController extends Controller
        $persona= Demandados::where("ci", $ci)->first();//persona
        $saldos= $this->adjuntarSaldosDemanda($ci);
         return view("demandado.list_demandas", 
-        ['lista'=>   $lista,   'ci'=>$ci, 'nombre'=> $persona->TITULAR, "saldos"=> $saldos ] );
+        ['lista'=>   $lista, 'idnro'=>$persona->IDNRO,  'ci'=>$ci, 'nombre'=> $persona->TITULAR, "saldos"=> $saldos ] );
  }
 
 
@@ -111,8 +111,12 @@ class DemandaController extends Controller
         }else{
             $lista= $lista= $this->listar_DEMANDAS( $ci);
             $saldos= $this->adjuntarSaldosDemanda($ci);
+            if(  request()->ajax() ){
+                return view("demandado.list_demandas_grilla", 
+                ['lista'=>   $lista,  'idnro'=>$ID,     "saldos"=> $saldos ] );
+            }else
             return view("demandado.list_demandas", 
-            ['lista'=>   $lista,   'ci'=>$ci, 'nombre'=> $persona->TITULAR, "saldos"=> $saldos ] );
+            ['lista'=>   $lista,  'idnro'=>$ID,  'ci'=>$ci, 'nombre'=> $persona->TITULAR, "saldos"=> $saldos ] );
         }   
  }
 /**
@@ -170,7 +174,7 @@ class DemandaController extends Controller
             //Quitar el campo _token
             $Params=  $request->input();  
             $Params['SALDO']=  $Params['DEMANDA'];
-            var_dump($Params);
+            
             /***ini transac */ 
              DB::beginTransaction();
              try {
@@ -243,16 +247,26 @@ class DemandaController extends Controller
         if( ! strcasecmp(  $request->method() , "post"))  {
             
             //Quitar el campo _token
-            $Params=  $request->input();    
+            $Params=  $request->input();  
+             
             //Actualizar en BD
             $obdema->fill(  $Params );
-            if($obdema->save() ){//exito  
-                echo json_encode(array(   'ok'=> "GUARDADO" ));
+            if($obdema->save() ){//exito   
+                    //ACTUALIZAR SALDO
+                $objudicial= new JudicialController();
+                $objudicial->saldo_C_y_L(   $obdema->IDNRO, "array", true);
+                echo json_encode( array( 'ci'=>  $request->input("CI"), "id_demanda"=>  $request->input("IDNRO") ) );
             }else{ //fallo
                 echo json_encode(array(  'error'=> 'Un problema en el servidor impidió guardar los datos. Contacte con su desarrollador.' )); 
             }
         }
         else{  //get 
+ 
+            
+        if($request->ajax() ){
+            return $this->editar_demanda_form( $iddeman  );
+        }
+
             $ci= $obdema->CI;//cedula  
             $nom= Demandados::where("CI",$ci)->first()->TITULAR;//nombre 
             //Devolver 
@@ -265,6 +279,26 @@ class DemandaController extends Controller
             return view('demandas.index',  $pars); //Modificar M  
             }
         }
+
+
+        //Solo devuelve el formulario de demandas (en AJAX)
+    public function editar_demanda_form(  $iddeman=0){//idd id_demanda
+        //instancia de demanda
+        $obdema= NULL;
+        if($iddeman==0) {$iddeman= request()->input("IDNRO"); }
+        $obdema= Demanda::find( $iddeman );
+        $obDataPerso= Demandados::where("CI", $obdema->CI)->first();
+         $ci= $obdema->CI;//cedula  
+         $nom= Demandados::where("CI",$ci)->first()->TITULAR;//nombre 
+         //Devolver 
+         $pars= array_merge( $this->formar_parametros() ,
+          array( 'ci'=>  $ci ,'id_demanda'=>$iddeman,'ficha0'=>$obDataPerso, 'ficha'=> $obdema,
+            'nombre'=> $nom , 'OPERACION'=>"M") 
+             );
+         return view('demandas.demanda_form',  $pars); //Modificar M  
+ 
+     }
+
 
 
 

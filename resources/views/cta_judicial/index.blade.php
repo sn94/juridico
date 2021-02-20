@@ -48,7 +48,7 @@ if ($detect->isMobile() == false):?>
 
 <script>
 
-  
+  var GrillaActualizada= false; 
  
 
     function borrar(ev){//form vista , edit
@@ -151,13 +151,55 @@ let divname= "#viewsaldo";
 
 
 /**Verificar tabla vacia */
+
+
 window.onload= function(){
+
+
   if( $("#tctajudicial tbody").children().length <= 0 )
   alert("NO SE REGISTRAN MOVIMIENTOS");
+
+window.onfocus= function(){
+
+if( !GrillaActualizada){
+ actualizarGrill();
+ GrillaActualizada=  true;
+}
+
+};  
+window.onmouseenter= function(){
+
+if( !GrillaActualizada){
+ actualizarGrill();
+ GrillaActualizada=  true;
+}
+
+};
+window.onmouseover= function(){
+
+if( !GrillaActualizada){
+  actualizarGrill();
+  GrillaActualizada=  true;
+}
+
 };
 
+window.onmouseleave= function(){
+console.log("leave");
+GrillaActualizada= false;
+};
 
+window.onblur= function(){
 
+GrillaActualizada= false;
+};
+
+window.onbeforeunload= function(){
+
+GrillaActualizada= false;
+};
+
+};
 
 </script>  
 

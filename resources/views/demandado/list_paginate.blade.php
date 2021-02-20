@@ -25,12 +25,18 @@ border:none;
 </style>
 <a href="<?=url("demandas-agregar")?>" class="btn btn-success btn-sm">NUEVO</a>
 
+
+<div class="form-check">
+    <input id="flag-codeudor" class="form-check-input" type="checkbox" value="option1" onchange="busqueda_selectiva( event) ">
+    <label class="form-check-label" for="inlineCheckbox1">BUSCAR CO-DEUDORES</label>
+  </div>
+
 <div class="input-group mb-2 mt-3">
   <div class="input-group-prepend">
     <button  onclick="buscar()" class="btn btn-success" type="button"><i class="fa fa-search" aria-hidden="true"></i>
 </button>
   </div>
-  <input id="argumento" onkeydown="buscarRegs(event)" type="text" class="form-control" placeholder="buscar" aria-label="" aria-describedby="basic-addon1">
+  <input id="argumento" onkeydown="buscarRegs(event)" type="text" class="form-control" placeholder="Buscar por cédula o nombre/apellido" aria-label="" aria-describedby="basic-addon1">
 </div>
 
  
@@ -48,19 +54,52 @@ border:none;
 
   <script> 
 
-function buscar( ){
+
+function busqueda_selectiva(ev){
+  if( ev.currentTarget.checked)
+  buscar( true );
+  else{ 
+    $("#argumento").val("");
+    buscar();
+    }
+}
+ 
+
+function buscar(  codeudor ){
+  let codeudor_v=  codeudor == undefined ? false :  true;
+
+  let url__=  "<?=url("ldemandados")?>/"+$("#argumento").val();
+  if( codeudor_v   ||  $("#flag-codeudor").prop("checked") ) { 
+    url__=   "<?=url("lgarantes")?>/"+$("#argumento").val();
+    }
+
   $.ajax({
-    url: "<?=url("ldemandados")?>/"+$("#argumento").val(),
+    url: url__,
+
+    beforeSend: function(){
+         $( "#tabla-dinamica").html(  "<div class='spinner mx-auto'><div class='spinner-bar'></div></div>" ); 
+       },
+
        success: function(res){
          $("#tabla-dinamica").html(  res );
-       }
-     });
+       },
+       error: function(){
+      $( "#tabla-dinamica").html(  "Error de servidor. Consulte con el administrador" ); 
+     }
+     }
+    
+     );
 }
+
+
+
   function buscarRegs(ev){
  
 if( ev.keyCode==13){
   let target=  ev.target;
-  buscar();
+  if( $("#flag-codeudor").prop("checked"))
+  buscar( true );
+  else buscar();
 }
   }/** */
  
