@@ -35,16 +35,25 @@ class GastosController extends Controller
         ])->paginate(20);
 
 
+        //Totales
+        $totales = Gastos::select(DB::raw('if(SUM(IMPORTE) is null, 0, SUM(IMPORTE)) AS IMPORTE, METODO, FLAG'))
+            ->groupBy("METODO")
+            ->groupBy("FLAG")
+            ->get();
+        // dd( $totales);
+
+
+
         if ($request->ajax()) {
             if ($dato->count())
-                return view("gastos.grilla", ["movi" =>  $dato]);
+                return view("gastos.grilla", ["movi" =>  $dato, "totales" => $totales]);
             else
                 echo "<h6>SIN REGISTROS</h6>";
         } else
             return view(
                 "gastos.index",
                 [
-                    "movi" =>  $dato, "TITULO" => "GASTOS", "url_agregar" => url("gasto"),
+                    "movi" =>  $dato,  "totales" => $totales, "TITULO" => "GASTOS", "url_agregar" => url("gasto"),
                     "CODGASTO" => DB::table("cod_gasto")->pluck('DESCRIPCION', 'IDNRO'),
                     "breadcrumbcolor" => "#fdc673 !important;"
                 ]
@@ -252,7 +261,7 @@ class GastosController extends Controller
                 $desde = $request->input("Desde");
                 $hasta = $request->input("Hasta");
             }
-        
+
             if ($desde != "") {
                 $desde = Helper::beautyDate($desde);
                 $hasta = Helper::beautyDate($hasta);
@@ -266,6 +275,12 @@ class GastosController extends Controller
         <style>
             .text-center{
                 text-align: center;
+            }
+            .text-left{
+                text-align: left;
+            }
+            .text-right{
+                text-align: right;
             }
             .codigo{
                 width: 65px;
@@ -303,18 +318,69 @@ class GastosController extends Controller
                 font-weight: bold;
                 font-size: 11px; 
             }
+            tr.pie th{ 
+                border-top: 1px solid black;
+                color: #0f0f0f;
+                font-weight: bold;
+                font-size: 11px; 
+            }
         </style>
         <h6>$TITULO_DE_PDF </h6>
+
+        EOF;
+
+
+            /********/
+
+            $TOTAL_INGRESOS = 0;
+            $TOTAL_EGRESOS = 0;
+            $TOTAL_I_EFE = 0;
+            $TOTAL_I_CHE = 0;
+            $TOTAL_I_GIRO = 0;
+            $TOTAL_E_EFE = 0;
+            $TOTAL_E_CHE = 0;
+            $TOTAL_E_GIRO = 0;
+            /*****totales
+             * ***** */
+
+            foreach ($Movi as $mo) :
+                /**TOTALES ** */
+
+                if ($mo->FLAG == "INGRESO") {
+                    $TOTAL_INGRESOS += $mo->IMPORTE;
+                    if ($mo->METODO == "EFECTIVO") $TOTAL_I_EFE += $mo->IMPORTE;
+                    if ($mo->METODO == "CHEQUE") $TOTAL_I_CHE += $mo->IMPORTE;
+                    if ($mo->METODO == "GIRO_TIGO") $TOTAL_I_GIRO += $mo->IMPORTE;
+                } else {
+                    $TOTAL_EGRESOS += $mo->IMPORTE;
+                    if ($mo->METODO == "EFECTIVO") $TOTAL_E_EFE += $mo->IMPORTE;
+                    if ($mo->METODO == "CHEQUE") $TOTAL_E_CHE += $mo->IMPORTE;
+                    if ($mo->METODO == "GIRO_TIGO") $TOTAL_E_GIRO += $mo->IMPORTE;
+                }
+            endforeach;
+            $html.=  <<<EOF
+            <table class="tabla">
+            <tr class="cuerpo"><th class="text-right">INGRESOS</th><th class="text-right">EFECTIVO</th><th class="text-right">CHEQUE</th><th class="text-right">GIRO_TIGO</th></tr>
+            <tr  class="cuerpo pie" ><th  class="text-right"> $TOTAL_INGRESOS</th><th class="text-right"> $TOTAL_I_EFE </th><th class="text-right">$TOTAL_I_CHE</th><th class="text-right">$TOTAL_I_GIRO</th></tr>
+            </table>
+            <table class="tabla">
+            <tr class="cuerpo"> <th class="text-right"  >EGRESOS</th> <th class="text-right">EFECTIVO</th><th class="text-right">CHEQUE</th><th class="text-right">GIRO_TIGO</th></tr>
+            <tr class="cuerpo pie"> <th  class="text-right"> $TOTAL_EGRESOS</th><th class="text-right"> $TOTAL_E_EFE </th><th class="text-right">$TOTAL_E_CHE</th><th class="text-right">$TOTAL_E_GIRO</th></tr>
+            </table>
+            <br><br>
+            EOF;
+            $html.= <<<EOF
         <table class="tabla">
         <thead>
         <tr class="cabecera"><th class="codigo">CODIGO</th><th class="fecha">FECHA</th><th class="comprobante">COMPROBANTE</th><th class="detalle">DETALLES</th><th class="importe">IMPORTE</th><th class="text-center">MOV.</th></tr>
         </thead>
         <tbody>
         EOF;
-            /********/
 
-            /********** */
+
             foreach ($Movi as $mo) :
+
+
                 //con formato
                 $f_MONTO = Helper::number_f($mo->IMPORTE);
                 $gooddate = Helper::beautyDate($mo->FECHA);
@@ -332,7 +398,8 @@ class GastosController extends Controller
             $html .= <<<EOF
         <br>
         <tr class="pie"><td  class="codigo"></td><td class="fecha"></td><td class="comprobante">TOTAL</td><td class="detalle"></td><td class="importe">$f_total</td> <td></td> </tr> 
-        </tbody></table>
+        </tbody>
+        </table> 
         EOF;
 
             if ($tipo == "PRINT") {

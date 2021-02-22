@@ -18,6 +18,96 @@ $iconsize =  $dete->isMobile() ? "" : "fa-lg";
   }
 </style>
 
+@php
+$TOTAL_INGRESOS= 0;
+$TOTAL_EGRESOS= 0;
+$TOTAL_I_EFE= 0;
+$TOTAL_I_CHE= 0;
+$TOTAL_I_GIRO= 0;
+$TOTAL_E_EFE= 0;
+$TOTAL_E_CHE= 0;
+$TOTAL_E_GIRO= 0;
+
+
+foreach( $totales as $tota):
+
+if( $tota->FLAG == "INGRESO")
+{
+$TOTAL_INGRESOS+= $tota->IMPORTE;
+if( $tota->METODO == "EFECTIVO") $TOTAL_I_EFE+= $tota->IMPORTE;
+if( $tota->METODO == "CHEQUE") $TOTAL_I_CHE+= $tota->IMPORTE;
+if( $tota->METODO == "GIRO_TIGO") $TOTAL_I_GIRO+= $tota->IMPORTE;
+}
+else
+{
+$TOTAL_EGRESOS+= $tota->IMPORTE;
+if( $tota->METODO == "EFECTIVO") $TOTAL_E_EFE+= $tota->IMPORTE;
+if( $tota->METODO == "CHEQUE") $TOTAL_E_CHE+= $tota->IMPORTE;
+if( $tota->METODO == "GIRO_TIGO") $TOTAL_E_GIRO+= $tota->IMPORTE;
+}
+
+endforeach;
+
+$TOTAL_INGRESOS= Helper::number_f($TOTAL_INGRESOS);
+$TOTAL_EGRESOS= Helper::number_f($TOTAL_EGRESOS);
+$TOTAL_I_EFE= Helper::number_f( $TOTAL_I_EFE);
+$TOTAL_I_CHE= Helper::number_f( $TOTAL_I_CHE);
+$TOTAL_I_GIRO= Helper::number_f( $TOTAL_I_GIRO);
+$TOTAL_E_EFE= Helper::number_f( $TOTAL_E_EFE);
+$TOTAL_E_CHE= Helper::number_f( $TOTAL_E_CHE);
+$TOTAL_E_GIRO= Helper::number_f( $TOTAL_E_GIRO);
+
+@endphp
+
+
+<div class="row">
+  <div class="col-12 col-md-6">
+    <table class="table table-bordered  table-striped">
+      <tr  >
+        <th colspan="3" class="p-0 text-center">INGRESOS</th>
+      </tr>
+      <tr  >
+        <th colspan="3"   class="p-0 text-center" > {{$TOTAL_INGRESOS}} </th>
+      </tr>
+      <tr>
+        <th class="text-right p-0">EFECTIVO</th>
+        <th class="text-right p-0">CHEQUE</th>
+        <th class="text-right p-0">GIRO_TIGO</th>
+      </tr>
+      <tr>
+        <th class="text-right p-0"> {{$TOTAL_I_EFE}} </th>
+        <th class="text-right p-0">{{$TOTAL_I_CHE}}</th>
+        <th class="text-right p-0">{{$TOTAL_I_GIRO}}</th>
+      </tr>
+    </table>
+  </div>
+  <div class="col-12 col-md-6">
+    <table class="table table-bordered  table-striped">
+      <tr>
+        <th colspan="3" class="text-center p-0">EGRESOS</th>
+      </tr>
+      <tr>
+        <th colspan="3" class=" text-center p-0">{{$TOTAL_EGRESOS}}</th>
+      </tr>
+      <tr>
+        <th class="text-right p-0">EFECTIVO</th>
+        <th class="text-right p-0">CHEQUE</th>
+        <th class="text-right p-0">GIRO_TIGO</th>
+      </tr>
+      <tr>
+        <th class="text-right p-0"> {{$TOTAL_E_EFE}} </th>
+        <th class="text-right p-0">{{$TOTAL_E_CHE}}</th>
+        <th class="text-right p-0">{{$TOTAL_E_GIRO}}</th>
+      </tr>
+    </table>
+  </div>
+</div>
+
+
+
+
+
+
 <table id="gastos" class="table  table-sm table-bordered  table-striped">
   <thead class="thead-dark">
     <tr>
@@ -61,12 +151,12 @@ $iconsize =  $dete->isMobile() ? "" : "fa-lg";
     <!--CADA CTA TENDRA ALGUN DEPOSITO, EXTRACCION O EXTRACCION POR PROYECTO-->
     <?php foreach ($movi as $it) : ?>
 
-    @php 
-    //es gasto o ingreso 
-    $style_row= $it->FLAG =="GASTO" ? "table-danger" : "table-success";
-    @endphp
+      @php
+      //es gasto o ingreso
+      $style_row= $it->FLAG =="GASTO" ? "table-danger" : "table-success";
+      @endphp
 
-      <tr id="{{$it->IDNRO}}"  class="{{$style_row}}">
+      <tr id="{{$it->IDNRO}}" class="{{$style_row}}">
 
         <td>
           <p class="pt-1 mr-1 ml-1 mb-0 text-center"><a onclick="mostrar_form(event)" data-toggle="modal" data-target="#showform" href="<?= url("gasto/M/" . $it->IDNRO) ?>"><i class="fa fa-pencil {{$iconsize}}" aria-hidden="true"></i></a></p>
