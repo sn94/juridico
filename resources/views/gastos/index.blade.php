@@ -22,51 +22,13 @@ echo link_to('gasto', $title = "AGREGAR", $attributes = [ "class"=>"btn btn-sm b
 <a href="<?= url("rep-gastos") ?>" data-toggle="modal" data-target="#show_opc_rep" onclick="mostrar_informe(event)" style="color:black;"> <i class="mr-2 ml-2 fa fa-print {{$iconsize}}" aria-hidden="true"></i></a>
 
 
-<div class="row">
-  <div class="col-12 col-md-4">
-    <label for="" style="display: block;">FILTRAR POR CÓDIGO DE GASTO:</label>
-    {!! Form::select('', $CODGASTO, null, [ 'id'=>'CODGASTO','class'=>'form-control form-control-sm', 'onchange'=>'filtrarPorCodigo(event)'] ) !!}
-  </div>
+<div class="row" style="align-items: baseline;">
 
 
 
-  <div class="col-12 col-md-8"  >
+  <div class="col-12 ">
 
-    <form id="gastos-search" action="<?= url("grillgastos") ?>" method="post" onsubmit="actualizar_grill_parametros(event)">
-      @csrf
-      
-      <div class="row">
-        <div class="col-12 col-md-3">
-        <label for="" style="display: block;">OTROS FILTROS:</label>
-          <!--Filtro: ES GASTO POR DEMANDA U OTROS -->
-          <select class="form-control" name="modo" id="">
-            <option value="T">TODO</option>
-            <option value="D">POR DEMANDAS</option>
-            <option value="V">POR VARIOS</option>
-            <option value="I">VER INGRESOS</option>
-          </select>
-        </div>
-        <div class="col-12 col-md-4">
-          <!--Parametros de fecha -->
-
-          <div style="display: grid; grid-template-columns: 20% 80%;">
-            <span style="font-size: 10pt; font-weight: 600;grid-column-start: 1;">Desde:</span>
-            <input style="grid-column-start: 2;" class="form-control form-control-sm" type="date" id="Desde" name="Desde">
-          </div>
-
-          <div style="display: grid; grid-template-columns: 20% 80%;" >
-            <span style="font-size: 10pt; font-weight: 600;grid-column-start: 1;">Hasta: </span>
-            <input  style="grid-column-start: 2;"  class="form-control form-control-sm" type="date" id="Hasta" name="Hasta">
-          </div>
-       
-        </div>
-        <div class="col-12 col-md-4" style="display: flex;">
-        <button style="background-color: #fdc673;color: #1a0c00;" type="submit" class="btn btn-sm btn-info mt-1">BUSCAR</button>
-        </div>
-
-      </div>
-   
-    </form>
+    @include("gastos.busqueda_params")
   </div>
 </div>
 

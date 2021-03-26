@@ -72,16 +72,23 @@ class GastosController extends Controller
         ])->orderBy($columna, $orden)->paginate(20);
 
 
+            //Totales
+            $totales = Gastos::select(DB::raw('if(SUM(IMPORTE) is null, 0, SUM(IMPORTE)) AS IMPORTE, METODO, FLAG'))
+                ->groupBy("METODO")
+                ->groupBy("FLAG")
+                ->get();
+
+
         if ($request->ajax()) {
             if ($dato->count())
-                return view("gastos.grilla", ["movi" =>  $dato]);
+                return view("gastos.grilla", ["movi" =>  $dato, "totales"=>  $totales]);
             else
                 echo "<h6>SIN REGISTROS</h6>";
         } else {
             return view(
                 "gastos.index",
                 [
-                    "movi" =>  $dato, "TITULO" => "GASTOS", "url_agregar" => url("gasto"),
+                    "movi" =>  $dato, "TITULO" => "GASTOS", "totales"=>  $totales, "url_agregar" => url("gasto"),
                     "CODGASTO" => DB::table("cod_gasto")->pluck('DESCRIPCION', 'IDNRO'),
                     "breadcrumbcolor" => "#fdc673 !important;"
                 ]
@@ -221,7 +228,12 @@ class GastosController extends Controller
     {
         $dato = $this->listar_datos_segun_param($request);
         if ($request->ajax()) {
-            return view("gastos.grilla", ["movi" =>  $dato]);
+            //Totales
+            $totales = Gastos::select(DB::raw('if(SUM(IMPORTE) is null, 0, SUM(IMPORTE)) AS IMPORTE, METODO, FLAG'))
+                ->groupBy("METODO")
+                ->groupBy("FLAG")
+                ->get(); 
+            return view("gastos.grilla", ["movi" =>  $dato, 'totales'=>  $totales]);
         } else {
             return view(
                 "gastos.index",
@@ -358,7 +370,7 @@ class GastosController extends Controller
                     if ($mo->METODO == "GIRO_TIGO") $TOTAL_E_GIRO += $mo->IMPORTE;
                 }
             endforeach;
-            $html.=  <<<EOF
+            $html .=  <<<EOF
             <table class="tabla">
             <tr class="cuerpo"><th class="text-right">INGRESOS</th><th class="text-right">EFECTIVO</th><th class="text-right">CHEQUE</th><th class="text-right">GIRO_TIGO</th></tr>
             <tr  class="cuerpo pie" ><th  class="text-right"> $TOTAL_INGRESOS</th><th class="text-right"> $TOTAL_I_EFE </th><th class="text-right">$TOTAL_I_CHE</th><th class="text-right">$TOTAL_I_GIRO</th></tr>
@@ -369,7 +381,7 @@ class GastosController extends Controller
             </table>
             <br><br>
             EOF;
-            $html.= <<<EOF
+            $html .= <<<EOF
         <table class="tabla">
         <thead>
         <tr class="cabecera"><th class="codigo">CODIGO</th><th class="fecha">FECHA</th><th class="comprobante">COMPROBANTE</th><th class="detalle">DETALLES</th><th class="importe">IMPORTE</th><th class="text-center">MOV.</th></tr>
